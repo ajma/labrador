@@ -165,6 +165,9 @@ export function ProjectEditor() {
     refetchInterval: showLogs ? 10000 : false,
   });
 
+  const [subdomainPrefix, setSubdomainPrefix] = useState('');
+  const [baseDomain, setBaseDomain] = useState('');
+
   const {
     register,
     handleSubmit,
@@ -192,6 +195,19 @@ export function ProjectEditor() {
         typeof project.exposureConfig === 'string'
           ? JSON.parse(project.exposureConfig || '{}')
           : project.exposureConfig || {};
+
+      // Parse domainName into subdomain prefix and base domain
+      if (project.domainName) {
+        const parts = project.domainName.split('.');
+        if (parts.length >= 2) {
+          setSubdomainPrefix(parts[0]);
+          setBaseDomain(parts.slice(1).join('.'));
+        } else {
+          setSubdomainPrefix('');
+          setBaseDomain(project.domainName);
+        }
+      }
+
       reset({
         name: project.name,
         composeContent: project.composeContent,
@@ -206,6 +222,10 @@ export function ProjectEditor() {
 
   const composeContent = watch('composeContent');
   const exposureEnabled = watch('exposureEnabled');
+  const selectedProviderId = watch('exposureProviderId');
+
+  const selectedProvider = availableProviders.find((p) => p.id === selectedProviderId);
+  const availableDomains = selectedProvider?.configuration?.domains || [];
 
   const handleComposeChange = useCallback(
     (value: string) => {
@@ -235,11 +255,21 @@ export function ProjectEditor() {
 
   const onSubmit = async (data: CreateProjectInput) => {
     try {
+      // Combine subdomain prefix and base domain
+      const fullDomain = subdomainPrefix && baseDomain
+        ? `${subdomainPrefix}.${baseDomain}`
+        : null;
+
+      const submitData = {
+        ...data,
+        domainName: fullDomain,
+      };
+
       if (isEditing) {
-        await updateMutation.mutateAsync(data);
+        await updateMutation.mutateAsync(submitData);
         toast.success('Project updated');
       } else {
-        await createMutation.mutateAsync(data);
+        await createMutation.mutateAsync(submitData);
         toast.success('Project created');
       }
     } catch (err: any) {
@@ -250,7 +280,16 @@ export function ProjectEditor() {
   const handleSaveAndDeploy = async () => {
     const data = watch();
     try {
-      await updateMutation.mutateAsync(data);
+      const fullDomain = subdomainPrefix && baseDomain
+        ? `${subdomainPrefix}.${baseDomain}`
+        : null;
+
+      const submitData = {
+        ...data,
+        domainName: fullDomain,
+      };
+
+      await updateMutation.mutateAsync(submitData);
       toast.success('Changes saved');
       await deployMutation.mutateAsync();
     } catch (err: any) {
@@ -351,23 +390,6 @@ export function ProjectEditor() {
             {errors.logoUrl && <p className="text-sm text-destructive">{errors.logoUrl.message}</p>}
           </div>
 
-          {/* Domain Name */}
-          <div className="space-y-2">
-            <label htmlFor="domainName" className="text-sm font-medium">
-              Domain Name <span className="text-muted-foreground">(optional)</span>
-            </label>
-            <input
-              id="domainName"
-              type="text"
-              {...register('domainName')}
-              placeholder="app.example.com"
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            />
-            {errors.domainName && (
-              <p className="text-sm text-destructive">{errors.domainName.message}</p>
-            )}
-          </div>
-
           {/* Exposure */}
           <div className="space-y-4 rounded-lg border border-input p-4">
             <h3 className="text-sm font-semibold">Exposure</h3>
@@ -407,6 +429,48 @@ export function ProjectEditor() {
                       No providers configured. Add one in Settings.
                     </p>
                   )}
+                </div>
+
+                {/* Domain Configuration */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Domain <span className="text-muted-foreground">(optional)</span>
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={subdomainPrefix}
+                      onChange={(e) => setSubdomainPrefix(e.target.value)}
+                      placeholder="myapp"
+                      className="flex h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    />
+                    <span className="text-muted-foreground">.</span>
+                    {availableDomains.length > 0 ? (
+                      <select
+                        value={baseDomain}
+                        onChange={(e) => setBaseDomain(e.target.value)}
+                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        <option value="">Select domain...</option>
+                        {availableDomains.map((domain: string) => (
+                          <option key={domain} value={domain}>
+                            {domain}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={baseDomain}
+                        onChange={(e) => setBaseDomain(e.target.value)}
+                        placeholder="example.com"
+                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      />
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    The domain where your app will be accessible (e.g., myapp.example.com)
+                  </p>
                 </div>
 
                 <div className="space-y-2">
