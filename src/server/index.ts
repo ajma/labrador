@@ -11,6 +11,7 @@ import { authRoutes } from './routes/auth.routes.js';
 import { projectRoutes } from './routes/projects.routes.js';
 import { dockerRoutes } from './routes/docker.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
+import { errorHandler } from './middleware/error.middleware.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -49,11 +50,22 @@ async function main() {
   // Health check
   app.get('/health', async () => ({ status: 'ok' }));
 
+  // Rate limiting for auth routes
+  await app.register(import('@fastify/rate-limit'), {
+    max: 10,
+    timeWindow: '1 minute',
+    hook: 'preHandler',
+    keyGenerator: (request) => request.ip,
+  });
+
   // Register routes
   await app.register(authRoutes, { prefix: '/api/auth' });
   await app.register(projectRoutes, { prefix: '/api/projects' });
   await app.register(dockerRoutes, { prefix: '/api/docker' });
   await app.register(settingsRoutes, { prefix: '/api/settings' });
+
+  // Error handler
+  app.setErrorHandler(errorHandler);
 
   // SPA fallback for frontend routing (production only)
   if (process.env.NODE_ENV === 'production') {
