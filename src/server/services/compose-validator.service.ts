@@ -107,7 +107,7 @@ export class ComposeValidatorService {
         if (svc.networks) {
           const nets = Array.isArray(svc.networks) ? svc.networks : Object.keys(svc.networks);
           for (const net of nets) {
-            if (!parsed.networks[net] && net !== 'default') {
+            if (!(net in parsed.networks) && net !== 'default') {
               errors.push({ message: `Service '${name}': network '${net}' not defined in networks section` });
             }
           }
