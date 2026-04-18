@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { eq } from 'drizzle-orm';
-import { settingsSchema, onboardingSchema } from '../../shared/schemas.js';
+import { settingsSchema, onboardingSchema, exposureProviderSchema } from '../../shared/schemas.js';
 import { getDatabase } from '../db/index.js';
 import { settings, exposureProviders } from '../db/schema.js';
 import { authenticate } from '../middleware/auth.middleware.js';
@@ -79,6 +79,109 @@ export async function settingsRoutes(app: FastifyInstance) {
         updatedAt: Date.now(),
       })
       .where(eq(settings.userId, userId));
+
+    return { success: true };
+  });
+
+  // GET /exposure-providers - List all exposure providers
+  app.get('/exposure-providers', async (request) => {
+    const db = getDatabase();
+    const { id: userId } = request.user as { id: string; username: string };
+
+    const providers = await db
+      .select()
+      .from(exposureProviders)
+      .where(eq(exposureProviders.userId, userId));
+
+    return providers.map((p) => ({
+      ...p,
+      configuration: JSON.parse(p.configuration as string),
+    }));
+  });
+
+  // POST /exposure-providers - Create a new exposure provider
+  app.post('/exposure-providers', async (request, reply) => {
+    const parsed = exposureProviderSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: 'Invalid input', details: parsed.error.flatten() });
+    }
+
+    const db = getDatabase();
+    const { id: userId } = request.user as { id: string; username: string };
+
+    const [created] = await db
+      .insert(exposureProviders)
+      .values({
+        userId,
+        providerType: parsed.data.providerType,
+        name: parsed.data.name,
+        enabled: parsed.data.enabled,
+        configuration: JSON.stringify(parsed.data.configuration),
+      })
+      .returning();
+
+    return {
+      ...created,
+      configuration: JSON.parse(created.configuration as string),
+    };
+  });
+
+  // PUT /exposure-providers/:id - Update an exposure provider
+  app.put('/exposure-providers/:id', async (request, reply) => {
+    const parsed = exposureProviderSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: 'Invalid input', details: parsed.error.flatten() });
+    }
+
+    const db = getDatabase();
+    const { id: userId } = request.user as { id: string; username: string };
+    const { id } = request.params as { id: string };
+
+    // Verify ownership
+    const [existing] = await db
+      .select()
+      .from(exposureProviders)
+      .where(eq(exposureProviders.id, id));
+
+    if (!existing || existing.userId !== userId) {
+      return reply.code(404).send({ error: 'Provider not found' });
+    }
+
+    const [updated] = await db
+      .update(exposureProviders)
+      .set({
+        providerType: parsed.data.providerType,
+        name: parsed.data.name,
+        enabled: parsed.data.enabled,
+        configuration: JSON.stringify(parsed.data.configuration),
+        updatedAt: Date.now(),
+      })
+      .where(eq(exposureProviders.id, id))
+      .returning();
+
+    return {
+      ...updated,
+      configuration: JSON.parse(updated.configuration as string),
+    };
+  });
+
+  // DELETE /exposure-providers/:id - Delete an exposure provider
+  app.delete('/exposure-providers/:id', async (request, reply) => {
+    const db = getDatabase();
+    const { id: userId } = request.user as { id: string; username: string };
+    const { id } = request.params as { id: string };
+
+    // Verify ownership
+    const [existing] = await db
+      .select()
+      .from(exposureProviders)
+      .where(eq(exposureProviders.id, id));
+
+    if (!existing || existing.userId !== userId) {
+      return reply.code(404).send({ error: 'Provider not found' });
+    }
+
+    await db.delete(exposureProviders).where(eq(exposureProviders.id, id));
 
     return { success: true };
   });
