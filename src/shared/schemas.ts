@@ -13,7 +13,7 @@ export const registerSchema = z.object({
 export const createProjectSchema = z.object({
   name: z.string().min(1).max(100),
   composeContent: z.string().max(102400),
-  logoUrl: z.string().url().nullable().optional(),
+  logoUrl: z.string().url().or(z.literal('')).nullable().optional(),
   domainName: z.string().nullable().optional(),
   exposureEnabled: z.boolean().optional().default(false),
   exposureProviderId: z.string().uuid().nullable().optional(),
