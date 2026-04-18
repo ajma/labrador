@@ -8,6 +8,8 @@ import { DockerService } from '../services/docker.service.js';
 import type { ExposureService } from '../services/exposure/exposure.service.js';
 import type { UpdateCheckerService } from '../services/update-checker.service.js';
 import type { StatsService } from '../services/stats.service.js';
+import fs from 'fs/promises';
+import path from 'path';
 
 const projectService = new ProjectService();
 
@@ -90,11 +92,40 @@ export async function projectRoutes(app: FastifyInstance) {
   // DELETE /:id - Delete a project
   app.delete<{ Params: { id: string } }>('/:id', async (request, reply) => {
     const userId = (request.user as any).id;
+    const { id } = request.params;
+
     try {
-      await projectService.deleteProject(request.params.id, userId);
+      const project = await projectService.getProject(id, userId);
+      if (!project) {
+        return reply.code(404).send({ error: 'Project not found' });
+      }
+
+      // Stop and clean up Docker containers if project is running
+      if (deployService && (project.status === 'running' || project.status === 'starting')) {
+        try {
+          await deployService.stop(id, userId);
+        } catch (err) {
+          // Continue with deletion even if stop fails
+          console.error('Failed to stop project during deletion:', err);
+        }
+      }
+
+      // Clean up compose file directory
+      const projectDir = path.join('/tmp/homelabman', project.slug);
+      try {
+        await fs.rm(projectDir, { recursive: true, force: true });
+      } catch (err) {
+        // Continue with deletion even if directory cleanup fails
+        console.error('Failed to remove project directory:', err);
+      }
+
+      // Delete from database
+      await projectService.deleteProject(id, userId);
+
       return reply.code(204).send();
-    } catch {
-      return reply.code(404).send({ error: 'Project not found' });
+    } catch (err: any) {
+      console.error('Delete project error:', err);
+      return reply.code(500).send({ error: err.message || 'Failed to delete project' });
     }
   });
 

@@ -263,8 +263,10 @@ export function ProjectEditor() {
     try {
       await deleteMutation.mutateAsync(id);
       toast.success('Project deleted');
+      setShowDeleteConfirm(false);
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete project');
+      setShowDeleteConfirm(false);
     }
   };
 

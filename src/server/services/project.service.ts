@@ -1,6 +1,6 @@
 import { eq, and } from 'drizzle-orm';
 import { getDatabase } from '../db/index.js';
-import { projects } from '../db/schema.js';
+import { projects, containerStats, containerUpdates } from '../db/schema.js';
 import type { CreateProjectInput, UpdateProjectInput } from '../../shared/schemas.js';
 import type { Project } from '../../shared/types.js';
 import crypto from 'crypto';
@@ -95,6 +95,11 @@ export class ProjectService {
       throw new Error('Project not found');
     }
 
+    // Delete related records first (foreign key constraints)
+    await db.delete(containerStats).where(eq(containerStats.projectId, projectId));
+    await db.delete(containerUpdates).where(eq(containerUpdates.projectId, projectId));
+
+    // Now delete the project
     await db.delete(projects).where(and(eq(projects.id, projectId), eq(projects.userId, userId)));
   }
 
