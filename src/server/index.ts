@@ -6,12 +6,15 @@ import websocket from '@fastify/websocket';
 import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { eq } from 'drizzle-orm';
 import { initDatabase } from './db/index.js';
+import { projects } from './db/schema.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { projectRoutes } from './routes/projects.routes.js';
 import { dockerRoutes } from './routes/docker.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
+import { DockerService } from './services/docker.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -47,8 +50,43 @@ async function main() {
   // Decorate app with db
   app.decorate('db', db);
 
+  // Initialize Docker service
+  let dockerService: DockerService | null = null;
+  try {
+    dockerService = new DockerService();
+    const dockerAvailable = await dockerService.ping();
+    if (dockerAvailable) {
+      app.log.info('Docker connection established');
+
+      // Reconcile project statuses on startup
+      try {
+        const statusMap = await dockerService.reconcileProjectStatuses();
+        for (const [projectId, status] of statusMap) {
+          await db
+            .update(projects)
+            .set({ status, updatedAt: Date.now() })
+            .where(eq(projects.id, projectId));
+        }
+        if (statusMap.size > 0) {
+          app.log.info(`Reconciled ${statusMap.size} project status(es) from Docker`);
+        }
+      } catch (reconcileErr) {
+        app.log.warn({ err: reconcileErr }, 'Failed to reconcile project statuses');
+      }
+    } else {
+      app.log.warn('Docker is not reachable; Docker features will be unavailable');
+      dockerService = null;
+    }
+  } catch (dockerErr) {
+    app.log.warn({ err: dockerErr }, 'Failed to initialize Docker service; starting without Docker');
+    dockerService = null;
+  }
+
+  // Decorate app with dockerService (may be null if Docker is unavailable)
+  app.decorate('dockerService', dockerService);
+
   // Health check
-  app.get('/health', async () => ({ status: 'ok' }));
+  app.get('/health', async () => ({ status: 'ok', docker: dockerService !== null }));
 
   // Rate limiting for auth routes
   await app.register(import('@fastify/rate-limit'), {
