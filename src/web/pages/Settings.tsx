@@ -1,5 +1,45 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+interface SetupCheck {
+  name: string;
+  passed: boolean;
+  message: string;
+  resolution?: string;
+}
+
+interface ProviderSetupResult {
+  allPassed: boolean;
+  checks: SetupCheck[];
+}
+
+function SetupCheckDisplay({ result }: { result: ProviderSetupResult }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {result.checks.map((check) => (
+        <div
+          key={check.name}
+          className={`rounded-md p-2 text-sm ${
+            check.passed
+              ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200'
+              : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span>{check.passed ? '✓' : '✗'}</span>
+            <span className="font-medium">{check.name}</span>
+            <span className="text-xs opacity-80">— {check.message}</span>
+          </div>
+          {!check.passed && check.resolution && (
+            <p className="mt-1 pl-5 text-xs opacity-90">
+              <span className="font-medium">Fix:</span> {check.resolution}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -160,6 +200,23 @@ export function Settings() {
   const queryClient = useQueryClient();
   const [editingProvider, setEditingProvider] = useState<ExposureProviderConfig | null>(null);
   const [isAddingProvider, setIsAddingProvider] = useState(false);
+  const [setupResults, setSetupResults] = useState<Record<string, ProviderSetupResult>>({});
+  const [checkingSetup, setCheckingSetup] = useState<Record<string, boolean>>({});
+
+  const runCheckSetup = async (provider: ExposureProviderConfig) => {
+    setCheckingSetup((prev) => ({ ...prev, [provider.id]: true }));
+    try {
+      const result = await api.post<ProviderSetupResult>('/settings/exposure-providers/check-setup', {
+        providerType: provider.providerType,
+        configuration: provider.configuration,
+      });
+      setSetupResults((prev) => ({ ...prev, [provider.id]: result }));
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to check setup');
+    } finally {
+      setCheckingSetup((prev) => ({ ...prev, [provider.id]: false }));
+    }
+  };
 
   const settingsQuery = useQuery<SettingsType>({
     queryKey: ['settings'],
@@ -300,6 +357,14 @@ export function Settings() {
                       <Button
                         variant="outline"
                         size="sm"
+                        onClick={() => runCheckSetup(provider)}
+                        disabled={checkingSetup[provider.id]}
+                      >
+                        {checkingSetup[provider.id] ? 'Checking...' : 'Check Setup'}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => {
                           setIsAddingProvider(false);
                           setEditingProvider(provider);
@@ -321,6 +386,11 @@ export function Settings() {
                     </div>
                   </div>
                 </CardHeader>
+                {setupResults[provider.id] && (
+                  <CardContent className="pt-0">
+                    <SetupCheckDisplay result={setupResults[provider.id]} />
+                  </CardContent>
+                )}
               </Card>
             ))}
           </div>

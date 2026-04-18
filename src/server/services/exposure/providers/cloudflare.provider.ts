@@ -3,6 +3,8 @@ import type {
   ValidationResult,
   ProviderHealth,
   RouteStatus,
+  ProviderSetupResult,
+  SetupCheck,
 } from '@shared/exposure/provider.interface.js';
 import { BaseProvider } from './base.provider.js';
 
@@ -211,6 +213,98 @@ export class CloudflareProvider extends BaseProvider {
     } catch {
       return [];
     }
+  }
+
+  async checkSetup(): Promise<ProviderSetupResult> {
+    const checks: SetupCheck[] = [];
+
+    // Check 1: API Token valid
+    try {
+      const res = await fetch(`${CF_API_BASE}/user/tokens/verify`, { headers: this.headers() });
+      if (!res.ok) {
+        checks.push({
+          name: 'API Token',
+          passed: false,
+          message: `Token verification failed (${res.status})`,
+          resolution: 'Regenerate the token in Cloudflare dashboard → My Profile → API Tokens.',
+        });
+        return { allPassed: false, checks };
+      }
+      checks.push({ name: 'API Token', passed: true, message: 'Token is valid' });
+    } catch {
+      checks.push({
+        name: 'API Token',
+        passed: false,
+        message: 'Could not reach Cloudflare API',
+        resolution: 'Check your network connection and try again.',
+      });
+      return { allPassed: false, checks };
+    }
+
+    // Check 2: Tunnel ID valid (also implicitly validates account ID — wrong account ID causes 404 here too)
+    try {
+      const res = await fetch(this.tunnelUrl(), { headers: this.headers() });
+      if (!res.ok) {
+        checks.push({
+          name: 'Tunnel ID',
+          passed: false,
+          message: `Tunnel not found (${res.status}) — verify both your Account ID and Tunnel ID are correct`,
+          resolution: 'Check Zero Trust → Networks → Tunnels for the correct Tunnel ID, and confirm your Account ID under Account Home.',
+        });
+        return { allPassed: false, checks };
+      }
+      checks.push({ name: 'Tunnel ID', passed: true, message: 'Tunnel exists and is accessible' });
+    } catch {
+      checks.push({
+        name: 'Tunnel ID',
+        passed: false,
+        message: 'Could not reach Cloudflare API',
+        resolution: 'Check your network connection and try again.',
+      });
+      return { allPassed: false, checks };
+    }
+
+    // Check 4: API Token permissions (parallel)
+    try {
+      const [tunnelConfigRes, zonesRes] = await Promise.all([
+        fetch(this.configUrl(), { headers: this.headers() }),
+        fetch(`${CF_API_BASE}/zones?account.id=${this.accountId}&per_page=1`, { headers: this.headers() }),
+      ]);
+
+      const missingPerms: string[] = [];
+      if (!tunnelConfigRes.ok && tunnelConfigRes.status === 403) {
+        missingPerms.push('Cloudflare Tunnel → Edit');
+      }
+      if (!zonesRes.ok && zonesRes.status === 403) {
+        missingPerms.push('Zone → Zone → Read');
+      }
+
+      if (missingPerms.length > 0) {
+        checks.push({
+          name: 'API Token Permissions',
+          passed: false,
+          message: `Missing permission(s): ${missingPerms.join(', ')}`,
+          resolution: `Edit the API token and add: ${missingPerms.join(' and ')}.`,
+        });
+        return { allPassed: false, checks };
+      }
+
+      checks.push({
+        name: 'API Token Permissions',
+        passed: true,
+        message: 'Cloudflare Tunnel:Edit and Zone:Read permissions confirmed',
+      });
+    } catch {
+      checks.push({
+        name: 'API Token Permissions',
+        passed: false,
+        message: 'Could not verify permissions',
+        resolution: 'Check your network connection and try again.',
+      });
+      return { allPassed: false, checks };
+    }
+
+    return { allPassed: true, checks };
   }
 
   getComposeTemplate(config: Record<string, any>): string | null {

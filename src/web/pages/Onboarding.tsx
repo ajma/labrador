@@ -1,5 +1,45 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+interface SetupCheck {
+  name: string;
+  passed: boolean;
+  message: string;
+  resolution?: string;
+}
+
+interface ProviderSetupResult {
+  allPassed: boolean;
+  checks: SetupCheck[];
+}
+
+function SetupCheckDisplay({ result }: { result: ProviderSetupResult }) {
+  return (
+    <div className="mt-3 space-y-2">
+      {result.checks.map((check) => (
+        <div
+          key={check.name}
+          className={`rounded-md p-2 text-sm ${
+            check.passed
+              ? 'bg-green-50 text-green-800 dark:bg-green-900/20 dark:text-green-200'
+              : 'bg-red-50 text-red-800 dark:bg-red-900/20 dark:text-red-200'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span>{check.passed ? '✓' : '✗'}</span>
+            <span className="font-medium">{check.name}</span>
+            <span className="text-xs opacity-80">— {check.message}</span>
+          </div>
+          {!check.passed && check.resolution && (
+            <p className="mt-1 pl-5 text-xs opacity-90">
+              <span className="font-medium">Fix:</span> {check.resolution}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQueryClient } from '@tanstack/react-query';
@@ -131,6 +171,23 @@ function ConfigureProvidersStep({
   onSkip: () => void;
 }) {
   const [expandedProvider, setExpandedProvider] = useState<'caddy' | 'cloudflare' | null>(null);
+  const [setupResults, setSetupResults] = useState<Record<string, ProviderSetupResult>>({});
+  const [checkingSetup, setCheckingSetup] = useState<Record<string, boolean>>({});
+
+  const runCheckSetup = async (providerType: string, configuration: Record<string, any>) => {
+    setCheckingSetup((prev) => ({ ...prev, [providerType]: true }));
+    try {
+      const result = await api.post<ProviderSetupResult>('/settings/exposure-providers/check-setup', {
+        providerType,
+        configuration,
+      });
+      setSetupResults((prev) => ({ ...prev, [providerType]: result }));
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to check setup');
+    } finally {
+      setCheckingSetup((prev) => ({ ...prev, [providerType]: false }));
+    }
+  };
 
   const [caddyApiUrl, setCaddyApiUrl] = useState(
     providerConfig.caddy?.apiUrl ?? 'http://localhost:2019',
@@ -205,9 +262,22 @@ function ConfigureProvidersStep({
               </div>
             </div>
             {providerConfig.caddy && expandedProvider !== 'caddy' && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Configured: {providerConfig.caddy.apiUrl}
-              </p>
+              <>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Configured: {providerConfig.caddy.apiUrl}
+                </p>
+                <div className="mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => runCheckSetup('caddy', { apiUrl: providerConfig.caddy!.apiUrl })}
+                    disabled={checkingSetup['caddy']}
+                  >
+                    {checkingSetup['caddy'] ? 'Checking...' : 'Check Setup'}
+                  </Button>
+                </div>
+                {setupResults['caddy'] && <SetupCheckDisplay result={setupResults['caddy']} />}
+              </>
             )}
           </CardHeader>
           {expandedProvider === 'caddy' && (
@@ -254,9 +324,28 @@ function ConfigureProvidersStep({
               </div>
             </div>
             {providerConfig.cloudflare && expandedProvider !== 'cloudflare' && (
-              <p className="text-xs text-muted-foreground mt-1">
-                Configured: Account {providerConfig.cloudflare.accountId}
-              </p>
+              <>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Configured: Account {providerConfig.cloudflare.accountId}
+                </p>
+                <div className="mt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      runCheckSetup('cloudflare', {
+                        apiToken: providerConfig.cloudflare!.apiToken,
+                        accountId: providerConfig.cloudflare!.accountId,
+                        tunnelId: providerConfig.cloudflare!.tunnelId,
+                      })
+                    }
+                    disabled={checkingSetup['cloudflare']}
+                  >
+                    {checkingSetup['cloudflare'] ? 'Checking...' : 'Check Setup'}
+                  </Button>
+                </div>
+                {setupResults['cloudflare'] && <SetupCheckDisplay result={setupResults['cloudflare']} />}
+              </>
             )}
           </CardHeader>
           {expandedProvider === 'cloudflare' && (

@@ -187,6 +187,35 @@ export async function settingsRoutes(app: FastifyInstance) {
     return { success: true };
   });
 
+  // POST /exposure-providers/check-setup - Validate provider configuration
+  app.post('/exposure-providers/check-setup', async (request, reply) => {
+    const { providerType, configuration } = request.body as {
+      providerType: string;
+      configuration: Record<string, any>;
+    };
+
+    if (!providerType || typeof providerType !== 'string') {
+      return reply.code(400).send({ error: 'providerType is required' });
+    }
+    if (!configuration || typeof configuration !== 'object') {
+      return reply.code(400).send({ error: 'configuration is required' });
+    }
+
+    const registry = (app as any).providerRegistry as ExposureProviderRegistry;
+    const provider = registry.get(providerType);
+
+    if (!provider) {
+      return reply.code(400).send({ error: `Unknown provider type: ${providerType}` });
+    }
+
+    if (!provider.checkSetup) {
+      return { allPassed: true, checks: [] };
+    }
+
+    await provider.initialize(configuration);
+    return provider.checkSetup();
+  });
+
   // GET /exposure-providers/:id/domains - List available domains for a provider
   app.get('/exposure-providers/:id/domains', async (request, reply) => {
     const db = getDatabase();

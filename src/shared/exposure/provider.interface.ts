@@ -1,3 +1,15 @@
+export interface SetupCheck {
+  name: string;
+  passed: boolean;
+  message: string;
+  resolution?: string;
+}
+
+export interface ProviderSetupResult {
+  allPassed: boolean;
+  checks: SetupCheck[];
+}
+
 export interface ExposureProvider {
   readonly type: string;
   readonly name: string;
@@ -15,6 +27,7 @@ export interface ExposureProvider {
   cleanup(): Promise<void>;
 
   listDomains?(): Promise<string[]>;
+  checkSetup?(): Promise<ProviderSetupResult>;
   getComposeTemplate?(config: Record<string, any>): string | null;
 }
 
