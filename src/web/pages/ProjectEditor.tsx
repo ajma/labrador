@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useProject, useCreateProject, useUpdateProject, useDeleteProject } from '../hooks/useProjects';
+import { useProject, useCreateProject, useUpdateProject, useDeleteProject, useProjectUpdates, useCheckUpdates } from '../hooks/useProjects';
 import { createProjectSchema, updateProjectSchema } from '@shared/schemas';
 import type { CreateProjectInput } from '@shared/schemas';
 import { useEffect, useState, useCallback } from 'react';
@@ -60,6 +60,10 @@ export function ProjectEditor() {
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [deployProgress, setDeployProgress] = useState<DeployProgress[]>([]);
   const [showLogs, setShowLogs] = useState(false);
+
+  // Container update detection
+  const { data: containerUpdates, isLoading: updatesLoading } = useProjectUpdates(id ?? '');
+  const checkUpdatesMutation = useCheckUpdates(id ?? '');
 
   // Fetch available exposure providers from settings
   const { data: settingsData } = useQuery<SettingsResponse>({
@@ -585,6 +589,78 @@ export function ProjectEditor() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Container Updates section */}
+      {isEditing && project && (
+        <div className="mt-8 rounded-lg border border-input">
+          <div className="flex items-center justify-between p-4">
+            <h3 className="text-sm font-semibold">Container Updates</h3>
+            <button
+              type="button"
+              onClick={() => checkUpdatesMutation.mutate()}
+              disabled={checkUpdatesMutation.isPending}
+              className="rounded border border-input px-3 py-1 text-xs font-medium hover:bg-muted disabled:opacity-50"
+            >
+              {checkUpdatesMutation.isPending ? 'Checking...' : 'Check for Updates'}
+            </button>
+          </div>
+          <div className="border-t border-input p-4">
+            {updatesLoading && (
+              <p className="text-sm text-muted-foreground">Loading update info...</p>
+            )}
+            {!updatesLoading && (!containerUpdates || containerUpdates.length === 0) && (
+              <p className="text-sm text-muted-foreground">
+                No update information available. Click &quot;Check for Updates&quot; to scan.
+              </p>
+            )}
+            {containerUpdates && containerUpdates.length > 0 && (
+              <div className="space-y-3">
+                {containerUpdates.map((update) => (
+                  <div
+                    key={update.id}
+                    className={`rounded-md p-3 text-sm ${
+                      update.updateAvailable
+                        ? 'bg-amber-50 border border-amber-200 dark:bg-amber-900/20 dark:border-amber-800'
+                        : 'bg-muted/50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium">{update.containerName}</span>
+                      {update.updateAvailable ? (
+                        <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                          Update Available
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                          Up to date
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-2 space-y-1 text-xs text-muted-foreground">
+                      <p>
+                        <span className="font-medium">Image:</span>{' '}
+                        <code className="rounded bg-muted px-1 py-0.5">{update.currentImage}</code>
+                      </p>
+                      {update.updateAvailable && update.latestImage !== update.currentImage && (
+                        <p>
+                          <span className="font-medium">Latest digest:</span>{' '}
+                          <code className="rounded bg-muted px-1 py-0.5">
+                            {update.latestImage.slice(0, 24)}...
+                          </code>
+                        </p>
+                      )}
+                      <p>
+                        <span className="font-medium">Last checked:</span>{' '}
+                        {new Date(update.checkedAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

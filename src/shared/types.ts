@@ -64,3 +64,13 @@ export interface DeploymentProgress {
   message: string;
   timestamp: number;
 }
+
+export interface ContainerUpdate {
+  id: string;
+  projectId: string;
+  containerName: string;
+  currentImage: string;
+  latestImage: string;
+  updateAvailable: boolean;
+  checkedAt: number;
+}

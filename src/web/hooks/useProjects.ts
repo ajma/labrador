@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../lib/api';
-import type { Project } from '@shared/types';
+import type { Project, ContainerUpdate } from '@shared/types';
 import type { CreateProjectInput, UpdateProjectInput } from '@shared/schemas';
 
 export function useProjects() {
@@ -53,6 +53,24 @@ export function useDeleteProject() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       navigate('/');
+    },
+  });
+}
+
+export function useProjectUpdates(projectId: string) {
+  return useQuery<ContainerUpdate[]>({
+    queryKey: ['updates', projectId],
+    queryFn: () => api.get<ContainerUpdate[]>(`/projects/${projectId}/updates`),
+    enabled: !!projectId,
+  });
+}
+
+export function useCheckUpdates(projectId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<ContainerUpdate[]>(`/projects/${projectId}/updates/check`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['updates', projectId] });
     },
   });
 }
