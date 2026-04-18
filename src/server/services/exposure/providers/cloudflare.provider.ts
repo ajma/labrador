@@ -23,15 +23,15 @@ export class CloudflareProvider extends BaseProvider {
   readonly name = 'Cloudflare Tunnel';
 
   private get apiToken(): string {
-    return this.config.api_token as string;
+    return (this.config.apiToken ?? this.config.api_token) as string;
   }
 
   private get accountId(): string {
-    return this.config.account_id as string;
+    return (this.config.accountId ?? this.config.account_id) as string;
   }
 
   private get tunnelId(): string {
-    return this.config.tunnel_id as string;
+    return (this.config.tunnelId ?? this.config.tunnel_id) as string;
   }
 
   private headers(): Record<string, string> {
@@ -53,18 +53,23 @@ export class CloudflareProvider extends BaseProvider {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!config.api_token || typeof config.api_token !== 'string') {
-      errors.push('api_token is required');
+    const apiToken = config.apiToken ?? config.api_token;
+    const accountId = config.accountId ?? config.account_id;
+    const tunnelId = config.tunnelId ?? config.tunnel_id;
+
+    if (!apiToken || typeof apiToken !== 'string') {
+      errors.push('apiToken is required');
     }
-    if (!config.account_id || typeof config.account_id !== 'string') {
-      errors.push('account_id is required');
+    if (!accountId || typeof accountId !== 'string') {
+      errors.push('accountId is required');
     }
-    if (!config.tunnel_id || typeof config.tunnel_id !== 'string') {
-      errors.push('tunnel_id is required');
+    if (!tunnelId || typeof tunnelId !== 'string') {
+      errors.push('tunnelId is required');
     }
 
-    if (errors.length === 0 && !config.tunnel_token) {
-      warnings.push('tunnel_token not set; getComposeTemplate will not include a token');
+    const tunnelToken = config.tunnelToken ?? config.tunnel_token;
+    if (errors.length === 0 && !tunnelToken) {
+      warnings.push('tunnelToken not set; getComposeTemplate will not include a token');
     }
 
     return { valid: errors.length === 0, errors, warnings };
@@ -195,7 +200,7 @@ export class CloudflareProvider extends BaseProvider {
   }
 
   getComposeTemplate(config: Record<string, any>): string | null {
-    const token = config.tunnel_token;
+    const token = config.tunnelToken ?? config.tunnel_token;
     if (!token) return null;
 
     return `services:
