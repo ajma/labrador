@@ -15,6 +15,7 @@ import { dockerRoutes } from './routes/docker.routes.js';
 import { settingsRoutes } from './routes/settings.routes.js';
 import { errorHandler } from './middleware/error.middleware.js';
 import { DockerService } from './services/docker.service.js';
+import { setupWebSocket } from './websocket/stats.handler.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -84,6 +85,10 @@ async function main() {
 
   // Decorate app with dockerService (may be null if Docker is unavailable)
   app.decorate('dockerService', dockerService);
+
+  // Set up WebSocket handler for real-time updates
+  const { broadcast } = setupWebSocket(app);
+  app.decorate('wsBroadcast', broadcast);
 
   // Health check
   app.get('/health', async () => ({ status: 'ok', docker: dockerService !== null }));
