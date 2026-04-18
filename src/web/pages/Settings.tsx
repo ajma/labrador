@@ -107,6 +107,10 @@ function ProviderForm({
                     setValue('configuration', { ...currentConfig, apiToken: e.target.value })
                   }
                 />
+                <p className="text-xs text-muted-foreground">
+                  Create an API token with <strong>Account → Cloudflare Tunnel → Edit</strong> permissions.
+                  Go to Cloudflare Dashboard → Profile → API Tokens → Create Custom Token.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cf-account-id">Account ID</Label>
@@ -118,6 +122,9 @@ function ProviderForm({
                     setValue('configuration', { ...currentConfig, accountId: e.target.value })
                   }
                 />
+                <p className="text-xs text-muted-foreground">
+                  Found in your Cloudflare dashboard URL or under Account Home.
+                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="cf-tunnel-id">Tunnel ID</Label>
@@ -129,6 +136,9 @@ function ProviderForm({
                     setValue('configuration', { ...currentConfig, tunnelId: e.target.value })
                   }
                 />
+                <p className="text-xs text-muted-foreground">
+                  Found in Cloudflare Zero Trust → Networks → Tunnels. Select your tunnel to see the ID.
+                </p>
               </div>
             </>
           )}
