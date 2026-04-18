@@ -357,11 +357,22 @@ function ConfigureProvidersStep({
                   type="password"
                   placeholder="Enter your Cloudflare API token"
                   value={cfApiToken}
-                  onChange={(e) => setCfApiToken(e.target.value)}
+                  onChange={(e) => {
+                    setCfApiToken(e.target.value);
+                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
+                  }}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Create an API token with <strong>Account → Cloudflare Tunnel → Edit</strong> permissions.
-                  Go to Cloudflare Dashboard → Profile → API Tokens → Create Custom Token.
+                  <a
+                    href="https://dash.cloudflare.com/profile/api-tokens"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Create an API token
+                  </a>{' '}
+                  with <strong>Account → Cloudflare Tunnel → Edit</strong> and{' '}
+                  <strong>Zone → Zone → Read</strong> permissions.
                 </p>
               </div>
               <div className="space-y-2">
@@ -370,7 +381,10 @@ function ConfigureProvidersStep({
                   id="cf-account-id"
                   placeholder="Enter your Account ID"
                   value={cfAccountId}
-                  onChange={(e) => setCfAccountId(e.target.value)}
+                  onChange={(e) => {
+                    setCfAccountId(e.target.value);
+                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
+                  }}
                 />
                 <p className="text-xs text-muted-foreground">
                   Found in your Cloudflare dashboard URL or under Account Home.
@@ -382,15 +396,29 @@ function ConfigureProvidersStep({
                   id="cf-tunnel-id"
                   placeholder="Enter your Tunnel ID"
                   value={cfTunnelId}
-                  onChange={(e) => setCfTunnelId(e.target.value)}
+                  onChange={(e) => {
+                    setCfTunnelId(e.target.value);
+                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
+                  }}
                 />
                 <p className="text-xs text-muted-foreground">
                   Found in Cloudflare Zero Trust → Networks → Tunnels. Select your tunnel to see the ID.
                 </p>
               </div>
-              <Button size="sm" onClick={saveCloudflare}>
-                Save
-              </Button>
+              {setupResults['cloudflare'] && <SetupCheckDisplay result={setupResults['cloudflare']} />}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => runCheckSetup('cloudflare', { apiToken: cfApiToken, accountId: cfAccountId, tunnelId: cfTunnelId })}
+                  disabled={checkingSetup['cloudflare'] || !cfApiToken || !cfAccountId || !cfTunnelId}
+                >
+                  {checkingSetup['cloudflare'] ? 'Checking...' : 'Check Setup'}
+                </Button>
+                <Button size="sm" onClick={saveCloudflare} disabled={!setupResults['cloudflare']?.allPassed}>
+                  Save
+                </Button>
+              </div>
             </CardContent>
           )}
         </Card>
