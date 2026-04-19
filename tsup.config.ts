@@ -4,7 +4,7 @@ export default defineConfig({
   entry: ['src/server/index.ts'],
   outDir: 'dist/server',
   format: ['esm'],
-  target: 'node20',
+  target: 'node24',
   clean: true,
   noExternal: [/^@shared/],
 });

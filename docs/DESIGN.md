@@ -81,7 +81,7 @@ export default defineConfig({
   entry: ['src/server/index.ts'],
   outDir: 'dist/server',
   format: ['cjs'],
-  target: 'node20',
+  target: 'node24',
   clean: true,
   noExternal: [/^@?src\/shared/],
 });

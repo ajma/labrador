@@ -65,7 +65,7 @@ To add a new provider: implement `ExposureProvider` extending `BaseProvider`, re
 ### Build
 
 - **Frontend**: Vite, output to `dist/web/`
-- **Backend**: tsup (ESM, node20 target), output to `dist/server/`
+- **Backend**: tsup (ESM, node24 target), output to `dist/server/`
 - **Docker**: Two-stage build (node:20-alpine). Requires `/var/run/docker.sock` mount and `JWT_SECRET` env var.
 
 ## Key Conventions
