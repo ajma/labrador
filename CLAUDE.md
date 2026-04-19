@@ -48,7 +48,7 @@ The provider system is the core extensibility mechanism:
 2. **BaseProvider** (`src/server/services/exposure/providers/base.provider.ts`) — Abstract class; stores `this.config` after `initialize()`.
 3. **Registry** (`src/server/services/exposure/provider-registry.ts`) — `ExposureProviderRegistry` keyed by `provider.type`, decorated onto Fastify as `app.providerRegistry`. Providers registered at startup in `index.ts`.
 4. **ExposureService** (`src/server/services/exposure/exposure.service.ts`) — Loads provider config from DB, calls `initialize(config)`, then delegates to provider methods.
-5. **Concrete providers**: `CaddyProvider` (Caddy Admin API, routes keyed `homelabman-{projectId}`) and `CloudflareProvider` (Cloudflare Tunnel REST API, routes keyed by domain). CloudflareProvider accepts both camelCase and snake_case config keys.
+5. **Concrete providers**: `CaddyProvider` (Caddy Admin API, routes keyed `homelabman-{projectId}`) and `CloudflareProvider` (Cloudflare Tunnel REST API, routes keyed by domain).
 
 To add a new provider: implement `ExposureProvider` extending `BaseProvider`, register in `index.ts`.
 
@@ -74,3 +74,4 @@ To add a new provider: implement `ExposureProvider` extending `BaseProvider`, re
 - `any` is intentionally allowed (`@typescript-eslint/no-explicit-any` is off).
 - Unused variables prefixed with `_` are ignored by ESint.
 - Tests use vitest with `globals: true` in Node environment. `vi.stubGlobal` / `vi.unstubAllGlobals` is the pattern for mocking `fetch` in unit tests.
+- **Casing convention**: SQL column names use `snake_case` (Drizzle/SQLite standard). All JavaScript identifiers and JSON blobs stored in the DB (e.g. provider `configuration`, project `exposureConfig`) use `camelCase`. Never store snake_case keys inside JSON columns.

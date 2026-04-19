@@ -25,15 +25,15 @@ export class CloudflareProvider extends BaseProvider {
   readonly name = 'Cloudflare Tunnel';
 
   private get apiToken(): string {
-    return (this.config.apiToken ?? this.config.api_token) as string;
+    return this.config.apiToken as string;
   }
 
   private get accountId(): string {
-    return (this.config.accountId ?? this.config.account_id) as string;
+    return this.config.accountId as string;
   }
 
   private get tunnelId(): string {
-    return (this.config.tunnelId ?? this.config.tunnel_id) as string;
+    return this.config.tunnelId as string;
   }
 
   private headers(): Record<string, string> {
@@ -55,21 +55,17 @@ export class CloudflareProvider extends BaseProvider {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    const apiToken = config.apiToken ?? config.api_token;
-    const accountId = config.accountId ?? config.account_id;
-    const tunnelId = config.tunnelId ?? config.tunnel_id;
-
-    if (!apiToken || typeof apiToken !== 'string') {
+    if (!config.apiToken || typeof config.apiToken !== 'string') {
       errors.push('apiToken is required');
     }
-    if (!accountId || typeof accountId !== 'string') {
+    if (!config.accountId || typeof config.accountId !== 'string') {
       errors.push('accountId is required');
     }
-    if (!tunnelId || typeof tunnelId !== 'string') {
+    if (!config.tunnelId || typeof config.tunnelId !== 'string') {
       errors.push('tunnelId is required');
     }
 
-    const tunnelToken = config.tunnelToken ?? config.tunnel_token;
+    const tunnelToken = config.tunnelToken;
     if (errors.length === 0 && !tunnelToken) {
       warnings.push('tunnelToken not set; getComposeTemplate will not include a token');
     }
@@ -372,7 +368,7 @@ export class CloudflareProvider extends BaseProvider {
   }
 
   getComposeTemplate(config: Record<string, any>): string | null {
-    const token = config.tunnelToken ?? config.tunnel_token;
+    const token = config.tunnelToken;
     if (!token) return null;
 
     return `services:

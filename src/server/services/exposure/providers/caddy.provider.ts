@@ -11,7 +11,7 @@ export class CaddyProvider extends BaseProvider {
   readonly name = 'Caddy';
 
   private get apiUrl(): string {
-    return (this.config.api_url as string) || 'http://localhost:2019';
+    return (this.config.apiUrl as string) || 'http://localhost:2019';
   }
 
   private routeId(projectId: string): string {
@@ -22,15 +22,15 @@ export class CaddyProvider extends BaseProvider {
     const errors: string[] = [];
     const warnings: string[] = [];
 
-    if (!config.api_url) {
-      warnings.push('No api_url set; defaulting to http://localhost:2019');
-    } else if (typeof config.api_url !== 'string') {
-      errors.push('api_url must be a string');
+    if (!config.apiUrl) {
+      warnings.push('No apiUrl set; defaulting to http://localhost:2019');
+    } else if (typeof config.apiUrl !== 'string') {
+      errors.push('apiUrl must be a string');
     } else {
       try {
-        new URL(config.api_url);
+        new URL(config.apiUrl);
       } catch {
-        errors.push('api_url is not a valid URL');
+        errors.push('apiUrl is not a valid URL');
       }
     }
 
