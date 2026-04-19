@@ -224,8 +224,6 @@ export function ProjectEditor() {
   const exposureEnabled = watch('exposureEnabled');
   const selectedProviderId = watch('exposureProviderId');
 
-  const selectedProvider = availableProviders.find((p) => p.id === selectedProviderId);
-
   const { data: availableDomains = [] } = useQuery<string[]>({
     queryKey: ['provider-domains', selectedProviderId],
     queryFn: () => api.get(`/settings/exposure-providers/${selectedProviderId}/domains`),

@@ -209,7 +209,7 @@ function ConfigureProvidersStep({
   };
 
   const removeCaddy = () => {
-    const { caddy: _, ...rest } = providerConfig;
+    const { caddy: _caddy, ...rest } = providerConfig;
     onConfigChange(rest);
     toast.info('Caddy configuration removed');
   };
@@ -229,7 +229,7 @@ function ConfigureProvidersStep({
   };
 
   const removeCloudflare = () => {
-    const { cloudflare: _, ...rest } = providerConfig;
+    const { cloudflare: _cloudflare, ...rest } = providerConfig;
     onConfigChange(rest);
     toast.info('Cloudflare configuration removed');
   };
