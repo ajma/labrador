@@ -51,12 +51,14 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { CloudflareProviderForm, type CloudflareProviderFormValue } from '../components/CloudflareProviderForm';
+import { resolveCloudflareBeforeSave, deployCloudflaredProject } from '../lib/cloudflare';
 
 type OnboardingStep = 1 | 2 | 3;
 
 interface ProviderConfig {
   caddy?: { apiUrl: string };
-  cloudflare?: { apiToken: string; accountId: string; tunnelId: string };
+  cloudflare?: CloudflareProviderFormValue;
 }
 
 function StepIndicator({ currentStep }: { currentStep: OnboardingStep }) {
@@ -192,9 +194,13 @@ function ConfigureProvidersStep({
   const [caddyApiUrl, setCaddyApiUrl] = useState(
     providerConfig.caddy?.apiUrl ?? 'http://localhost:2019',
   );
-  const [cfApiToken, setCfApiToken] = useState(providerConfig.cloudflare?.apiToken ?? '');
-  const [cfAccountId, setCfAccountId] = useState(providerConfig.cloudflare?.accountId ?? '');
-  const [cfTunnelId, setCfTunnelId] = useState(providerConfig.cloudflare?.tunnelId ?? '');
+  const [cfFormValue, setCfFormValue] = useState<CloudflareProviderFormValue>({
+    apiToken: providerConfig.cloudflare?.apiToken ?? '',
+    accountId: providerConfig.cloudflare?.accountId ?? '',
+    tunnelId: providerConfig.cloudflare?.tunnelId ?? '__new__',
+    tunnelName: providerConfig.cloudflare?.tunnelName ?? '',
+    deployContainer: providerConfig.cloudflare?.deployContainer ?? true,
+  });
 
   const saveCaddy = () => {
     onConfigChange({ ...providerConfig, caddy: { apiUrl: caddyApiUrl } });
@@ -209,14 +215,15 @@ function ConfigureProvidersStep({
   };
 
   const saveCloudflare = () => {
-    if (!cfApiToken || !cfAccountId || !cfTunnelId) {
-      toast.error('All Cloudflare fields are required');
+    if (!cfFormValue.apiToken || !cfFormValue.accountId) {
+      toast.error('Connect your token and select an account before saving');
       return;
     }
-    onConfigChange({
-      ...providerConfig,
-      cloudflare: { apiToken: cfApiToken, accountId: cfAccountId, tunnelId: cfTunnelId },
-    });
+    if (cfFormValue.tunnelId === '__new__' && !cfFormValue.tunnelName.trim()) {
+      toast.error('Enter a tunnel name');
+      return;
+    }
+    onConfigChange({ ...providerConfig, cloudflare: cfFormValue });
     setExpandedProvider(null);
     toast.success('Cloudflare configuration saved');
   };
@@ -324,98 +331,19 @@ function ConfigureProvidersStep({
               </div>
             </div>
             {providerConfig.cloudflare && expandedProvider !== 'cloudflare' && (
-              <>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Configured: Account {providerConfig.cloudflare.accountId}
-                </p>
-                <div className="mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      runCheckSetup('cloudflare', {
-                        apiToken: providerConfig.cloudflare!.apiToken,
-                        accountId: providerConfig.cloudflare!.accountId,
-                        tunnelId: providerConfig.cloudflare!.tunnelId,
-                      })
-                    }
-                    disabled={checkingSetup['cloudflare']}
-                  >
-                    {checkingSetup['cloudflare'] ? 'Checking...' : 'Check Setup'}
-                  </Button>
-                </div>
-                {setupResults['cloudflare'] && <SetupCheckDisplay result={setupResults['cloudflare']} />}
-              </>
+              <p className="text-xs text-muted-foreground mt-1">
+                Configured: Account {providerConfig.cloudflare.accountId}
+                {providerConfig.cloudflare.tunnelId !== '__new__'
+                  ? ` · Tunnel ${providerConfig.cloudflare.tunnelId}`
+                  : ` · New tunnel "${providerConfig.cloudflare.tunnelName}"`}
+              </p>
             )}
           </CardHeader>
           {expandedProvider === 'cloudflare' && (
             <CardContent className="space-y-3 pt-0">
-              <div className="space-y-2">
-                <Label htmlFor="cf-api-token">API Token</Label>
-                <Input
-                  id="cf-api-token"
-                  type="password"
-                  placeholder="Enter your Cloudflare API token"
-                  value={cfApiToken}
-                  onChange={(e) => {
-                    setCfApiToken(e.target.value);
-                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
-                  }}
-                />
-                <p className="text-xs text-muted-foreground">
-                  <a
-                    href="https://dash.cloudflare.com/profile/api-tokens"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Create an API token
-                  </a>{' '}
-                  with <strong>Account → Cloudflare Tunnel → Edit</strong> and{' '}
-                  <strong>Zone → Zone → Read</strong> permissions.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cf-account-id">Account ID</Label>
-                <Input
-                  id="cf-account-id"
-                  placeholder="Enter your Account ID"
-                  value={cfAccountId}
-                  onChange={(e) => {
-                    setCfAccountId(e.target.value);
-                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
-                  }}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Found in your Cloudflare dashboard URL or under Account Home.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cf-tunnel-id">Tunnel ID</Label>
-                <Input
-                  id="cf-tunnel-id"
-                  placeholder="Enter your Tunnel ID"
-                  value={cfTunnelId}
-                  onChange={(e) => {
-                    setCfTunnelId(e.target.value);
-                    setSetupResults((prev) => { const { cloudflare: _, ...rest } = prev; return rest; });
-                  }}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Found in Cloudflare Zero Trust → Networks → Tunnels. Select your tunnel to see the ID.
-                </p>
-              </div>
-              {setupResults['cloudflare'] && <SetupCheckDisplay result={setupResults['cloudflare']} />}
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => runCheckSetup('cloudflare', { apiToken: cfApiToken, accountId: cfAccountId, tunnelId: cfTunnelId })}
-                  disabled={checkingSetup['cloudflare'] || !cfApiToken || !cfAccountId || !cfTunnelId}
-                >
-                  {checkingSetup['cloudflare'] ? 'Checking...' : 'Check Setup'}
-                </Button>
-                <Button size="sm" onClick={saveCloudflare} disabled={!setupResults['cloudflare']?.allPassed}>
+              <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} />
+              <div className="flex gap-2 pt-2">
+                <Button size="sm" onClick={saveCloudflare}>
                   Save
                 </Button>
               </div>
@@ -505,14 +433,22 @@ export function Onboarding() {
       }
 
       if (providerConfig.cloudflare) {
+        const cf = providerConfig.cloudflare;
+
+        const { tunnelId, tunnelToken } = await resolveCloudflareBeforeSave(cf);
+
+        if (cf.deployContainer && tunnelToken) {
+          await deployCloudflaredProject(tunnelToken);
+        }
+
         exposureProviders.push({
           providerType: 'cloudflare',
           name: 'Cloudflare',
           enabled: true,
           configuration: {
-            apiToken: providerConfig.cloudflare.apiToken,
-            accountId: providerConfig.cloudflare.accountId,
-            tunnelId: providerConfig.cloudflare.tunnelId,
+            apiToken: cf.apiToken,
+            accountId: cf.accountId,
+            tunnelId,
           },
         });
       }

@@ -46,10 +46,12 @@ import { toast } from 'sonner';
 import { exposureProviderSchema, type ExposureProviderInput } from '@shared/schemas';
 import type { ExposureProviderConfig, Settings as SettingsType } from '@shared/types';
 import { api } from '../lib/api';
+import { resolveCloudflareBeforeSave, deployCloudflaredProject } from '../lib/cloudflare';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { CloudflareProviderForm, type CloudflareProviderFormValue } from '../components/CloudflareProviderForm';
 
 function ProviderForm({
   provider,
@@ -84,6 +86,15 @@ function ProviderForm({
 
   const currentConfig = watch('configuration');
 
+  const [cfFormValue, setCfFormValue] = useState<CloudflareProviderFormValue>({
+    apiToken: (provider?.configuration as any)?.apiToken ?? '',
+    accountId: (provider?.configuration as any)?.accountId ?? '',
+    tunnelId: (provider?.configuration as any)?.tunnelId ?? '__new__',
+    tunnelName: '',
+    deployContainer: true,
+  });
+  const [isPresaving, setIsPresaving] = useState(false);
+
   const handleTypeChange = (type: 'caddy' | 'cloudflare') => {
     setProviderType(type);
     setValue('providerType', type);
@@ -95,7 +106,48 @@ function ProviderForm({
       <CardHeader>
         <CardTitle className="text-lg">{provider ? 'Edit Provider' : 'Add Provider'}</CardTitle>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSave)}>
+      <form
+        onSubmit={handleSubmit(async (data) => {
+          if (providerType === 'cloudflare') {
+            if (!cfFormValue.apiToken || !cfFormValue.accountId) {
+              toast.error('Connect your token and select an account before saving');
+              return;
+            }
+            if (cfFormValue.tunnelId === '__new__' && !cfFormValue.tunnelName.trim()) {
+              toast.error('Enter a tunnel name');
+              return;
+            }
+
+            let tunnelId = cfFormValue.tunnelId;
+
+            setIsPresaving(true);
+            try {
+              const { tunnelId: resolvedTunnelId, tunnelToken } = await resolveCloudflareBeforeSave(cfFormValue);
+              tunnelId = resolvedTunnelId;
+
+              if (cfFormValue.deployContainer && tunnelToken) {
+                await deployCloudflaredProject(tunnelToken);
+              }
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : 'Failed to create tunnel');
+              return;
+            } finally {
+              setIsPresaving(false);
+            }
+
+            onSave({
+              ...data,
+              configuration: {
+                apiToken: cfFormValue.apiToken,
+                accountId: cfFormValue.accountId,
+                tunnelId,
+              },
+            });
+            return;
+          }
+          onSave(data);
+        })}
+      >
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="provider-type">Type</Label>
@@ -135,60 +187,15 @@ function ProviderForm({
           )}
 
           {providerType === 'cloudflare' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="cf-api-token">API Token</Label>
-                <Input
-                  id="cf-api-token"
-                  type="password"
-                  placeholder="Enter your Cloudflare API token"
-                  value={(currentConfig as Record<string, string>).apiToken ?? ''}
-                  onChange={(e) =>
-                    setValue('configuration', { ...currentConfig, apiToken: e.target.value })
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  Create an API token with <strong>Account → Cloudflare Tunnel → Edit</strong> permissions.
-                  Go to Cloudflare Dashboard → Profile → API Tokens → Create Custom Token.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cf-account-id">Account ID</Label>
-                <Input
-                  id="cf-account-id"
-                  placeholder="Enter your Account ID"
-                  value={(currentConfig as Record<string, string>).accountId ?? ''}
-                  onChange={(e) =>
-                    setValue('configuration', { ...currentConfig, accountId: e.target.value })
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  Found in your Cloudflare dashboard URL or under Account Home.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cf-tunnel-id">Tunnel ID</Label>
-                <Input
-                  id="cf-tunnel-id"
-                  placeholder="Enter your Tunnel ID"
-                  value={(currentConfig as Record<string, string>).tunnelId ?? ''}
-                  onChange={(e) =>
-                    setValue('configuration', { ...currentConfig, tunnelId: e.target.value })
-                  }
-                />
-                <p className="text-xs text-muted-foreground">
-                  Found in Cloudflare Zero Trust → Networks → Tunnels. Select your tunnel to see the ID.
-                </p>
-              </div>
-            </>
+            <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} />
           )}
         </CardContent>
         <CardFooter className="flex justify-end gap-2">
           <Button type="button" variant="ghost" onClick={onCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Saving...' : 'Save'}
+          <Button type="submit" disabled={isPending || isPresaving}>
+            {isPending || isPresaving ? 'Saving...' : 'Save'}
           </Button>
         </CardFooter>
       </form>
