@@ -114,6 +114,66 @@ export class CloudflareProvider extends BaseProvider {
     }
   }
 
+  private async findZoneId(hostname: string): Promise<string | null> {
+    const parts = hostname.split('.');
+    // Try from most-specific to root (e.g. sub.example.com → example.com)
+    for (let i = 1; i < parts.length - 1; i++) {
+      const name = parts.slice(i).join('.');
+      const res = await fetch(`${CF_API_BASE}/zones?name=${name}&status=active`, {
+        headers: this.headers(),
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.result?.length > 0) return data.result[0].id as string;
+    }
+    return null;
+  }
+
+  private async upsertDnsRecord(zoneId: string, hostname: string): Promise<void> {
+    const content = `${this.tunnelId}.cfargotunnel.com`;
+    const record = { type: 'CNAME', name: hostname, content, proxied: true, ttl: 1 };
+
+    // Check for existing record
+    const listRes = await fetch(
+      `${CF_API_BASE}/zones/${zoneId}/dns_records?type=CNAME&name=${hostname}`,
+      { headers: this.headers() },
+    );
+    if (listRes.ok) {
+      const listData = await listRes.json();
+      const existing = listData.result?.[0];
+      if (existing) {
+        await fetch(`${CF_API_BASE}/zones/${zoneId}/dns_records/${existing.id}`, {
+          method: 'PUT',
+          headers: this.headers(),
+          body: JSON.stringify(record),
+        });
+        return;
+      }
+    }
+
+    await fetch(`${CF_API_BASE}/zones/${zoneId}/dns_records`, {
+      method: 'POST',
+      headers: this.headers(),
+      body: JSON.stringify(record),
+    });
+  }
+
+  private async deleteDnsRecord(zoneId: string, hostname: string): Promise<void> {
+    const listRes = await fetch(
+      `${CF_API_BASE}/zones/${zoneId}/dns_records?type=CNAME&name=${hostname}`,
+      { headers: this.headers() },
+    );
+    if (!listRes.ok) return;
+    const listData = await listRes.json();
+    const existing = listData.result?.[0];
+    if (existing) {
+      await fetch(`${CF_API_BASE}/zones/${zoneId}/dns_records/${existing.id}`, {
+        method: 'DELETE',
+        headers: this.headers(),
+      });
+    }
+  }
+
   async addRoute(route: ExposureRoute): Promise<void> {
     const config = await this.getTunnelConfig();
     const targetHost = route.targetHost || 'host.docker.internal';
@@ -123,7 +183,6 @@ export class CloudflareProvider extends BaseProvider {
     const catchAll = config.ingress.find((e) => !e.hostname);
     const entries = config.ingress.filter((e) => e.hostname);
 
-    // Check if hostname already exists
     const existing = entries.findIndex((e) => e.hostname === route.domain);
     if (existing >= 0) {
       entries[existing] = { hostname: route.domain, service };
@@ -131,9 +190,11 @@ export class CloudflareProvider extends BaseProvider {
       entries.push({ hostname: route.domain, service });
     }
 
-    // Catch-all must be last
     config.ingress = [...entries, catchAll || { service: 'http_status:404' }];
     await this.putTunnelConfig(config);
+
+    const zoneId = await this.findZoneId(route.domain);
+    if (zoneId) await this.upsertDnsRecord(zoneId, route.domain);
   }
 
   async updateRoute(route: ExposureRoute): Promise<void> {
@@ -157,6 +218,9 @@ export class CloudflareProvider extends BaseProvider {
 
     config.ingress = [...entries, catchAll || { service: 'http_status:404' }];
     await this.putTunnelConfig(config);
+
+    const zoneId = await this.findZoneId(routeId);
+    if (zoneId) await this.deleteDnsRecord(zoneId, routeId);
   }
 
   async getRouteStatus(routeId: string): Promise<RouteStatus> {
