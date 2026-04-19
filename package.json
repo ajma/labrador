@@ -11,6 +11,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:reset": "rm -f ./data/homelabman.db && drizzle-kit generate && drizzle-kit migrate",
     "test": "vitest",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "lint": "eslint src/"
   },
   "dependencies": {
@@ -57,9 +60,11 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@playwright/test": "^1.54.2",
     "@types/bcrypt": "^5.0.0",
     "@types/dockerode": "^3.3.0",
     "@types/js-yaml": "^4.0.0",
+    "@types/jsdom": "^28.0.1",
     "@types/node": "^22.0.0",
     "@types/react": "^18.3.0",
     "@types/react-dom": "^18.3.0",
@@ -68,6 +73,7 @@
     "concurrently": "^9.0.0",
     "drizzle-kit": "^0.28.0",
     "eslint": "^9.0.0",
+    "jsdom": "^29.0.2",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
     "tsup": "^8.0.0",
@@ -79,9 +85,25 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "bcrypt",
-      "better-sqlite3",
-      "esbuild"
+      ",",
+      "-",
+      "3",
+      "b",
+      "c",
+      "cpu-features",
+      "d",
+      "e",
+      "i",
+      "l",
+      "p",
+      "protobufjs",
+      "q",
+      "r",
+      "s",
+      "ssh2",
+      "t",
+      "u",
+      "y"
     ]
   }
 }

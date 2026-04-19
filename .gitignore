@@ -10,3 +10,6 @@ coverage
 
 .superpowers/
 docs/superpowers/
+playwright-report/
+test-results/
+.playwright/
