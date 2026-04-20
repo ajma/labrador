@@ -22,6 +22,7 @@ import { setupWebSocket } from './websocket/stats.handler.js';
 import { ExposureProviderRegistry } from './services/exposure/provider-registry.js';
 import { ExposureService } from './services/exposure/exposure.service.js';
 import { CaddyProvider, CloudflareProvider } from './services/exposure/providers/index.js';
+import { CloudflareApiService } from './services/cloudflare-api.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -114,6 +115,10 @@ async function main() {
     app.log.info('Stats collection service started (collecting every 10s)');
   }
   app.decorate('statsService', statsService);
+
+  // Initialize Cloudflare API service
+  const cloudflareApiService = new CloudflareApiService();
+  app.decorate('cloudflareApiService', cloudflareApiService);
 
   // Initialize exposure provider system
   const providerRegistry = new ExposureProviderRegistry();

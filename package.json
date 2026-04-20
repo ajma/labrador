@@ -86,25 +86,10 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      ",",
-      "-",
-      "3",
-      "b",
-      "c",
+      "bcrypt",
       "cpu-features",
-      "d",
-      "e",
-      "i",
-      "l",
-      "p",
       "protobufjs",
-      "q",
-      "r",
-      "s",
-      "ssh2",
-      "t",
-      "u",
-      "y"
+      "ssh2"
     ]
   }
 }

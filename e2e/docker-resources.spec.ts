@@ -1,33 +1,32 @@
 import { expect, test } from '@playwright/test';
 
-function jsonResponse(body: unknown, status = 200) {
-  return {
-    status,
-    contentType: 'application/json',
-    body: JSON.stringify(body),
-  };
-}
-
-const authenticated = { authenticated: true, needsOnboarding: false };
+test.beforeEach(async ({ page }) => {
+  await page.request.post('/api/test/reset');
+  await page.goto('/api/test/session');
+});
 
 test('containers page renders container rows', async ({ page }) => {
-  await page.route('**/api/auth/status', (route) =>
-    route.fulfill(jsonResponse(authenticated)),
-  );
-
-  await page.route('**/api/docker/containers', (route) =>
-    route.fulfill(jsonResponse([
-      {
-        Id: 'abc123def456',
-        Names: ['/nginx-proxy'],
-        Image: 'nginx:latest',
-        State: 'running',
-        Status: 'Up 2 hours',
-        Created: 1700000000,
-        Ports: [{ PrivatePort: 80, PublicPort: 8080, Type: 'tcp' }],
-      },
-    ])),
-  );
+  await page.request.post('/api/test/mock/docker', {
+    data: {
+      containers: [
+        {
+          Id: 'abc123def456',
+          Names: ['/nginx-proxy'],
+          Image: 'nginx:latest',
+          State: 'running',
+          Status: 'Up 2 hours',
+          Created: 1700000000,
+          Ports: [{ PrivatePort: 80, PublicPort: 8080, Type: 'tcp' }],
+          Labels: {},
+          ImageID: 'sha256:abc',
+          Command: 'nginx',
+          HostConfig: { NetworkMode: 'bridge' },
+          NetworkSettings: { Networks: {} },
+          Mounts: [],
+        },
+      ],
+    },
+  });
 
   await page.goto('/containers');
 
@@ -38,24 +37,24 @@ test('containers page renders container rows', async ({ page }) => {
 });
 
 test('images page renders image rows', async ({ page }) => {
-  await page.route('**/api/auth/status', (route) =>
-    route.fulfill(jsonResponse(authenticated)),
-  );
-
-  await page.route('**/api/docker/containers', (route) =>
-    route.fulfill(jsonResponse([])),
-  );
-
-  await page.route('**/api/docker/images', (route) =>
-    route.fulfill(jsonResponse([
-      {
-        Id: 'sha256:deadbeef1234',
-        RepoTags: ['nginx:latest'],
-        Size: 187654321,
-        Created: 1700000000,
-      },
-    ])),
-  );
+  await page.request.post('/api/test/mock/docker', {
+    data: {
+      images: [
+        {
+          Id: 'sha256:deadbeef1234',
+          RepoTags: ['nginx:latest'],
+          Size: 187654321,
+          Created: 1700000000,
+          ParentId: '',
+          RepoDigests: [],
+          VirtualSize: 187654321,
+          Labels: {},
+          SharedSize: 0,
+          Containers: 0,
+        },
+      ],
+    },
+  });
 
   await page.goto('/images');
 
@@ -65,13 +64,9 @@ test('images page renders image rows', async ({ page }) => {
 });
 
 test('networks page renders network rows', async ({ page }) => {
-  await page.route('**/api/auth/status', (route) =>
-    route.fulfill(jsonResponse(authenticated)),
-  );
-
-  await page.route('**/api/docker/networks**', (route) =>
-    route.fulfill(jsonResponse({
-      data: [
+  await page.request.post('/api/test/mock/docker', {
+    data: {
+      networks: [
         {
           Id: 'net123',
           Name: 'bridge',
@@ -79,11 +74,17 @@ test('networks page renders network rows', async ({ page }) => {
           Scope: 'local',
           Created: '2024-01-01T00:00:00Z',
           Containers: {},
+          Options: {},
+          Labels: {},
+          Internal: false,
+          Attachable: false,
+          Ingress: false,
+          EnableIPv6: false,
+          IPAM: { Driver: 'default', Config: [], Options: {} },
         },
       ],
-      total: 1,
-    })),
-  );
+    },
+  });
 
   await page.goto('/networks');
 
