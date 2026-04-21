@@ -157,6 +157,7 @@ export function ProjectEditor() {
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [deployProgress, setDeployProgress] = useState<DeployProgress[]>([]);
   const [showLogs, setShowLogs] = useState(false);
+  const [domainErrors, setDomainErrors] = useState<{ subdomain?: string; domain?: string }>({});
 
   // Container update detection
   const { data: containerUpdates, isLoading: updatesLoading } = useProjectUpdates(id ?? '');
@@ -330,6 +331,9 @@ export function ProjectEditor() {
   const selectedProviderId = watch('exposureProviderId');
   const exposureConfig = watch('exposureConfig') as Record<string, unknown> | undefined;
 
+  const selectedProvider = availableProviders.find((p) => p.id === selectedProviderId);
+  const isCloudflareProvider = selectedProvider?.providerType === 'cloudflare';
+
   const composeTargetPorts = useMemo(
     () => extractComposeTargetPorts(composeContent ?? ''),
     [composeContent],
@@ -345,6 +349,15 @@ export function ProjectEditor() {
     enabled: !!selectedProviderId && exposureEnabled,
   });
 
+  const validateDomain = () => {
+    if (!isCloudflareProvider) return true;
+    const errors: { subdomain?: string; domain?: string } = {};
+    if (!subdomainPrefix.trim()) errors.subdomain = 'Required for Cloudflare';
+    if (!baseDomain.trim()) errors.domain = 'Required for Cloudflare';
+    setDomainErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleComposeChange = useCallback(
     (value: string) => {
       setValue('composeContent', value, { shouldDirty: true });
@@ -357,6 +370,7 @@ export function ProjectEditor() {
     const extractedName = extractComposeProjectName(composeContent);
     if (extractedName) {
       setValue('name', extractedName, { shouldDirty: true });
+      setSubdomainPrefix(extractedName);
     }
     const firstPort = extractFirstComposeTargetPort(composeContent);
     if (firstPort !== null) {
@@ -364,7 +378,7 @@ export function ProjectEditor() {
       setValue('exposureConfig', { ...current, port: firstPort }, { shouldDirty: true });
       setValue('exposureEnabled', true, { shouldDirty: true });
     }
-  }, [composeContent, exposureConfig, setValue]);
+  }, [composeContent, exposureConfig, setValue, setSubdomainPrefix]);
 
   // Debounced validation of compose content
   useEffect(() => {
@@ -386,6 +400,7 @@ export function ProjectEditor() {
   }, [composeContent]);
 
   const onSubmit = async (data: CreateProjectInput) => {
+    if (!validateDomain()) return;
     try {
       // Combine subdomain prefix and base domain
       const fullDomain = subdomainPrefix && baseDomain
@@ -410,6 +425,7 @@ export function ProjectEditor() {
   };
 
   const handleSaveAndDeploy = async () => {
+    if (!validateDomain()) return;
     const data = watch();
     try {
       const fullDomain = subdomainPrefix && baseDomain
@@ -583,22 +599,31 @@ export function ProjectEditor() {
                 {/* Domain Configuration */}
                 <div className="space-y-2">
                   <label className="text-sm font-medium">
-                    Domain <span className="text-muted-foreground">(optional)</span>
+                    Domain{' '}
+                    {isCloudflareProvider
+                      ? <span className="text-destructive">*</span>
+                      : <span className="text-muted-foreground">(optional)</span>}
                   </label>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={subdomainPrefix}
-                      onChange={(e) => setSubdomainPrefix(e.target.value)}
+                      onChange={(e) => {
+                        setSubdomainPrefix(e.target.value);
+                        if (domainErrors.subdomain) setDomainErrors((prev) => ({ ...prev, subdomain: undefined }));
+                      }}
                       placeholder="myapp"
-                      className="flex h-10 w-32 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className={`flex h-10 w-32 rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${domainErrors.subdomain ? 'border-destructive' : 'border-input'}`}
                     />
                     <span className="text-muted-foreground">.</span>
                     {availableDomains.length > 0 ? (
                       <select
                         value={baseDomain}
-                        onChange={(e) => setBaseDomain(e.target.value)}
-                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        onChange={(e) => {
+                          setBaseDomain(e.target.value);
+                          if (domainErrors.domain) setDomainErrors((prev) => ({ ...prev, domain: undefined }));
+                        }}
+                        className={`flex h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${domainErrors.domain ? 'border-destructive' : 'border-input'}`}
                       >
                         <option value="">Select domain...</option>
                         {availableDomains.map((domain: string) => (
@@ -611,15 +636,29 @@ export function ProjectEditor() {
                       <input
                         type="text"
                         value={baseDomain}
-                        onChange={(e) => setBaseDomain(e.target.value)}
+                        onChange={(e) => {
+                          setBaseDomain(e.target.value);
+                          if (domainErrors.domain) setDomainErrors((prev) => ({ ...prev, domain: undefined }));
+                        }}
                         placeholder="example.com"
-                        className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        className={`flex h-10 flex-1 rounded-md border bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${domainErrors.domain ? 'border-destructive' : 'border-input'}`}
                       />
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    The domain where your app will be accessible (e.g., myapp.example.com)
-                  </p>
+                  {(domainErrors.subdomain || domainErrors.domain) && (
+                    <p className="text-sm text-destructive">
+                      {domainErrors.subdomain && domainErrors.domain
+                        ? 'Subdomain and domain are required for Cloudflare'
+                        : domainErrors.subdomain
+                          ? 'Subdomain is required for Cloudflare'
+                          : 'Domain is required for Cloudflare'}
+                    </p>
+                  )}
+                  {!domainErrors.subdomain && !domainErrors.domain && (
+                    <p className="text-xs text-muted-foreground">
+                      The domain where your app will be accessible (e.g., myapp.example.com)
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
