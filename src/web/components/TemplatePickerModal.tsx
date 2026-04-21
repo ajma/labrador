@@ -47,7 +47,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="relative flex h-[600px] w-full max-w-2xl flex-col rounded-xl border border-input bg-background shadow-xl">
+      <div className="relative flex h-[80vh] w-full max-w-5xl flex-col rounded-xl border border-input bg-background shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-input px-6 py-4">
           <h2 className="text-lg font-semibold">Choose a Template</h2>
@@ -112,7 +112,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
           {!isLoading && !isError && filtered.length === 0 && (
             <p className="text-center text-sm text-muted-foreground">No templates match your search.</p>
           )}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((template) => (
               <button
                 key={template.id}
