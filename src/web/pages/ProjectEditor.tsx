@@ -478,18 +478,35 @@ export function ProjectEditor() {
 
   return (
     <div className="mx-auto max-w-7xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{isEditing ? 'Edit Project' : 'New Project'}</h2>
-        {isEditing && (
-          <div className="flex items-center gap-2">
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold">{isEditing ? 'Edit Project' : 'New Project'}</h2>
+          {isEditing && (
             <span className={`rounded-full px-3 py-1 text-xs font-medium ${statusColor}`}>
               {project?.status}
             </span>
-          </div>
-        )}
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="submit"
+            form="project-form"
+            disabled={isSubmitting}
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+          >
+            {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Project'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="rounded-lg border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <form id="project-form" onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column - Project Settings */}
         <div className="space-y-6">
           {/* Name */}
@@ -664,41 +681,47 @@ export function ProjectEditor() {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Project'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="rounded-lg border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
-            >
-              Cancel
-            </button>
-            {isEditing && (
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="ml-auto rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90"
-              >
-                Delete
-              </button>
-            )}
-          </div>
         </div>
 
         {/* Right Column - Docker Compose */}
         <div className="space-y-6">
-          {/* Deployment controls */}
+          {/* Deployment */}
           {isEditing && project && (
             <div className="rounded-lg border border-input p-4">
-              <h3 className="mb-3 text-sm font-semibold">Deployment</h3>
-              <div className="flex items-center gap-3 flex-wrap">
+              <div className="mb-0 flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold">Deployment</h3>
+                {isRunning && (
+                  <div className="flex items-center gap-2">
+                    {isDirty && (
+                      <button
+                        type="button"
+                        onClick={handleSaveAndDeploy}
+                        disabled={isDeploying || updateMutation.isPending}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {updateMutation.isPending || isDeploying ? 'Deploying...' : 'Save & Redeploy'}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => stopMutation.mutate()}
+                      disabled={stopMutation.isPending}
+                      className="rounded-lg bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+                    >
+                      {stopMutation.isPending ? 'Stopping...' : 'Stop'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => restartMutation.mutate()}
+                      disabled={restartMutation.isPending}
+                      className="rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
+                    >
+                      {restartMutation.isPending ? 'Restarting...' : 'Restart'}
+                    </button>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2 flex-wrap">
                 {(isStopped || project.status === 'error') && (
                   <button
                     type="button"
@@ -709,47 +732,12 @@ export function ProjectEditor() {
                     {isDeploying ? 'Deploying...' : 'Deploy'}
                   </button>
                 )}
-                {isRunning && (
-                  <>
-                    {isDirty && (
-                      <button
-                        type="button"
-                        onClick={handleSaveAndDeploy}
-                        disabled={isDeploying || updateMutation.isPending}
-                        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
-                      >
-                        {updateMutation.isPending || isDeploying ? 'Deploying...' : 'Save & Redeploy'}
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => stopMutation.mutate()}
-                      disabled={stopMutation.isPending}
-                      className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
-                    >
-                      {stopMutation.isPending ? 'Stopping...' : 'Stop'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => restartMutation.mutate()}
-                      disabled={restartMutation.isPending}
-                      className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white hover:bg-amber-700 disabled:opacity-50"
-                    >
-                      {restartMutation.isPending ? 'Restarting...' : 'Restart'}
-                    </button>
-                  </>
-                )}
-                {isDeploying && (
-                  <span className="text-sm text-muted-foreground">
-                    Deployment in progress...
-                  </span>
+{isDeploying && (
+                  <span className="text-sm text-muted-foreground">Deployment in progress...</span>
                 )}
               </div>
-
-              {/* Deployment progress messages */}
               {deployProgress.length > 0 && (
                 <div className="mt-3 max-h-40 overflow-y-auto rounded border border-input bg-muted/50 p-3">
-                  <h4 className="mb-2 text-xs font-semibold text-muted-foreground">Progress</h4>
                   {deployProgress.map((p, i) => (
                     <div key={i} className="flex items-start gap-2 text-xs">
                       <span className="shrink-0 font-mono text-muted-foreground">
@@ -903,6 +891,19 @@ export function ProjectEditor() {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Delete */}
+      {isEditing && (
+        <div className="mt-8 flex justify-end border-t border-input pt-6">
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground hover:bg-destructive/90"
+          >
+            Delete Project
+          </button>
         </div>
       )}
 
