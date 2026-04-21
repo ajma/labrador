@@ -7,7 +7,7 @@ import fastifyStatic from '@fastify/static';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { eq } from 'drizzle-orm';
-import { initDatabase } from './db/index.js';
+import { initDatabase, migrateDatabase } from './db/index.js';
 import { projects } from './db/schema.js';
 import { authRoutes } from './routes/auth.routes.js';
 import { projectRoutes } from './routes/projects.routes.js';
@@ -54,6 +54,7 @@ async function main() {
 
   // Initialize database
   const db = initDatabase();
+  await migrateDatabase(path.join(__dirname, 'db/migrations'));
 
   // Decorate app with db
   app.decorate('db', db);

@@ -1,4 +1,5 @@
 import { drizzle } from 'drizzle-orm/libsql';
+import { migrate } from 'drizzle-orm/libsql/migrator';
 import { createClient } from '@libsql/client';
 import * as schema from './schema.js';
 import fs from 'fs';
@@ -20,6 +21,10 @@ export function initDatabase(url?: string) {
   const client = createClient({ url: dbUrl });
   db = drizzle(client, { schema });
   return db;
+}
+
+export async function migrateDatabase(migrationsFolder: string) {
+  await migrate(db, { migrationsFolder });
 }
 
 export function getDatabase() {

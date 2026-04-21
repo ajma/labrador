@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently \"vite\" \"tsx watch src/server/index.ts\"",
     "dev:web": "vite --host 127.0.0.1 --port 5173",
-    "build": "vite build && tsup",
+    "build": "vite build && tsup && mkdir -p dist/server/db && cp -r src/server/db/migrations dist/server/db/",
     "preview": "node dist/server/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",

@@ -9,12 +9,14 @@ RUN pnpm run build && pnpm prune --prod
 # Stage 2: Final image
 FROM node:24-alpine
 WORKDIR /app
+ENV NODE_ENV=production
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+COPY --from=builder /app/templates ./templates
 
-RUN mkdir -p /data
+RUN apk add --no-cache docker-cli docker-cli-compose && mkdir -p /data
 
 EXPOSE 3000
 
