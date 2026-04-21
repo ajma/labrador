@@ -1,0 +1,9 @@
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:latest
+    volumes:
+      - /:/srv
+      - ./filebrowser.db:/database.db
+    ports:
+      - "8080:80"
+    restart: unless-stopped

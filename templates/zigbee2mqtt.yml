@@ -1,0 +1,13 @@
+services:
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt:latest
+    volumes:
+      - ./zigbee2mqtt-data:/app/data
+      - /run/udev:/run/udev:ro
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=UTC
+    devices:
+      - /dev/ttyACM0:/dev/ttyACM0
+    restart: unless-stopped

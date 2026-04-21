@@ -1,0 +1,16 @@
+services:
+  dashy:
+    image: lissy93/dashy:latest
+    ports:
+      - "4000:8080"
+    volumes:
+      - ./dashy-config.yml:/app/user-data/conf.yml
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "node", "/app/services/healthcheck"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped

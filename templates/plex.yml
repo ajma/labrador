@@ -1,0 +1,12 @@
+services:
+  plex:
+    image: plexinc/pms-server:latest
+    network_mode: host
+    environment:
+      - TZ=UTC
+      - PLEX_CLAIM=${PLEX_CLAIM}
+    volumes:
+      - ./config:/config
+      - ./transcode:/transcode
+      - ./media:/data
+    restart: unless-stopped

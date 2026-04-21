@@ -1,0 +1,17 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest
+    ports:
+      - "9000:9000"
+    volumes:
+      - mealie_data:/app/data
+    environment:
+      - ALLOW_SIGNUP=true
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - MAX_WORKERS=1
+      - WEB_CONCURRENCY=1
+    restart: unless-stopped
+volumes:
+  mealie_data:

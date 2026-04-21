@@ -1,9 +1,479 @@
 [
   {
-    "id": "nginx",
-    "name": "Nginx",
-    "description": "High-performance web server and reverse proxy.",
-    "logoUrl": "https://raw.githubusercontent.com/docker-library/docs/master/nginx/logo.png",
-    "categories": ["web", "proxy"]
+    "id": "plex",
+    "name": "Plex",
+    "description": "Media server that organizes and streams your movies, TV, and music to any device.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/plex.png",
+    "categories": [
+      "media",
+      "streaming"
+    ]
+  },
+  {
+    "id": "jellyfin",
+    "name": "Jellyfin",
+    "description": "Free, open-source media server with no subscriptions or tracking. Stream anywhere.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/jellyfin.png",
+    "categories": [
+      "media",
+      "streaming"
+    ]
+  },
+  {
+    "id": "emby",
+    "name": "Emby",
+    "description": "Personal media server with a Netflix-like interface, live TV support, and multi-device streaming.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/emby.png",
+    "categories": [
+      "media",
+      "streaming"
+    ]
+  },
+  {
+    "id": "tautulli",
+    "name": "Tautulli",
+    "description": "Monitoring and analytics tool for Plex. Tracks playback history, stats, and sends notifications.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/tautulli.png",
+    "categories": [
+      "media",
+      "monitoring"
+    ]
+  },
+  {
+    "id": "jellyseerr",
+    "name": "Jellyseerr",
+    "description": "Request management for Jellyfin and Plex. Users request media through a polished interface.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/jellyseerr.png",
+    "categories": [
+      "media",
+      "requests"
+    ]
+  },
+  {
+    "id": "bazarr",
+    "name": "Bazarr",
+    "description": "Automatically downloads and manages subtitles for your movies and TV shows.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/bazarr.png",
+    "categories": [
+      "media"
+    ]
+  },
+  {
+    "id": "kavita",
+    "name": "Kavita",
+    "description": "Self-hosted digital library for manga, comics, and books with a clean reading interface.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/kavita.png",
+    "categories": [
+      "media",
+      "books"
+    ]
+  },
+  {
+    "id": "audiobookshelf",
+    "name": "Audiobookshelf",
+    "description": "Self-hosted audiobook and podcast server with cross-device progress tracking and podcast feeds.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/audiobookshelf.png",
+    "categories": [
+      "media",
+      "audio"
+    ]
+  },
+  {
+    "id": "traefik",
+    "name": "Traefik",
+    "description": "Cloud-native reverse proxy that auto-discovers Docker services and provisions SSL certificates automatically.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/traefik.png",
+    "categories": [
+      "networking",
+      "proxy"
+    ]
+  },
+  {
+    "id": "nginx-proxy-manager",
+    "name": "Nginx Proxy Manager",
+    "description": "GUI for managing Nginx reverse proxies and Let's Encrypt SSL certs without editing config files.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/nginx-proxy-manager.png",
+    "categories": [
+      "networking",
+      "proxy"
+    ]
+  },
+  {
+    "id": "caddy",
+    "name": "Caddy",
+    "description": "Web server and reverse proxy with automatic HTTPS via Let's Encrypt built in by default.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/caddy.png",
+    "categories": [
+      "networking",
+      "proxy"
+    ]
+  },
+  {
+    "id": "pi-hole",
+    "name": "Pi-hole",
+    "description": "Network-level DNS ad blocker that removes ads on every device without client-side software.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/pi-hole.png",
+    "categories": [
+      "networking",
+      "dns"
+    ]
+  },
+  {
+    "id": "adguard-home",
+    "name": "AdGuard Home",
+    "description": "Network-wide DNS ad blocker with parental controls, per-device stats, and encrypted DNS support.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/adguard-home.png",
+    "categories": [
+      "networking",
+      "dns"
+    ]
+  },
+  {
+    "id": "wg-easy",
+    "name": "wg-easy",
+    "description": "WireGuard VPN server with a built-in web UI for managing clients and QR code setup.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/wireguard.png",
+    "categories": [
+      "networking",
+      "vpn"
+    ]
+  },
+  {
+    "id": "tailscale",
+    "name": "Tailscale",
+    "description": "Zero-config mesh VPN built on WireGuard. Connects devices securely without port forwarding.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/tailscale.png",
+    "categories": [
+      "networking",
+      "vpn"
+    ]
+  },
+  {
+    "id": "cloudflared",
+    "name": "Cloudflared",
+    "description": "Cloudflare Tunnel daemon that exposes local services to the internet without opening firewall ports.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/cloudflare.png",
+    "categories": [
+      "networking",
+      "tunnel"
+    ]
+  },
+  {
+    "id": "grafana",
+    "name": "Grafana",
+    "description": "Open-source analytics platform for building dashboards from metrics, logs, and dozens of data sources.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/grafana.png",
+    "categories": [
+      "monitoring",
+      "dashboards"
+    ]
+  },
+  {
+    "id": "prometheus",
+    "name": "Prometheus",
+    "description": "Time-series metrics database that scrapes targets on a pull model. The backbone of homelab monitoring.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/prometheus.png",
+    "categories": [
+      "monitoring"
+    ]
+  },
+  {
+    "id": "uptime-kuma",
+    "name": "Uptime Kuma",
+    "description": "Self-hosted uptime monitor with a real-time dashboard, multi-protocol checks, and rich notifications.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/uptime-kuma.png",
+    "categories": [
+      "monitoring"
+    ]
+  },
+  {
+    "id": "netdata",
+    "name": "Netdata",
+    "description": "Real-time monitoring agent that collects thousands of system and container metrics with zero config.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/netdata.png",
+    "categories": [
+      "monitoring"
+    ]
+  },
+  {
+    "id": "loki",
+    "name": "Loki",
+    "description": "Grafana's log aggregation system. Stores and queries logs efficiently using labels, not full-text indexing.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/loki.png",
+    "categories": [
+      "monitoring",
+      "logging"
+    ]
+  },
+  {
+    "id": "dozzle",
+    "name": "Dozzle",
+    "description": "Lightweight real-time Docker log viewer accessible from the browser. No storage required.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/dozzle.png",
+    "categories": [
+      "monitoring",
+      "logging"
+    ]
+  },
+  {
+    "id": "glances",
+    "name": "Glances",
+    "description": "Cross-platform system monitor with a web UI showing CPU, memory, disk, network, and containers.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/glances.png",
+    "categories": [
+      "monitoring"
+    ]
+  },
+  {
+    "id": "speedtest-tracker",
+    "name": "Speedtest Tracker",
+    "description": "Runs scheduled internet speed tests and tracks upload, download, and ping trends over time.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/speedtest-tracker.png",
+    "categories": [
+      "monitoring",
+      "networking"
+    ]
+  },
+  {
+    "id": "changedetection-io",
+    "name": "Changedetection.io",
+    "description": "Monitors websites for content changes and alerts you via email, Telegram, Discord, or webhook.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/changedetection-io.png",
+    "categories": [
+      "monitoring"
+    ]
+  },
+  {
+    "id": "home-assistant",
+    "name": "Home Assistant",
+    "description": "The leading open-source home automation platform. Local control, no cloud dependency or subscriptions.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/home-assistant.png",
+    "categories": [
+      "automation",
+      "iot"
+    ]
+  },
+  {
+    "id": "node-red",
+    "name": "Node-RED",
+    "description": "Visual flow-based programming tool for wiring together APIs, hardware, and home automation logic.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/node-red.png",
+    "categories": [
+      "automation"
+    ]
+  },
+  {
+    "id": "mosquitto",
+    "name": "Mosquitto",
+    "description": "Lightweight MQTT broker. The real-time messaging backbone for IoT and home automation setups.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/mosquitto.png",
+    "categories": [
+      "automation",
+      "iot"
+    ]
+  },
+  {
+    "id": "zigbee2mqtt",
+    "name": "Zigbee2MQTT",
+    "description": "Bridges Zigbee devices to MQTT without proprietary hubs. Supports hundreds of devices locally.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/zigbee2mqtt.png",
+    "categories": [
+      "automation",
+      "iot"
+    ]
+  },
+  {
+    "id": "dashy",
+    "name": "Dashy",
+    "description": "Highly customizable homelab dashboard with widgets, service status checks, and YAML configuration.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/dashy.png",
+    "categories": [
+      "dashboard"
+    ]
+  },
+  {
+    "id": "homer",
+    "name": "Homer",
+    "description": "Dead-simple static homepage for self-hosted services, configured from a single YAML file.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homer.png",
+    "categories": [
+      "dashboard"
+    ]
+  },
+  {
+    "id": "homarr",
+    "name": "Homarr",
+    "description": "Modern homelab dashboard with drag-and-drop widgets, service integrations, and live status indicators.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/homarr.png",
+    "categories": [
+      "dashboard"
+    ]
+  },
+  {
+    "id": "flame",
+    "name": "Flame",
+    "description": "Minimal self-hosted start page with app shortcuts and Docker label auto-discovery.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/flame.png",
+    "categories": [
+      "dashboard"
+    ]
+  },
+  {
+    "id": "watchtower",
+    "name": "Watchtower",
+    "description": "Automatically updates running Docker containers when new image versions are published.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/watchtower.png",
+    "categories": [
+      "management",
+      "docker"
+    ]
+  },
+  {
+    "id": "vaultwarden",
+    "name": "Vaultwarden",
+    "description": "Lightweight Bitwarden-compatible password manager server written in Rust. Works with all Bitwarden clients.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/vaultwarden.png",
+    "categories": [
+      "security",
+      "passwords"
+    ]
+  },
+  {
+    "id": "authelia",
+    "name": "Authelia",
+    "description": "Open-source SSO and two-factor authentication gateway for securing your self-hosted services.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/authelia.png",
+    "categories": [
+      "security",
+      "auth"
+    ]
+  },
+  {
+    "id": "authentik",
+    "name": "Authentik",
+    "description": "Flexible identity provider with SSO, MFA, and support for SAML, OAuth2, OIDC, and LDAP.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/authentik.png",
+    "categories": [
+      "security",
+      "auth"
+    ]
+  },
+  {
+    "id": "keycloak",
+    "name": "Keycloak",
+    "description": "Enterprise identity and access management with SSO, OAuth2, OIDC, and LDAP federation.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/keycloak.png",
+    "categories": [
+      "security",
+      "auth"
+    ]
+  },
+  {
+    "id": "nextcloud",
+    "name": "Nextcloud",
+    "description": "Self-hosted Google Drive alternative with file sync, calendars, contacts, and collaborative office tools.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/nextcloud.png",
+    "categories": [
+      "storage",
+      "productivity"
+    ]
+  },
+  {
+    "id": "immich",
+    "name": "Immich",
+    "description": "High-performance self-hosted photo backup with facial recognition and automatic album creation.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/immich.png",
+    "categories": [
+      "storage",
+      "photos"
+    ]
+  },
+  {
+    "id": "filebrowser",
+    "name": "Filebrowser",
+    "description": "Web-based file manager for browsing, uploading, downloading, and sharing files from your server.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/filebrowser.png",
+    "categories": [
+      "storage"
+    ]
+  },
+  {
+    "id": "syncthing",
+    "name": "Syncthing",
+    "description": "Peer-to-peer file sync between devices with no central server or cloud service required.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/syncthing.png",
+    "categories": [
+      "storage",
+      "sync"
+    ]
+  },
+  {
+    "id": "duplicati",
+    "name": "Duplicati",
+    "description": "Encrypted, incremental backup client supporting cloud storage, FTP, and local destinations.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/duplicati.png",
+    "categories": [
+      "storage",
+      "backup"
+    ]
+  },
+  {
+    "id": "gitea",
+    "name": "Gitea",
+    "description": "Lightweight self-hosted Git service with repos, issues, pull requests, and Actions CI/CD.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/gitea.png",
+    "categories": [
+      "development",
+      "git"
+    ]
+  },
+  {
+    "id": "forgejo",
+    "name": "Forgejo",
+    "description": "Community-governed Gitea fork focused on software freedom and open development. Fully API-compatible.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/forgejo.png",
+    "categories": [
+      "development",
+      "git"
+    ]
+  },
+  {
+    "id": "drone",
+    "name": "Drone CI",
+    "description": "Self-hosted CI/CD platform where pipelines run in isolated Docker containers, defined as YAML.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/drone.png",
+    "categories": [
+      "development",
+      "ci-cd"
+    ]
+  },
+  {
+    "id": "paperless-ngx",
+    "name": "Paperless-ngx",
+    "description": "Document management system that OCRs scanned papers into a searchable, auto-tagged digital archive.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/paperless-ngx.png",
+    "categories": [
+      "productivity",
+      "documents"
+    ]
+  },
+  {
+    "id": "stirling-pdf",
+    "name": "Stirling PDF",
+    "description": "Local web app for PDF operations: merge, split, compress, convert, and redact without third-party services.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/stirling-pdf.png",
+    "categories": [
+      "productivity"
+    ]
+  },
+  {
+    "id": "mealie",
+    "name": "Mealie",
+    "description": "Self-hosted recipe manager and meal planner. Import recipes from any URL and generate shopping lists.",
+    "logoUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/mealie.png",
+    "categories": [
+      "productivity",
+      "food"
+    ]
   }
 ]

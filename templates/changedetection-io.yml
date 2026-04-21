@@ -1,0 +1,11 @@
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    volumes:
+      - changedetection-data:/datastore
+    ports:
+      - 5000:5000
+    restart: unless-stopped
+
+volumes:
+  changedetection-data:

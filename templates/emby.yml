@@ -1,0 +1,14 @@
+services:
+  emby:
+    image: emby/embyserver:latest
+    environment:
+      - UID=1000
+      - GID=1000
+    volumes:
+      - ./config:/config
+      - ./media/tv:/mnt/tv
+      - ./media/movies:/mnt/movies
+    ports:
+      - "8096:8096"
+      - "8920:8920"
+    restart: unless-stopped

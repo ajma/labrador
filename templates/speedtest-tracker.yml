@@ -1,0 +1,12 @@
+services:
+  speedtest-tracker:
+    image: ghcr.io/alexjustesen/speedtest-tracker:latest
+    environment:
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=sqlite
+      - TZ=UTC
+    volumes:
+      - ./config:/config
+    ports:
+      - "8080:80"
+    restart: unless-stopped

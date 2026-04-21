@@ -1,0 +1,11 @@
+services:
+  homarr:
+    image: ghcr.io/ajnart/homarr:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./homarr/configs:/app/data/configs
+      - ./homarr/icons:/app/public/icons
+      - ./homarr/data:/data
+    ports:
+      - "7575:7575"
+    restart: unless-stopped

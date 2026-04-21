@@ -1,0 +1,13 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    environment:
+      - DOMAIN=https://vaultwarden.example.com
+      - SIGNUPS_ALLOWED=false
+    volumes:
+      - vaultwarden_data:/data
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+volumes:
+  vaultwarden_data:
