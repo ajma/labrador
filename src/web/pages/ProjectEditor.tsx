@@ -169,6 +169,13 @@ export function ProjectEditor() {
     if (template.logoUrl) {
       setValue('logoUrl', template.logoUrl);
     }
+    const ports = extractComposeTargetPorts(template.composeContent);
+    if (ports.length > 0) {
+      const slug = template.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      setSubdomainPrefix(slug);
+      setValue('exposureEnabled', true);
+      setValue('exposureConfig', { port: ports[0] });
+    }
     setShowTemplatePicker(false);
   }
 
