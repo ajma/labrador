@@ -21,6 +21,7 @@ interface ExposureProviderOption {
 
 interface SettingsResponse {
   exposureProviders: ExposureProviderOption[];
+  defaultExposureProviderId: string | null;
 }
 
 interface ExposureStatus {
@@ -314,6 +315,15 @@ export function ProjectEditor() {
       });
     }
   }, [isEditing, project, reset]);
+
+  // Seed default provider for new projects once settings load
+  useEffect(() => {
+    if (isEditing) return;
+    const defaultId = settingsData?.defaultExposureProviderId;
+    if (defaultId) {
+      setValue('exposureProviderId', defaultId);
+    }
+  }, [isEditing, settingsData, setValue]);
 
   const composeContent = watch('composeContent');
   const exposureEnabled = watch('exposureEnabled');
