@@ -45,6 +45,17 @@ interface DeployProgress {
   timestamp: number;
 }
 
+const emptyProjectFormValues: CreateProjectInput = {
+  name: '',
+  composeContent: '',
+  logoUrl: null,
+  domainName: null,
+  exposureEnabled: false,
+  exposureProviderId: null,
+  exposureConfig: {},
+  isInfrastructure: false,
+};
+
 export function ProjectEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -177,19 +188,18 @@ export function ProjectEditor() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm<CreateProjectInput>({
     resolver: zodResolver(isEditing ? updateProjectSchema : createProjectSchema),
-    defaultValues: {
-      name: '',
-      composeContent: '',
-      logoUrl: null,
-      domainName: null,
-      exposureEnabled: false,
-      exposureProviderId: null,
-      exposureConfig: {},
-    },
+    defaultValues: emptyProjectFormValues,
   });
 
-  // Populate form when project data loads
+  // Keep form state in sync when route switches between edit and new modes.
   useEffect(() => {
+    if (!isEditing) {
+      reset(emptyProjectFormValues);
+      setSubdomainPrefix('');
+      setBaseDomain('');
+      return;
+    }
+
     if (project) {
       const expConfig =
         typeof project.exposureConfig === 'string'
@@ -218,7 +228,7 @@ export function ProjectEditor() {
         exposureConfig: expConfig,
       });
     }
-  }, [project, reset]);
+  }, [isEditing, project, reset]);
 
   const composeContent = watch('composeContent');
   const exposureEnabled = watch('exposureEnabled');
