@@ -13,7 +13,7 @@ vi.mock('../../middleware/auth.middleware.js', () => ({
   authenticate: vi.fn(async () => {}),
 }));
 
-const fsMock = (await import('fs/promises')).default as { readFile: ReturnType<typeof vi.fn> };
+const fsMock = (await import('fs/promises')).default as unknown as { readFile: ReturnType<typeof vi.fn> };
 
 const MANIFEST = JSON.stringify([
   {

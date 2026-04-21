@@ -1,6 +1,5 @@
 import { api } from './api';
 import type { CloudflareProviderFormValue } from '../components/CloudflareProviderForm';
-import type { ProjectTemplate } from '@shared/types';
 
 /** Resolves the final tunnelId and optional tunnelToken before saving a Cloudflare provider.
  *  - If tunnelId === '__new__': creates the tunnel via CF API, returns new tunnelId + tunnelToken.
@@ -35,12 +34,22 @@ export async function resolveCloudflareBeforeSave(cf: CloudflareProviderFormValu
   return { tunnelId, tunnelToken };
 }
 
+export function buildCloudflaredComposeContent(tunnelToken: string): string {
+  return [
+    'services:',
+    '  cloudflared:',
+    '    image: cloudflare/cloudflared:latest',
+    `    command: tunnel run --token ${tunnelToken}`,
+    '    restart: unless-stopped',
+    '    extra_hosts:',
+    '      - "host.docker.internal:host-gateway"',
+  ].join('\n');
+}
+
 export async function deployCloudflaredProject(tunnelToken: string): Promise<void> {
-  const template = await api.get<ProjectTemplate>('/projects/templates/cloudflared');
-  const composeContent = template.composeContent.replaceAll('${token}', tunnelToken);
+  const composeContent = buildCloudflaredComposeContent(tunnelToken);
   const project = await api.post<{ id: string }>('/projects', {
-    name: template.name,
-    logoUrl: template.logoUrl,
+    name: 'Cloudflare Tunnel',
     composeContent,
     isInfrastructure: true,
   });
