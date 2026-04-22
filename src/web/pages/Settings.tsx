@@ -355,6 +355,216 @@ function ProviderModal({
   );
 }
 
+// ─── providers section ───────────────────────────────────────────────────────
+
+function ProvidersSection() {
+  const queryClient = useQueryClient();
+  const [modalState, setModalState] = useState<
+    { mode: 'add' } | { mode: 'edit'; provider: ExposureProviderConfig } | null
+  >(null);
+  const [setupResults, setSetupResults] = useState<Record<string, ProviderSetupResult>>({});
+  const [checkingSetup, setCheckingSetup] = useState<Record<string, boolean>>({});
+  const [deletingProviderId, setDeletingProviderId] = useState<string | null>(null);
+
+  const settingsQuery = useQuery<SettingsType>({
+    queryKey: ['settings'],
+    queryFn: () => api.get('/settings'),
+  });
+
+  const providersQuery = useQuery<ExposureProviderConfig[]>({
+    queryKey: ['settings', 'providers'],
+    queryFn: () => api.get('/settings/exposure-providers'),
+  });
+
+  const createProvider = useMutation({
+    mutationFn: (data: ExposureProviderInput) => api.post('/settings/exposure-providers', data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setModalState(null);
+      toast.success('Provider added');
+    },
+    onError: (error: Error) => toast.error(error.message || 'Failed to add provider'),
+  });
+
+  const updateProvider = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ExposureProviderInput }) =>
+      api.put(`/settings/exposure-providers/${id}`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setModalState(null);
+      toast.success('Provider updated');
+    },
+    onError: (error: Error) => toast.error(error.message || 'Failed to update provider'),
+  });
+
+  const deleteProvider = useMutation({
+    mutationFn: (id: string) => api.delete(`/settings/exposure-providers/${id}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      setDeletingProviderId(null);
+      toast.success('Provider deleted');
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || 'Failed to delete provider');
+      setDeletingProviderId(null);
+    },
+  });
+
+  const setDefaultProvider = useMutation({
+    mutationFn: (providerId: string | null) =>
+      api.put('/settings', { defaultExposureProviderId: providerId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      toast.success('Default provider updated');
+    },
+    onError: (error: Error) => toast.error(error.message || 'Failed to update default provider'),
+  });
+
+  const runCheckSetup = async (provider: ExposureProviderConfig) => {
+    setCheckingSetup((prev) => ({ ...prev, [provider.id]: true }));
+    try {
+      const result = await api.post<ProviderSetupResult>('/settings/exposure-providers/check-setup', {
+        providerType: provider.providerType,
+        configuration: provider.configuration,
+      });
+      setSetupResults((prev) => ({ ...prev, [provider.id]: result }));
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to check setup');
+    } finally {
+      setCheckingSetup((prev) => ({ ...prev, [provider.id]: false }));
+    }
+  };
+
+  const providers = providersQuery.data ?? [];
+  const settings = settingsQuery.data;
+  const modalIsPending =
+    (modalState?.mode === 'add' && createProvider.isPending) ||
+    (modalState?.mode === 'edit' && updateProvider.isPending);
+
+  return (
+    <>
+      <div className="flex items-center justify-end gap-4 mb-4">
+        <button
+          onClick={() => setModalState({ mode: 'add' })}
+          className="flex shrink-0 items-center gap-1.5 rounded-xl border border-[rgba(100,158,245,0.4)] px-3 py-1.5 text-[13px] text-[#7db0ff] transition-colors hover:bg-[rgba(100,158,245,0.08)]"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          Add Provider
+        </button>
+      </div>
+
+      {providersQuery.isLoading ? (
+        <p className="text-[13px] text-[rgba(255,255,255,0.35)]">Loading providers…</p>
+      ) : providers.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-white/[0.10] px-6 py-10 text-center">
+          <p className="text-[13px] text-[rgba(255,255,255,0.35)]">
+            No providers yet.{' '}
+            <button onClick={() => setModalState({ mode: 'add' })} className="text-[#7db0ff] hover:underline">
+              Add one
+            </button>{' '}
+            to expose your services.
+          </p>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-white/[0.10] overflow-hidden">
+          {providers.map((provider, i) => (
+            <div key={provider.id} className={`px-5 py-4 ${i > 0 ? 'border-t border-white/[0.06]' : ''}`}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[14px] font-medium text-[rgba(255,255,255,0.85)]">{provider.name}</span>
+                    {settings?.defaultExposureProviderId === provider.id && (
+                      <span className="rounded-full bg-[rgba(100,158,245,0.12)] px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-[#7db0ff]">Default</span>
+                    )}
+                    {!provider.enabled && (
+                      <span className="rounded-full bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-[11px] font-medium uppercase tracking-[0.12em] text-[rgba(255,255,255,0.35)]">Disabled</span>
+                    )}
+                  </div>
+                  <p className="mt-0.5 text-[12px] text-[rgba(255,255,255,0.35)]">
+                    {provider.providerType === 'caddy' ? 'Caddy Reverse Proxy' : 'Cloudflare Tunnel'}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1">
+                  {settings?.defaultExposureProviderId !== provider.id && (
+                    <button
+                      onClick={() => setDefaultProvider.mutate(provider.id)}
+                      className="rounded-lg px-2.5 py-1 text-[12px] text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                    >
+                      Set default
+                    </button>
+                  )}
+                  <button
+                    onClick={() => runCheckSetup(provider)}
+                    disabled={checkingSetup[provider.id]}
+                    className="rounded-lg px-2.5 py-1 text-[12px] text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+                  >
+                    {checkingSetup[provider.id] ? 'Checking…' : 'Check setup'}
+                  </button>
+                  <button
+                    onClick={() => setModalState({ mode: 'edit', provider })}
+                    className="rounded-lg px-2.5 py-1 text-[12px] text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                  >
+                    Edit
+                  </button>
+                  {deletingProviderId === provider.id ? (
+                    <div className="flex items-center gap-1.5 pl-1">
+                      <span className="text-[12px] text-[rgba(255,255,255,0.45)]">Delete?</span>
+                      <button
+                        onClick={() => setDeletingProviderId(null)}
+                        className="text-[12px] text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={() => deleteProvider.mutate(provider.id)}
+                        disabled={deleteProvider.isPending}
+                        className="rounded-lg border border-[rgba(248,113,113,0.36)] px-2.5 py-0.5 text-[12px] text-[rgba(254,202,202,0.85)] transition-colors hover:bg-[rgba(127,29,29,0.20)] disabled:opacity-40"
+                      >
+                        {deleteProvider.isPending ? 'Deleting…' : 'Confirm'}
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setDeletingProviderId(provider.id)}
+                      className="rounded-lg px-2.5 py-1 text-[12px] text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(248,113,113,0.75)]"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </div>
+              {setupResults[provider.id] && <SetupCheckDisplay result={setupResults[provider.id]} />}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {providers.length > 0 && settings?.defaultExposureProviderId && (
+        <button
+          onClick={() => setDefaultProvider.mutate(null)}
+          className="mt-3 text-[12px] text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(255,255,255,0.5)]"
+        >
+          Clear default provider
+        </button>
+      )}
+
+      {/* Modal */}
+      {modalState && (
+        <ProviderModal
+          provider={modalState.mode === 'edit' ? modalState.provider : undefined}
+          onClose={() => setModalState(null)}
+          onSave={(data) => {
+            if (modalState.mode === 'add') createProvider.mutate(data);
+            else updateProvider.mutate({ id: modalState.provider.id, data });
+          }}
+          isPending={modalIsPending}
+        />
+      )}
+    </>
+  );
+}
+
 // ─── account section ─────────────────────────────────────────────────────────
 
 function AccountSection() {
@@ -464,7 +674,7 @@ export function Settings() {
       </Section>
 
       <Section id="providers" heading="Exposure Providers" description="Configure how your services are exposed to the internet.">
-        <p className="text-[13px] text-[rgba(255,255,255,0.38)]">Providers section — coming soon.</p>
+        <ProvidersSection />
       </Section>
 
       <Section id="data" heading="Data" description="Back up or restore your HomelabMan configuration — projects, providers, and settings.">
