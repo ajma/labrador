@@ -2,7 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { eq } from 'drizzle-orm';
 import { settingsSchema, onboardingSchema, exposureProviderSchema } from '../../shared/schemas.js';
 import { getDatabase } from '../db/index.js';
-import { settings, exposureProviders } from '../db/schema.js';
+import { settings, exposureProviders, projects } from '../db/schema.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 import { ExposureProviderRegistry } from '../services/exposure/provider-registry.js';
 
@@ -244,5 +244,48 @@ export async function settingsRoutes(app: FastifyInstance) {
 
     await provider.initialize(config);
     return provider.listDomains();
+  });
+
+  // GET /export - Download full user data as JSON backup
+  app.get('/export', async (request, reply) => {
+    const db = getDatabase();
+    const { id: userId } = request.user as { id: string; username: string };
+
+    const [userSettings] = await db.select().from(settings).where(eq(settings.userId, userId));
+    const providerRows = await db.select().from(exposureProviders).where(eq(exposureProviders.userId, userId));
+    const projectRows = await db.select().from(projects).where(eq(projects.userId, userId));
+
+    const providerIdToName = new Map(providerRows.map((p) => [p.id, p.name]));
+
+    const defaultProviderName = userSettings?.defaultExposureProviderId
+      ? (providerIdToName.get(userSettings.defaultExposureProviderId) ?? null)
+      : null;
+
+    const backup = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      settings: { defaultExposureProviderName: defaultProviderName },
+      providers: providerRows.map((p) => ({
+        providerType: p.providerType,
+        name: p.name,
+        enabled: p.enabled,
+        configuration: typeof p.configuration === 'string' ? JSON.parse(p.configuration) : p.configuration,
+      })),
+      projects: projectRows.map((p) => ({
+        name: p.name,
+        logoUrl: p.logoUrl,
+        domainName: p.domainName,
+        composeContent: p.composeContent,
+        exposureEnabled: p.exposureEnabled,
+        exposureProviderName: p.exposureProviderId ? (providerIdToName.get(p.exposureProviderId) ?? null) : null,
+        exposureConfig: typeof p.exposureConfig === 'string' ? JSON.parse(p.exposureConfig ?? '{}') : (p.exposureConfig ?? {}),
+        isInfrastructure: p.isInfrastructure,
+      })),
+    };
+
+    const date = new Date().toISOString().slice(0, 10);
+    reply.header('Content-Disposition', `attachment; filename="homelabman-backup-${date}.json"`);
+    reply.header('Content-Type', 'application/json');
+    return backup;
   });
 }
