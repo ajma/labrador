@@ -47,8 +47,6 @@ export const changePasswordSchema = z.object({
   path: ['confirmPassword'],
 });
 
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
-
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
@@ -56,3 +54,4 @@ export type UpdateProjectInput = z.infer<typeof updateProjectSchema>;
 export type ExposureProviderInput = z.infer<typeof exposureProviderSchema>;
 export type SettingsInput = z.infer<typeof settingsSchema>;
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
