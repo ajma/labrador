@@ -701,6 +701,8 @@ export function ProjectEditor() {
               type="text"
               {...register('name')}
               placeholder="my-awesome-service"
+              data-1p-ignore
+              autoComplete="off"
               className={inputCls}
             />
             {errors.name && (
