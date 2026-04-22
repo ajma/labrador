@@ -20,11 +20,39 @@ function formatBytes(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-const statusConfig: Record<Project['status'], { dot: string; label: string }> = {
-  running: { dot: 'bg-[#4ade80]', label: 'Running' },
-  stopped: { dot: 'bg-[rgba(255,255,255,0.25)]', label: 'Stopped' },
-  starting: { dot: 'bg-[#facc15] animate-pulse', label: 'Starting' },
-  error: { dot: 'bg-[rgba(248,113,113,0.85)]', label: 'Error' },
+const statusConfig: Record<Project['status'], { dot: string; label: string; labelColor: string; cardBorder: string; cardBg: string; cardHover: string }> = {
+  running: {
+    dot: 'bg-[#4ade80] shadow-[0_0_8px_rgba(74,222,128,0.45)]',
+    label: 'Running',
+    labelColor: 'text-[rgba(74,222,128,0.9)]',
+    cardBorder: 'border-[rgba(74,222,128,0.18)]',
+    cardBg: 'bg-[rgba(74,222,128,0.02)]',
+    cardHover: 'hover:bg-[rgba(74,222,128,0.04)]',
+  },
+  stopped: {
+    dot: 'bg-[rgba(255,255,255,0.20)]',
+    label: 'Stopped',
+    labelColor: 'text-[rgba(255,255,255,0.35)]',
+    cardBorder: 'border-white/[0.08]',
+    cardBg: 'bg-[rgba(255,255,255,0.025)]',
+    cardHover: 'hover:bg-[rgba(255,255,255,0.04)]',
+  },
+  starting: {
+    dot: 'bg-[#facc15] animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.4)]',
+    label: 'Starting',
+    labelColor: 'text-[#facc15]',
+    cardBorder: 'border-[rgba(250,204,21,0.20)]',
+    cardBg: 'bg-[rgba(250,204,21,0.015)]',
+    cardHover: 'hover:bg-[rgba(250,204,21,0.03)]',
+  },
+  error: {
+    dot: 'bg-[#f87171] shadow-[0_0_8px_rgba(248,113,113,0.45)]',
+    label: 'Error',
+    labelColor: 'text-[#f87171]',
+    cardBorder: 'border-[rgba(248,113,113,0.20)]',
+    cardBg: 'bg-[rgba(248,113,113,0.02)]',
+    cardHover: 'hover:bg-[rgba(248,113,113,0.04)]',
+  },
 };
 
 function timeAgo(timestamp: number | null): string {
@@ -44,7 +72,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
 
   return (
     <div
-      className="flex cursor-pointer flex-col rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] transition-colors hover:bg-[rgba(255,255,255,0.05)]"
+      className={`flex cursor-pointer flex-col rounded-2xl border transition-colors ${status.cardBorder} ${status.cardBg} ${status.cardHover}`}
       onClick={() => navigate(`/projects/${project.id}`)}
     >
       {/* Header */}
@@ -87,7 +115,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
           )}
           <div className="flex items-center gap-1.5">
             <span className={`h-2 w-2 rounded-full ${status.dot}`} />
-            <span className="text-[12px] text-[rgba(255,255,255,0.45)]">{status.label}</span>
+            <span className={`text-[12px] ${status.labelColor}`}>{status.label}</span>
           </div>
         </div>
       </div>
@@ -102,6 +130,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
           const totalCpu = stats.reduce((sum, s) => sum + s.cpuUsage, 0);
           const totalMem = stats.reduce((sum, s) => sum + s.memoryUsage, 0);
           const totalMemLimit = stats.reduce((sum, s) => sum + s.memoryLimit, 0);
+          const cpuColor = totalCpu > 80 ? '#f87171' : totalCpu > 50 ? '#facc15' : '#4ade80';
           return (
             <div className="mt-2 space-y-1.5">
               <div>
@@ -111,8 +140,8 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
                 </div>
                 <div className="h-1 w-full rounded-full bg-[rgba(255,255,255,0.06)]">
                   <div
-                    className="h-1 rounded-full bg-[#649ef5] transition-all"
-                    style={{ width: `${Math.min(totalCpu, 100)}%` }}
+                    className="h-1 rounded-full transition-all"
+                    style={{ width: `${Math.min(totalCpu, 100)}%`, backgroundColor: cpuColor }}
                   />
                 </div>
               </div>
@@ -155,7 +184,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
           </>
         )}
         {project.status === 'starting' && (
-          <span className="text-[12px] text-[rgba(255,255,255,0.35)]">Deploying…</span>
+          <span className="text-[12px] text-[#facc15]">Deploying…</span>
         )}
         <button
           onClick={(e) => { e.stopPropagation(); navigate(`/projects/${project.id}`); }}

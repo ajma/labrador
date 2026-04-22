@@ -140,6 +140,9 @@ const emptyProjectFormValues: CreateProjectInput = {
 const inputCls =
   'flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-[14px] text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)] disabled:cursor-not-allowed disabled:opacity-50';
 
+const selectCls =
+  'h-10 w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 pr-9 text-[14px] text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)]';
+
 const statusStyles: Record<string, string> = {
   running: 'bg-[rgba(74,222,128,0.12)] text-[#4ade80] border-[rgba(74,222,128,0.25)]',
   stopped: 'bg-[rgba(255,255,255,0.04)] text-[rgba(255,255,255,0.38)] border-[rgba(255,255,255,0.08)]',
@@ -733,7 +736,7 @@ export function ProjectEditor() {
                     <div className="relative">
                       <select
                         {...register('exposureProviderId')}
-                        className="w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(4,7,15,0.78)] px-4 py-2 pr-9 text-[14px] text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)]"
+                        className={selectCls}
                       >
                         <option value="">Select a provider…</option>
                         {availableProviders.map((p) => (
@@ -788,9 +791,7 @@ export function ProjectEditor() {
                               setBaseDomain(e.target.value);
                               if (domainErrors.domain) setDomainErrors((prev) => ({ ...prev, domain: undefined }));
                             }}
-                            className={`w-full appearance-none rounded-[14px] border bg-[rgba(4,7,15,0.78)] px-4 py-2 pr-9 text-[14px] text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)] ${
-                              domainErrors.domain ? 'border-[rgba(248,113,113,0.5)]' : 'border-white/[0.20]'
-                            }`}
+                            className={`${selectCls} ${domainErrors.domain ? 'border-[rgba(248,113,113,0.5)]' : ''}`}
                           >
                             <option value="">Select domain…</option>
                             {availableDomains.map((domain: string) => (

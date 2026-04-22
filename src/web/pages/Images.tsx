@@ -29,6 +29,15 @@ function shortId(id: string): string {
   return id.replace('sha256:', '').slice(0, 12);
 }
 
+function ContainerCountBadge({ count }: { count: number }) {
+  if (count === 0) return <span className="text-[rgba(255,255,255,0.28)]">0</span>;
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(74,222,128,0.25)] bg-[rgba(74,222,128,0.08)] px-2 py-0.5 text-[12px] font-medium text-[#4ade80]">
+      {count}
+    </span>
+  );
+}
+
 function getRepoTag(image: DockerImage): string {
   if (!image.RepoTags || image.RepoTags.length === 0) return '<none>';
   return image.RepoTags[0];
@@ -224,15 +233,15 @@ export function Images() {
       {isLoading && (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl border border-white/[0.06] bg-[rgba(255,255,255,0.03)]" />
+            <div key={i} className="h-14 animate-pulse rounded-xl border border-[rgba(100,158,245,0.08)] bg-[rgba(100,158,245,0.03)]" />
           ))}
         </div>
       )}
 
       {/* Empty */}
       {!isLoading && images?.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-12 text-center">
-          <HardDrive className="mb-3 h-8 w-8 text-[rgba(255,255,255,0.20)]" />
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[rgba(100,158,245,0.15)] bg-[rgba(100,158,245,0.02)] p-12 text-center">
+          <HardDrive className="mb-3 h-8 w-8 text-[#649ef5] opacity-40" />
           <p className="text-[13px] text-[rgba(255,255,255,0.35)]">No images found.</p>
         </div>
       )}
@@ -259,13 +268,19 @@ export function Images() {
               </tr>
             </thead>
             <tbody>
-              {paginatedImages!.map((image) => (
+              {paginatedImages!.map((image) => {
+                const tag = getRepoTag(image);
+                const isNone = tag === '<none>';
+                const containerCount = containerCountByImage.get(image.Id) || 0;
+                return (
                 <tr key={image.Id} className="border-b border-white/[0.06] last:border-0">
-                  <td className="px-4 py-3 text-[13px] font-medium text-[rgba(255,255,255,0.85)]">{getRepoTag(image)}</td>
-                  <td className="px-4 py-3 font-mono text-[12px] text-[rgba(255,255,255,0.45)]">{shortId(image.Id)}</td>
+                  <td className={`px-4 py-3 text-[13px] font-medium ${isNone ? 'text-[rgba(255,255,255,0.35)] italic' : 'text-[rgba(255,255,255,0.85)]'}`}>
+                    {tag}
+                  </td>
+                  <td className="px-4 py-3 font-mono text-[12px] text-[rgba(255,255,255,0.35)]">{shortId(image.Id)}</td>
                   <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{formatBytes(image.Size)}</td>
                   <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{formatDate(image.Created)}</td>
-                  <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{containerCountByImage.get(image.Id) || 0}</td>
+                  <td className="px-4 py-3"><ContainerCountBadge count={containerCount} /></td>
                   <td className="px-4 py-3 text-right">
                     {!usedImageIds.has(image.Id) && (
                       deletingId === image.Id ? (
@@ -296,7 +311,8 @@ export function Images() {
                     )}
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
           <TablePagination

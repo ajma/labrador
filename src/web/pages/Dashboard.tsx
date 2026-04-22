@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus } from 'lucide-react';
+import { Plus, Server } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProjects } from '../hooks/useProjects';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -92,19 +92,23 @@ export function Dashboard() {
       {isLoading && (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 animate-pulse rounded-2xl border border-white/[0.06] bg-[rgba(255,255,255,0.03)]" />
+            <div key={i} className="h-40 animate-pulse rounded-2xl border border-[rgba(100,158,245,0.08)] bg-[rgba(100,158,245,0.03)]" />
           ))}
         </div>
       )}
 
       {!isLoading && projects?.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-16 text-center">
-          <p className="text-[13px] text-[rgba(255,255,255,0.35)]">
-            No projects yet. Create your first project to get started.
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[rgba(100,158,245,0.18)] bg-[rgba(100,158,245,0.02)] p-16 text-center">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[rgba(100,158,245,0.10)] text-[#649ef5]">
+            <Server className="h-6 w-6" />
+          </div>
+          <p className="text-[14px] font-medium text-[rgba(255,255,255,0.65)]">Nothing deployed yet</p>
+          <p className="mt-1 text-[13px] text-[rgba(255,255,255,0.35)]">
+            Create a project to start self-hosting.
           </p>
           <button
             onClick={() => navigate('/projects/new')}
-            className="mt-4 flex items-center gap-1.5 rounded-xl bg-[#649ef5] px-4 py-1.5 text-[13px] font-medium text-[#101827] transition-colors hover:bg-[#7db0ff]"
+            className="mt-5 flex items-center gap-1.5 rounded-xl bg-[#649ef5] px-4 py-1.5 text-[13px] font-medium text-[#101827] transition-colors hover:bg-[#7db0ff]"
           >
             <Plus className="h-3.5 w-3.5" />
             Create Project

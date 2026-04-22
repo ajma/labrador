@@ -57,7 +57,34 @@ function useDeleteNetwork() {
 const DRIVER_OPTIONS = ['bridge', 'overlay', 'macvlan', 'host', 'none'] as const;
 
 const selectCls =
-  'w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(4,7,15,0.78)] px-4 py-2 text-[14px] text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)] pr-9';
+  'h-10 w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 pr-9 text-[14px] text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)]';
+
+const driverStyles: Record<string, string> = {
+  bridge: 'bg-[rgba(100,158,245,0.10)] text-[#7db0ff] border-[rgba(100,158,245,0.25)]',
+  overlay: 'bg-[rgba(100,158,245,0.08)] text-[rgba(125,176,255,0.85)] border-[rgba(100,158,245,0.20)]',
+  macvlan: 'bg-[rgba(74,222,128,0.08)] text-[rgba(74,222,128,0.85)] border-[rgba(74,222,128,0.20)]',
+  host: 'bg-[rgba(250,204,21,0.08)] text-[#facc15] border-[rgba(250,204,21,0.20)]',
+  none: 'bg-[rgba(255,255,255,0.04)] text-[rgba(255,255,255,0.35)] border-[rgba(255,255,255,0.10)]',
+};
+
+function DriverBadge({ driver }: { driver: string }) {
+  const cls = driverStyles[driver] ?? 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.55)] border-[rgba(255,255,255,0.14)]';
+  return (
+    <span className={`inline-flex items-center rounded-lg border px-2 py-0.5 text-[12px] font-medium ${cls}`}>
+      {driver}
+    </span>
+  );
+}
+
+function ContainerCountBadge({ network }: { network: DockerNetwork }) {
+  const count = network.Containers ? Object.keys(network.Containers).length : 0;
+  if (count === 0) return <span className="text-[rgba(255,255,255,0.28)]">0</span>;
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(74,222,128,0.25)] bg-[rgba(74,222,128,0.08)] px-2 py-0.5 text-[12px] font-medium text-[#4ade80]">
+      {count}
+    </span>
+  );
+}
 
 export function Networks() {
   const [isCreating, setIsCreating] = useState(false);
@@ -160,15 +187,15 @@ export function Networks() {
       {isLoading && (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl border border-white/[0.06] bg-[rgba(255,255,255,0.03)]" />
+            <div key={i} className="h-14 animate-pulse rounded-xl border border-[rgba(100,158,245,0.08)] bg-[rgba(100,158,245,0.03)]" />
           ))}
         </div>
       )}
 
       {/* Empty */}
       {!isLoading && networks?.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-12 text-center">
-          <Network className="mb-3 h-8 w-8 text-[rgba(255,255,255,0.20)]" />
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[rgba(100,158,245,0.15)] bg-[rgba(100,158,245,0.02)] p-12 text-center">
+          <Network className="mb-3 h-8 w-8 text-[#649ef5] opacity-40" />
           <p className="text-[13px] text-[rgba(255,255,255,0.35)]">No networks found.</p>
         </div>
       )}
@@ -182,8 +209,8 @@ export function Networks() {
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Name</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Driver</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Scope</th>
-                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Containers</th>
                 <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Created</th>
+                <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Containers</th>
                 <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Actions</th>
               </tr>
             </thead>
@@ -192,15 +219,13 @@ export function Networks() {
                 <tr key={network.Id} className="border-b border-white/[0.06] last:border-0">
                   <td className="px-4 py-3 text-[13px] font-medium text-[rgba(255,255,255,0.85)]">{network.Name}</td>
                   <td className="px-4 py-3">
-                    <span className="inline-flex items-center rounded-lg bg-[rgba(255,255,255,0.06)] px-2 py-0.5 text-[12px] font-medium text-[rgba(255,255,255,0.55)]">
-                      {network.Driver}
-                    </span>
+                    <DriverBadge driver={network.Driver} />
                   </td>
                   <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{network.Scope}</td>
-                  <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">
-                    {network.Containers ? Object.keys(network.Containers).length : 0}
-                  </td>
                   <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{formatDate(network.Created)}</td>
+                  <td className="px-4 py-3">
+                    <ContainerCountBadge network={network} />
+                  </td>
                   <td className="px-4 py-3 text-right">
                     {deletingId === network.Id ? (
                       <div className="inline-flex items-center gap-2">

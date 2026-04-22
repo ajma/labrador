@@ -32,14 +32,21 @@ function formatPorts(ports: DockerContainer['Ports']): string {
     .join(', ') || '-';
 }
 
-function stateColor(state: string): string {
-  switch (state) {
-    case 'running': return 'text-[#4ade80]';
-    case 'exited': return 'text-[rgba(248,113,113,0.85)]';
-    case 'paused': return 'text-[#facc15]';
-    case 'restarting': return 'text-[#7db0ff]';
-    default: return 'text-[rgba(255,255,255,0.38)]';
-  }
+const stateStyles: Record<string, { bg: string; text: string; border: string; dot: string }> = {
+  running: { bg: 'bg-[rgba(74,222,128,0.10)]', text: 'text-[#4ade80]', border: 'border-[rgba(74,222,128,0.25)]', dot: 'bg-[#4ade80] shadow-[0_0_6px_rgba(74,222,128,0.5)]' },
+  exited: { bg: 'bg-[rgba(248,113,113,0.08)]', text: 'text-[rgba(248,113,113,0.85)]', border: 'border-[rgba(248,113,113,0.20)]', dot: 'bg-[rgba(248,113,113,0.85)]' },
+  paused: { bg: 'bg-[rgba(250,204,21,0.08)]', text: 'text-[#facc15]', border: 'border-[rgba(250,204,21,0.20)]', dot: 'bg-[#facc15]' },
+  restarting: { bg: 'bg-[rgba(125,176,255,0.10)]', text: 'text-[#7db0ff]', border: 'border-[rgba(125,176,255,0.25)]', dot: 'bg-[#7db0ff] animate-pulse' },
+};
+
+function StateBadge({ state }: { state: string }) {
+  const s = stateStyles[state] ?? { bg: 'bg-[rgba(255,255,255,0.04)]', text: 'text-[rgba(255,255,255,0.38)]', border: 'border-[rgba(255,255,255,0.10)]', dot: 'bg-[rgba(255,255,255,0.20)]' };
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[12px] font-medium capitalize ${s.bg} ${s.text} ${s.border}`}>
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${s.dot}`} />
+      {state}
+    </span>
+  );
 }
 
 export function Containers() {
@@ -83,15 +90,15 @@ export function Containers() {
       {isLoading && (
         <div className="space-y-2">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="h-14 animate-pulse rounded-xl border border-white/[0.06] bg-[rgba(255,255,255,0.03)]" />
+            <div key={i} className="h-14 animate-pulse rounded-xl border border-[rgba(100,158,245,0.08)] bg-[rgba(100,158,245,0.03)]" />
           ))}
         </div>
       )}
 
       {!isLoading && containers?.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-12 text-center">
-          <Box className="mb-3 h-8 w-8 text-[rgba(255,255,255,0.20)]" />
-          <p className="text-[13px] text-[rgba(255,255,255,0.35)]">No containers found.</p>
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[rgba(100,158,245,0.15)] bg-[rgba(100,158,245,0.02)] p-12 text-center">
+          <Box className="mb-3 h-8 w-8 text-[#649ef5] opacity-40" />
+          <p className="text-[13px] text-[rgba(255,255,255,0.35)]">No containers running.</p>
         </div>
       )}
 
@@ -116,14 +123,17 @@ export function Containers() {
             </thead>
             <tbody>
               {paginated!.map((container) => (
-                <tr key={container.Id} className="border-b border-white/[0.06] last:border-0">
+                <tr
+                  key={container.Id}
+                  className={`border-b border-white/[0.06] last:border-0 ${container.State === 'running' ? 'bg-[rgba(74,222,128,0.015)]' : ''}`}
+                >
                   <td className="px-4 py-3 text-[13px] font-medium text-[rgba(255,255,255,0.85)]">{containerName(container.Names)}</td>
                   <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{container.Image}</td>
-                  <td className="px-4 py-3 font-mono text-[12px] text-[rgba(255,255,255,0.45)]">{shortId(container.Id)}</td>
-                  <td className={`px-4 py-3 text-[13px] font-medium capitalize ${stateColor(container.State)}`}>
-                    {container.State}
+                  <td className="px-4 py-3 font-mono text-[12px] text-[rgba(255,255,255,0.35)]">{shortId(container.Id)}</td>
+                  <td className="px-4 py-3">
+                    <StateBadge state={container.State} />
                   </td>
-                  <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.45)]">{container.Status}</td>
+                  <td className="px-4 py-3 text-[13px] text-[rgba(255,255,255,0.38)]">{container.Status}</td>
                   <td className="px-4 py-3 font-mono text-[12px] text-[rgba(255,255,255,0.45)]">{formatPorts(container.Ports)}</td>
                 </tr>
               ))}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, FolderOpen, Network, HardDrive, Settings, LogOut, Plus, Menu, X, Container, ChevronDown, ChevronRight, Box } from 'lucide-react';
+import { LayoutDashboard, Network, HardDrive, Settings, LogOut, Plus, Menu, X, Container, ChevronDown, ChevronRight, Box } from 'lucide-react';
 import { api } from '../lib/api';
 import { useQueryClient } from '@tanstack/react-query';
 import { useProjects } from '../hooks/useProjects';
@@ -31,7 +31,7 @@ function NavItem({
       className={({ isActive }) =>
         `flex items-center gap-3 rounded-lg px-3 py-[8px] text-[13px] transition-all ${
           isActive
-            ? 'bg-[rgba(100,158,245,0.10)] text-[#7db0ff]'
+            ? 'bg-[rgba(100,158,245,0.12)] text-[#7db0ff] shadow-[inset_2px_0_0_#649ef5]'
             : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
         }`
       }
@@ -58,7 +58,7 @@ function SidebarContent({
   return (
     <>
       <div className="flex h-14 items-center border-b border-[rgba(255,255,255,0.12)] px-4">
-        <h1 className="text-[15px] font-semibold text-[rgba(255,255,255,0.92)]">HomelabMan</h1>
+        <h1 className="text-[15px] font-semibold text-[#7db0ff]">HomelabMan</h1>
       </div>
       <nav className="flex-1 overflow-y-auto p-2">
         <div className="space-y-0.5">
@@ -109,23 +109,34 @@ function SidebarContent({
             </NavLink>
           </div>
           <div className="space-y-0.5">
-            {projects?.map((project) => (
-              <NavLink
-                key={project.id}
-                to={`/projects/${project.id}`}
-                onClick={onNavClick}
-                className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-[8px] text-[13px] transition-all ${
-                    isActive
-                      ? 'bg-[rgba(100,158,245,0.10)] text-[#7db0ff]'
-                      : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
-                  }`
-                }
-              >
-                <FolderOpen className="h-4 w-4 shrink-0" />
-                <span className="truncate">{project.name}</span>
-              </NavLink>
-            ))}
+            {projects?.map((project) => {
+              const dotColor: Record<string, string> = {
+                running: '#4ade80',
+                stopped: 'rgba(255,255,255,0.20)',
+                starting: '#facc15',
+                error: '#f87171',
+              };
+              return (
+                <NavLink
+                  key={project.id}
+                  to={`/projects/${project.id}`}
+                  onClick={onNavClick}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-lg px-3 py-[8px] text-[13px] transition-all ${
+                      isActive
+                        ? 'bg-[rgba(100,158,245,0.12)] text-[#7db0ff] shadow-[inset_2px_0_0_#649ef5]'
+                        : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
+                    }`
+                  }
+                >
+                  <span
+                    className="h-2 w-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: dotColor[project.status] ?? 'rgba(255,255,255,0.20)' }}
+                  />
+                  <span className="truncate">{project.name}</span>
+                </NavLink>
+              );
+            })}
             {projects?.length === 0 && (
               <p className="px-3 py-2 text-[12px] text-[rgba(255,255,255,0.28)]">No projects yet</p>
             )}
@@ -168,7 +179,7 @@ export function Layout() {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="ml-3 text-[15px] font-semibold text-[rgba(255,255,255,0.92)]">HomelabMan</h1>
+        <h1 className="ml-3 text-[15px] font-semibold text-[#7db0ff]">HomelabMan</h1>
       </header>
 
       {/* Mobile drawer overlay */}
