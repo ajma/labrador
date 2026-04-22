@@ -627,6 +627,8 @@ function DataSection() {
       } else {
         setImportError(err.message || 'Import failed. Please try again.');
       }
+      setImportFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     } finally {
       setIsImporting(false);
       setImportConfirming(false);
@@ -652,7 +654,7 @@ function DataSection() {
         <p className="text-[13px] font-medium text-[rgba(255,255,255,0.6)] mb-3">Restore from backup</p>
 
         <div
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => { if (!isImporting) fileInputRef.current?.click(); }}
           className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/[0.15] px-6 py-8 transition-colors hover:border-white/[0.25] hover:bg-[rgba(255,255,255,0.02)]"
         >
           <p className="text-[13px] text-[rgba(255,255,255,0.45)]">
