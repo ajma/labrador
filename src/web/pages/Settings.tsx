@@ -249,7 +249,7 @@ function ProviderForm({
             placeholder="http://localhost:2019"
             className={inputCls}
             value={(currentConfig as Record<string, string>).apiUrl ?? ''}
-            onChange={(e) => { setValue('configuration', { apiUrl: e.target.value }); onDirty(); }}
+            onChange={(e) => setValue('configuration', { apiUrl: e.target.value })}
           />
         </div>
       )}
