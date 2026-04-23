@@ -47,13 +47,13 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="relative flex h-[80vh] w-full max-w-5xl flex-col rounded-2xl border border-white/[0.18] bg-background/[0.97] shadow-xl">
+      <div className="relative flex h-[80vh] w-full max-w-5xl flex-col rounded-2xl border border-white/[0.24] bg-background/[0.97] shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.14] px-6 py-4">
-          <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.88)]">Choose a Template</h2>
+        <div className="flex items-center justify-between border-b border-white/[0.20] px-6 py-4">
+          <h2 className="text-lg font-semibold text-foreground">Choose a Template</h2>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.65)]"
+            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
             aria-label="Close"
           >
             <X className="h-4 w-4" />
@@ -61,15 +61,15 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
         </div>
 
         {/* Search + filters */}
-        <div className="space-y-3 border-b border-white/[0.14] px-6 py-4">
+        <div className="space-y-3 border-b border-white/[0.20] px-6 py-4">
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.28)]" />
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search templates…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] pl-10 pr-4 py-2 text-md text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-primary/[0.5]"
+              className="flex h-10 w-full rounded-[14px] border border-white/[0.26] bg-muted pl-10 pr-4 py-2 text-md text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/[0.5]"
             />
           </div>
           {categories.length > 0 && (
@@ -79,7 +79,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
                 className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                   activeCategory === null
                     ? 'bg-primary/[0.15] text-primary'
-                    : 'border border-white/[0.14] text-[rgba(255,255,255,0.45)] hover:bg-[rgba(255,255,255,0.05)] hover:text-[rgba(255,255,255,0.7)]'
+                    : 'border border-white/[0.20] text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
               >
                 All
@@ -91,7 +91,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
                   className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                     activeCategory === cat
                       ? 'bg-primary/[0.15] text-primary'
-                      : 'border border-white/[0.14] text-[rgba(255,255,255,0.45)] hover:bg-[rgba(255,255,255,0.05)] hover:text-[rgba(255,255,255,0.7)]'
+                      : 'border border-white/[0.20] text-muted-foreground hover:bg-accent hover:text-foreground'
                   }`}
                 >
                   {cat}
@@ -104,13 +104,13 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
         {/* Template list */}
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading && (
-            <p className="text-center text-sm text-[rgba(255,255,255,0.38)]">Loading templates…</p>
+            <p className="text-center text-sm text-muted-foreground">Loading templates…</p>
           )}
           {isError && (
             <p className="text-center text-sm text-[rgba(254,202,202,0.85)]">Failed to load templates.</p>
           )}
           {!isLoading && !isError && filtered.length === 0 && (
-            <p className="text-center text-sm text-[rgba(255,255,255,0.38)]">No templates match your search.</p>
+            <p className="text-center text-sm text-muted-foreground">No templates match your search.</p>
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((template) => (
@@ -118,7 +118,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
                 key={template.id}
                 onClick={() => handleSelect(template.id)}
                 disabled={loadingId !== null}
-                className="flex items-start gap-3 rounded-xl border border-white/[0.16] bg-[rgba(255,255,255,0.02)] p-4 text-left transition-colors hover:bg-[rgba(255,255,255,0.05)] disabled:opacity-50"
+                className="flex items-start gap-3 rounded-xl border border-white/[0.22] bg-accent/50 p-4 text-left transition-colors hover:bg-accent disabled:opacity-50"
               >
                 {template.logoUrl ? (
                   <img
@@ -127,22 +127,22 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
                     className="h-10 w-10 rounded object-contain"
                   />
                 ) : (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[rgba(255,255,255,0.06)] text-2xs font-bold text-[rgba(255,255,255,0.45)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-2xs font-bold text-muted-foreground">
                     {template.name.slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <div className="min-w-0 flex-1">
-                  <span className="truncate text-sm font-medium text-[rgba(255,255,255,0.85)]">
+                  <span className="truncate text-sm font-medium text-foreground">
                     {loadingId === template.id ? 'Loading…' : template.name}
                   </span>
-                  <p className="mt-0.5 line-clamp-2 text-xs text-[rgba(255,255,255,0.40)]">
+                  <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground">
                     {template.description}
                   </p>
                   <div className="mt-2 flex flex-wrap gap-1">
                     {template.categories.map((cat) => (
                       <span
                         key={cat}
-                        className="rounded-full bg-[rgba(255,255,255,0.06)] px-2 py-0.5 text-2xs capitalize text-[rgba(255,255,255,0.40)]"
+                        className="rounded-full bg-muted px-2 py-0.5 text-2xs capitalize text-muted-foreground"
                       >
                         {cat}
                       </span>

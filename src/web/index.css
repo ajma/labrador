@@ -26,7 +26,7 @@
 
     /* Muted: subdued surface + muted text */
     --muted: 37 8% 15%;
-    --muted-foreground: 37 5% 50%;
+    --muted-foreground: 37 5% 65%;
 
     /* Accent: hover surface */
     --accent: 37 10% 14%;
@@ -37,8 +37,8 @@
     --destructive-foreground: 40 5% 92%;
 
     /* Border: warm-tinted */
-    --border: 37 8% 22%;
-    --input: 37 8% 22%;
+    --border: 37 8% 28%;
+    --input: 37 8% 28%;
 
     /* Ring: same as primary for focus */
     --ring: 37 55% 65%;
@@ -51,7 +51,7 @@
 /* Select option dark background */
 select option {
   background-color: hsl(var(--popover));
-  color: rgba(255, 255, 255, 0.85);
+  color: hsl(var(--foreground));
 }
 
 /* Sonner toast icon colors */

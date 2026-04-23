@@ -31,10 +31,10 @@ function NavItem({
       end={item.to === '/'}
       onClick={onNavClick}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-lg px-3 py-[8px] text-sm transition-all ${
+        `flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
           isActive
             ? 'bg-primary/[0.12] text-primary shadow-[inset_2px_0_0_hsl(var(--primary))]'
-            : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
+            : 'text-muted-foreground hover:text-muted-foreground hover:bg-accent'
         }`
       }
     >
@@ -78,10 +78,10 @@ function SidebarContent({
 
   return (
     <>
-      <div className="flex h-14 items-center border-b border-[rgba(255,255,255,0.12)] px-4">
+      <div className="flex h-14 items-center border-b border-border px-4">
         <h1 className="text-lg font-semibold text-primary">
           Labrador
-          <span className="ml-1.5 text-2xs font-normal text-[rgba(255,255,255,0.3)]">v{__APP_VERSION__}</span>
+          <span className="ml-1.5 text-2xs font-normal text-muted-foreground">v{__APP_VERSION__}</span>
         </h1>
       </div>
       <nav className="flex-1 overflow-y-auto p-2">
@@ -93,10 +93,10 @@ function SidebarContent({
           {/* Docker expandable section */}
           <button
             onClick={() => setDockerOpen(!dockerOpen)}
-            className={`flex w-full items-center gap-3 rounded-lg px-3 py-[8px] text-sm transition-all ${
+            className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
               isDockerRoute
                 ? 'text-primary'
-                : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
+                : 'text-muted-foreground hover:text-muted-foreground hover:bg-accent'
             }`}
           >
             <Container className="h-4 w-4 shrink-0" />
@@ -108,7 +108,7 @@ function SidebarContent({
             )}
           </button>
           {dockerOpen && (
-            <div className="ml-3 space-y-0.5 border-l border-[rgba(255,255,255,0.12)] pl-2">
+            <div className="ml-3 space-y-0.5 border-l border-border pl-2">
               {dockerNavItems.map((item) => (
                 <NavItem key={item.to} item={item} onNavClick={onNavClick} />
               ))}
@@ -120,14 +120,14 @@ function SidebarContent({
         {/* Projects section */}
         <div className="mt-4">
           <div className="flex items-center justify-between px-3 py-2">
-            <span className="text-2xs font-semibold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.28)]">
+            <span className="text-2xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Projects
             </span>
             <div className="flex items-center gap-1">
               {groups.length > 0 && (
                 <button
                   onClick={toggleAll}
-                  className="rounded-md p-1 text-[rgba(255,255,255,0.3)] hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.6)] transition-all"
+                  className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-muted-foreground transition-all"
                   title={allCollapsed ? 'Expand all' : 'Collapse all'}
                 >
                   {allCollapsed ? (
@@ -140,7 +140,7 @@ function SidebarContent({
               <NavLink
                 to="/projects/new"
                 onClick={onNavClick}
-                className="rounded-md p-1 text-[rgba(255,255,255,0.3)] hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.6)] transition-all"
+                className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-muted-foreground transition-all"
                 title="New Project"
               >
                 <Plus className="h-3.5 w-3.5" />
@@ -150,7 +150,7 @@ function SidebarContent({
 
           {(() => {
             if (!projects || projects.length === 0) {
-              return <p className="px-3 py-2 text-xs text-[rgba(255,255,255,0.28)]">No projects yet</p>;
+              return <p className="px-3 py-2 text-xs text-muted-foreground">No projects yet</p>;
             }
 
             const dotColor: Record<string, string> = {
@@ -169,10 +169,10 @@ function SidebarContent({
                 to={`/projects/${project.id}`}
                 onClick={onNavClick}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-[8px] text-sm transition-all ${
+                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all ${
                     isActive
                       ? 'bg-primary/[0.12] text-primary shadow-[inset_2px_0_0_hsl(var(--primary))]'
-                      : 'text-[rgba(255,255,255,0.45)] hover:text-[rgba(255,255,255,0.6)] hover:bg-[rgba(255,255,255,0.06)]'
+                      : 'text-muted-foreground hover:text-muted-foreground hover:bg-accent'
                   }`
                 }
               >
@@ -196,7 +196,7 @@ function SidebarContent({
                     <div key={group.id}>
                       <button
                         onClick={() => toggleGroup(group.id)}
-                        className="flex w-full items-center gap-2 rounded-lg px-3 py-[6px] text-2xs font-semibold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.28)] hover:bg-[rgba(255,255,255,0.04)] transition-all"
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-2xs font-semibold uppercase tracking-[0.14em] text-muted-foreground hover:bg-accent transition-all"
                       >
                         {collapsed ? (
                           <ChevronRight className="h-3 w-3 shrink-0" />
@@ -206,7 +206,7 @@ function SidebarContent({
                         {group.name}
                       </button>
                       {!collapsed && (
-                        <div className="ml-3 space-y-0.5 border-l border-[rgba(255,255,255,0.08)] pl-2">
+                        <div className="ml-3 space-y-0.5 border-l border-border pl-2">
                           {gProjects.map(renderProject)}
                         </div>
                       )}
@@ -218,11 +218,11 @@ function SidebarContent({
           })()}
         </div>
       </nav>
-      <div className="border-t border-[rgba(255,255,255,0.12)] p-2 space-y-0.5">
+      <div className="border-t border-border p-2 space-y-0.5">
         <NavItem item={{ to: '/settings', icon: Settings, label: 'Settings' }} onNavClick={onNavClick} />
         <button
           onClick={onLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-[8px] text-sm text-[rgba(255,255,255,0.35)] transition-all hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.6)]"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-all hover:bg-accent hover:text-muted-foreground"
         >
           <LogOut className="h-4 w-4 shrink-0" />
           Logout
@@ -247,17 +247,17 @@ export function Layout() {
   return (
     <div className="flex h-screen flex-col md:flex-row">
       {/* Mobile top bar */}
-      <header className="flex h-14 items-center border-b border-[rgba(255,255,255,0.12)] px-4 md:hidden">
+      <header className="flex h-14 items-center border-b border-border px-4 md:hidden">
         <button
           onClick={() => setMobileOpen(true)}
-          className="rounded-md p-2 text-[rgba(255,255,255,0.35)] hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.6)] transition-all"
+          className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-muted-foreground transition-all"
           aria-label="Open navigation"
         >
           <Menu className="h-5 w-5" />
         </button>
         <h1 className="ml-3 text-lg font-semibold text-primary">
           Labrador
-          <span className="ml-1.5 text-2xs font-normal text-[rgba(255,255,255,0.3)]">v{__APP_VERSION__}</span>
+          <span className="ml-1.5 text-2xs font-normal text-muted-foreground">v{__APP_VERSION__}</span>
         </h1>
       </header>
 
@@ -268,11 +268,11 @@ export function Layout() {
             className="absolute inset-0 bg-[rgba(0,0,0,0.55)] transition-opacity"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-[rgba(255,255,255,0.12)] bg-background/[0.98] shadow-[4px_0_24px_rgba(0,0,0,0.4)] animate-in slide-in-from-left duration-200">
+          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-border bg-background/[0.98] shadow-[4px_0_24px_rgba(0,0,0,0.4)] animate-in slide-in-from-left duration-200">
             <div className="absolute right-2 top-3">
               <button
                 onClick={() => setMobileOpen(false)}
-                className="rounded-md p-1 text-[rgba(255,255,255,0.35)] hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.6)] transition-all"
+                className="rounded-md p-1 text-muted-foreground hover:bg-accent hover:text-muted-foreground transition-all"
                 aria-label="Close navigation"
               >
                 <X className="h-4 w-4" />
@@ -289,7 +289,7 @@ export function Layout() {
       )}
 
       {/* Desktop sidebar */}
-      <aside className="hidden w-64 flex-col border-r border-[rgba(255,255,255,0.12)] bg-[rgba(255,255,255,0.015)] md:flex">
+      <aside className="hidden w-64 flex-col border-r border-border bg-accent/40 md:flex">
         <SidebarContent projects={projects} groups={groups} onLogout={handleLogout} />
       </aside>
 

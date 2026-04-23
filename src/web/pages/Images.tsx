@@ -30,7 +30,7 @@ function shortId(id: string): string {
 }
 
 function ContainerCountBadge({ count }: { count: number }) {
-  if (count === 0) return <span className="text-[rgba(255,255,255,0.28)]">0</span>;
+  if (count === 0) return <span className="text-muted-foreground">0</span>;
   return (
     <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(74,222,128,0.25)] bg-[rgba(74,222,128,0.08)] px-2 py-0.5 text-xs font-medium text-[#4ade80]">
       {count}
@@ -143,14 +143,14 @@ export function Images() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold text-[rgba(255,255,255,0.92)]">Images</h1>
+        <h1 className="text-xl font-semibold text-foreground">Images</h1>
         <div className="flex items-center gap-2">
           {showPruneConfirm ? (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-[rgba(255,255,255,0.45)]">Prune unused images?</span>
+              <span className="text-xs text-muted-foreground">Prune unused images?</span>
               <button
                 onClick={() => setShowPruneConfirm(false)}
-                className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
               >
                 Cancel
               </button>
@@ -165,7 +165,7 @@ export function Images() {
           ) : (
             <button
               onClick={() => setShowPruneConfirm(true)}
-              className="rounded-xl border border-white/[0.14] px-3 py-1.5 text-sm text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)]"
+              className="rounded-xl border border-white/[0.20] px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:border-white/[0.28] hover:text-foreground"
             >
               Prune Unused
             </button>
@@ -184,10 +184,10 @@ export function Images() {
 
       {/* Pull Image Form */}
       {isPulling && (
-        <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.02)] p-5">
-          <h3 className="mb-4 text-md font-medium text-[rgba(255,255,255,0.85)]">Pull Image</h3>
+        <div className="rounded-2xl border border-white/[0.22] bg-accent/50 p-5">
+          <h3 className="mb-4 text-md font-medium text-foreground">Pull Image</h3>
           <div className="space-y-1.5">
-            <label htmlFor="image-name" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="image-name" className="text-xs font-medium text-muted-foreground">
               Image Name
             </label>
             <Input
@@ -201,7 +201,7 @@ export function Images() {
           <div className="mt-4 flex justify-end gap-2">
             <button
               onClick={() => { setIsPulling(false); setPullName(''); }}
-              className="rounded-xl px-4 py-1.5 text-sm text-[rgba(255,255,255,0.4)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+              className="rounded-xl px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
             >
               Cancel
             </button>
@@ -219,7 +219,7 @@ export function Images() {
       {/* Search Filter */}
       {!isLoading && images && images.length > 0 && (
         <div className="relative">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.28)]" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Filter by name or ID…"
             value={filter}
@@ -242,29 +242,29 @@ export function Images() {
       {!isLoading && images?.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-primary/[0.15] bg-primary/[0.02] p-12 text-center">
           <HardDrive className="mb-3 h-8 w-8 text-primary opacity-40" />
-          <p className="text-sm text-[rgba(255,255,255,0.35)]">No images found.</p>
+          <p className="text-sm text-muted-foreground">No images found.</p>
         </div>
       )}
 
       {/* No filter results */}
       {!isLoading && images && images.length > 0 && filteredImages?.length === 0 && (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.16] p-8">
-          <p className="text-sm text-[rgba(255,255,255,0.35)]">No images match your filter.</p>
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.22] p-8">
+          <p className="text-sm text-muted-foreground">No images match your filter.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && filteredImages && filteredImages.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.22] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.14] bg-[rgba(255,255,255,0.02)]">
-                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Repository / Tag</th>
-                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Image ID</th>
-                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Size</th>
-                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Created</th>
-                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Containers</th>
-                <th className="px-4 py-3 text-right text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Actions</th>
+              <tr className="border-b border-white/[0.20] bg-accent/50">
+                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Repository / Tag</th>
+                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Image ID</th>
+                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Size</th>
+                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Created</th>
+                <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Containers</th>
+                <th className="px-4 py-3 text-right text-2xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -273,13 +273,13 @@ export function Images() {
                 const isNone = tag === '<none>';
                 const containerCount = containerCountByImage.get(image.Id) || 0;
                 return (
-                <tr key={image.Id} className="border-b border-white/[0.18] last:border-0">
-                  <td className={`px-4 py-3 text-sm font-medium ${isNone ? 'text-[rgba(255,255,255,0.35)] italic' : 'text-[rgba(255,255,255,0.85)]'}`}>
+                <tr key={image.Id} className="border-b border-white/[0.24] last:border-0">
+                  <td className={`px-4 py-3 text-sm font-medium ${isNone ? 'text-muted-foreground italic' : 'text-foreground'}`}>
                     {tag}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-[rgba(255,255,255,0.35)]">{shortId(image.Id)}</td>
-                  <td className="px-4 py-3 text-sm text-[rgba(255,255,255,0.45)]">{formatBytes(image.Size)}</td>
-                  <td className="px-4 py-3 text-sm text-[rgba(255,255,255,0.45)]">{formatDate(image.Created)}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{shortId(image.Id)}</td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{formatBytes(image.Size)}</td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{formatDate(image.Created)}</td>
                   <td className="px-4 py-3"><ContainerCountBadge count={containerCount} /></td>
                   <td className="px-4 py-3 text-right">
                     {!usedImageIds.has(image.Id) && (
@@ -287,7 +287,7 @@ export function Images() {
                         <div className="inline-flex items-center gap-2">
                           <button
                             onClick={() => setDeletingId(null)}
-                            className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                            className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
                           >
                             Cancel
                           </button>
@@ -302,7 +302,7 @@ export function Images() {
                       ) : (
                         <button
                           onClick={() => setDeletingId(image.Id)}
-                          className="rounded-lg p-1.5 text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(248,113,113,0.75)]"
+                          className="rounded-lg p-1.5 text-muted-foreground/50 transition-colors hover:text-[rgba(248,113,113,0.75)]"
                           title="Delete image"
                         >
                           <Trash2 className="h-4 w-4" />

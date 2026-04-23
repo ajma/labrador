@@ -15,7 +15,7 @@ function formatBytes(bytes: number): string {
 export function StatsDisplay({ stats }: StatsDisplayProps) {
   if (stats.length === 0) {
     return (
-      <p className="text-sm text-[rgba(255,255,255,0.38)]">No stats available.</p>
+      <p className="text-sm text-muted-foreground">No stats available.</p>
     );
   }
 
@@ -24,27 +24,27 @@ export function StatsDisplay({ stats }: StatsDisplayProps) {
       {stats.map((s) => (
         <div
           key={s.containerId}
-          className="rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.03)] p-3"
+          className="rounded-xl border border-white/[0.20] bg-accent/80 p-3"
         >
           <div className="mb-2.5 flex items-center justify-between">
-            <span className="text-sm font-medium text-[rgba(255,255,255,0.85)]">{s.name}</span>
+            <span className="text-sm font-medium text-foreground">{s.name}</span>
             <span className="flex items-center gap-1.5">
               <span
                 className={`h-2 w-2 rounded-full ${
                   s.status === 'running' ? 'bg-[#4ade80]' : 'bg-[rgba(255,255,255,0.25)]'
                 }`}
               />
-              <span className="text-xs text-[rgba(255,255,255,0.38)]">{s.status}</span>
+              <span className="text-xs text-muted-foreground">{s.status}</span>
             </span>
           </div>
 
           {/* CPU */}
           <div className="mb-1.5">
-            <div className="mb-1 flex justify-between text-2xs text-[rgba(255,255,255,0.38)]">
+            <div className="mb-1 flex justify-between text-2xs text-muted-foreground">
               <span>CPU</span>
               <span>{s.cpuUsage.toFixed(1)}%</span>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-[rgba(255,255,255,0.06)]">
+            <div className="h-1.5 w-full rounded-full bg-muted">
               <div
                 className="h-1.5 rounded-full bg-primary transition-all"
                 style={{ width: `${Math.min(s.cpuUsage, 100)}%` }}
@@ -54,11 +54,11 @@ export function StatsDisplay({ stats }: StatsDisplayProps) {
 
           {/* Memory */}
           <div className="mb-1.5">
-            <div className="mb-1 flex justify-between text-2xs text-[rgba(255,255,255,0.38)]">
+            <div className="mb-1 flex justify-between text-2xs text-muted-foreground">
               <span>Memory</span>
               <span>{formatBytes(s.memoryUsage)} / {formatBytes(s.memoryLimit)}</span>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-[rgba(255,255,255,0.06)]">
+            <div className="h-1.5 w-full rounded-full bg-muted">
               <div
                 className="h-1.5 rounded-full bg-primary/[0.55] transition-all"
                 style={{
@@ -69,7 +69,7 @@ export function StatsDisplay({ stats }: StatsDisplayProps) {
           </div>
 
           {/* Network I/O */}
-          <div className="flex justify-between text-2xs text-[rgba(255,255,255,0.38)]">
+          <div className="flex justify-between text-2xs text-muted-foreground">
             <span>Net RX: {formatBytes(s.networkRx)}</span>
             <span>Net TX: {formatBytes(s.networkTx)}</span>
           </div>

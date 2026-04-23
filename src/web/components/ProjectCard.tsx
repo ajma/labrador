@@ -32,10 +32,10 @@ const statusConfig: Record<Project['status'], { dot: string; label: string; labe
   stopped: {
     dot: 'bg-[rgba(255,255,255,0.20)]',
     label: 'Stopped',
-    labelColor: 'text-[rgba(255,255,255,0.35)]',
-    cardBorder: 'border-white/[0.14]',
-    cardBg: 'bg-[rgba(255,255,255,0.025)]',
-    cardHover: 'hover:bg-[rgba(255,255,255,0.04)]',
+    labelColor: 'text-muted-foreground',
+    cardBorder: 'border-white/[0.20]',
+    cardBg: 'bg-accent/60',
+    cardHover: 'hover:bg-accent',
   },
   starting: {
     dot: 'bg-[#facc15] animate-pulse shadow-[0_0_8px_rgba(250,204,21,0.4)]',
@@ -86,11 +86,11 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
             />
           )}
           <div className="min-w-0">
-            <h3 className="truncate text-md font-semibold text-[rgba(255,255,255,0.88)]">
+            <h3 className="truncate text-md font-semibold text-foreground">
               {project.name}
             </h3>
             {project.domainName && (
-              <div className="mt-0.5 flex items-center gap-1 text-xs text-[rgba(255,255,255,0.35)]">
+              <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
                 <Globe className="h-3 w-3 shrink-0" />
                 <a
                   href={`https://${project.domainName}`}
@@ -122,7 +122,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
 
       {/* Stats / Last deployed */}
       <div className="px-4 pb-3">
-        <p className="text-xs text-[rgba(255,255,255,0.35)]">
+        <p className="text-xs text-muted-foreground">
           Last deployed: {timeAgo(project.deployedAt)}
         </p>
 
@@ -134,18 +134,18 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
           return (
             <div className="mt-2 space-y-1.5">
               <div>
-                <div className="mb-0.5 flex justify-between text-2xs text-[rgba(255,255,255,0.35)]">
+                <div className="mb-0.5 flex justify-between text-2xs text-muted-foreground">
                   <span>CPU</span>
                   <span>{totalCpu.toFixed(1)}%</span>
                 </div>
-                <div className="h-1 w-full rounded-full bg-[rgba(255,255,255,0.06)]">
+                <div className="h-1 w-full rounded-full bg-muted">
                   <div
                     className="h-1 rounded-full transition-all"
                     style={{ width: `${Math.min(totalCpu, 100)}%`, backgroundColor: cpuColor }}
                   />
                 </div>
               </div>
-              <div className="flex justify-between text-2xs text-[rgba(255,255,255,0.35)]">
+              <div className="flex justify-between text-2xs text-muted-foreground">
                 <span>Memory</span>
                 <span>{formatBytes(totalMem)} / {formatBytes(totalMemLimit)}</span>
               </div>
@@ -155,7 +155,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
       </div>
 
       {/* Footer actions */}
-      <div className="mt-auto flex items-center gap-1.5 border-t border-white/[0.18] px-4 py-2.5">
+      <div className="mt-auto flex items-center gap-1.5 border-t border-white/[0.24] px-4 py-2.5">
         {(project.status === 'stopped' || project.status === 'error') && (
           <button
             onClick={(e) => { e.stopPropagation(); onDeploy(project.id); }}
@@ -169,14 +169,14 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
           <>
             <button
               onClick={(e) => { e.stopPropagation(); onStop(project.id); }}
-              className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:bg-[rgba(255,255,255,0.05)] hover:text-[rgba(255,255,255,0.75)]"
+              className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <Square className="h-3 w-3" />
               Stop
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onRestart(project.id); }}
-              className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:bg-[rgba(255,255,255,0.05)] hover:text-[rgba(255,255,255,0.75)]"
+              className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
             >
               <RotateCcw className="h-3 w-3" />
               Restart
@@ -188,7 +188,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
         )}
         <button
           onClick={(e) => { e.stopPropagation(); navigate(`/projects/${project.id}`); }}
-          className="ml-auto flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.05)] hover:text-[rgba(255,255,255,0.65)]"
+          className="ml-auto flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
         >
           <ExternalLink className="h-3 w-3" />
           Open

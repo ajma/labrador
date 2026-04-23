@@ -14,13 +14,9 @@ import type { ExposureProviderConfig, Settings as SettingsType, ProjectGroup, Pr
 import { useGroups, useCreateGroup, useRenameGroup, useDeleteGroup, useReorderGroups, useReorderProjects } from '../hooks/useGroups';
 import { useProjects } from '../hooks/useProjects';
 import { api } from '../lib/api';
+import { inputCls } from '../lib/styles';
 import { resolveCloudflareBeforeSave, deployCloudflaredProject } from '../lib/cloudflare';
 import { CloudflareProviderForm, type CloudflareProviderFormValue } from '../components/CloudflareProviderForm';
-
-// ─── shared input class ──────────────────────────────────────────────────────
-
-const inputCls =
-  'flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-primary/[0.5] disabled:cursor-not-allowed disabled:opacity-50';
 
 // ─── anchor sections ─────────────────────────────────────────────────────────
 
@@ -40,15 +36,15 @@ function AnchorNav({ active }: { active: SectionId }) {
   };
 
   return (
-    <nav className="flex items-stretch gap-6 px-6 mb-8 border-b border-white/[0.16] sticky top-0 bg-background z-10">
+    <nav className="flex items-stretch gap-6 px-6 mb-8 border-b border-white/[0.22] sticky top-0 bg-background z-10">
       {SECTIONS.map((s) => (
         <button
           key={s.id}
           onClick={() => scrollTo(s.id)}
           className={`relative flex items-center py-3 text-sm font-medium transition-colors ${
             active === s.id
-              ? 'text-[rgba(255,255,255,0.92)]'
-              : 'text-[rgba(255,255,255,0.35)] hover:text-[rgba(255,255,255,0.65)]'
+              ? 'text-foreground'
+              : 'text-muted-foreground hover:text-muted-foreground'
           }`}
         >
           {s.label}
@@ -83,8 +79,8 @@ function Section({
       {!first && <div className="h-px bg-white/[0.06] my-16" />}
       <section id={id} className="scroll-mt-14">
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.88)]">{heading}</h2>
-          <p className="mt-0.5 text-sm text-[rgba(255,255,255,0.38)]">{description}</p>
+          <h2 className="text-lg font-semibold text-foreground">{heading}</h2>
+          <p className="mt-0.5 text-sm text-muted-foreground">{description}</p>
         </div>
         {children}
       </section>
@@ -117,10 +113,10 @@ function SetupCheckDisplay({ result }: { result: ProviderSetupResult }) {
             <XCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[rgba(248,113,113,0.85)]" />
           )}
           <div>
-            <span className="text-sm text-[rgba(255,255,255,0.75)]">{check.name}</span>
-            <span className="text-sm text-[rgba(255,255,255,0.35)]"> — {check.message}</span>
+            <span className="text-sm text-foreground">{check.name}</span>
+            <span className="text-sm text-muted-foreground"> — {check.message}</span>
             {!check.passed && check.resolution && (
-              <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.38)]">Fix: {check.resolution}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Fix: {check.resolution}</p>
             )}
           </div>
         </div>
@@ -151,7 +147,7 @@ function ProviderTypeToggle({
           className={`rounded-[10px] px-4 py-1.5 text-sm font-medium capitalize transition-colors ${
             value === type
               ? 'bg-primary/[0.15] text-primary'
-              : 'text-[rgba(255,255,255,0.38)] hover:text-[rgba(255,255,255,0.65)]'
+              : 'text-muted-foreground hover:text-muted-foreground'
           }`}
         >
           {type}
@@ -238,24 +234,24 @@ function ProviderForm({
   return (
     <form ref={formRef} onSubmit={handleFormSubmit} onChange={onDirty} className="space-y-4">
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Type</label>
+        <label className="text-xs font-medium text-muted-foreground">Type</label>
         <div>
           <ProviderTypeToggle value={providerType} onChange={handleTypeChange} disabled={!!provider} />
         </div>
         {!!provider && (
-          <p className="text-xs text-[rgba(255,255,255,0.28)]">Provider type cannot be changed after creation.</p>
+          <p className="text-xs text-muted-foreground">Provider type cannot be changed after creation.</p>
         )}
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Name</label>
+        <label className="text-xs font-medium text-muted-foreground">Name</label>
         <input type="text" placeholder="e.g. My Caddy Server" className={inputCls} {...register('name')} />
         {errors.name && <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.name.message}</p>}
       </div>
 
       {providerType === 'caddy' && (
         <div className="space-y-1.5">
-          <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">API URL</label>
+          <label className="text-xs font-medium text-muted-foreground">API URL</label>
           <input
             type="text"
             placeholder="http://localhost:2019"
@@ -317,18 +313,18 @@ function ProviderModal({
         e.preventDefault();
         handleCancel();
       }}
-      className="m-auto w-full max-w-lg rounded-2xl border border-white/[0.16] bg-popover p-0 shadow-2xl backdrop:bg-black/60"
+      className="m-auto w-full max-w-lg rounded-2xl border border-white/[0.22] bg-popover p-0 shadow-2xl backdrop:bg-black/60"
     >
       <div className="flex flex-col" style={{ maxHeight: '90vh' }}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.14] px-6 py-4 shrink-0">
-          <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.88)]">
+        <div className="flex items-center justify-between border-b border-white/[0.20] px-6 py-4 shrink-0">
+          <h3 className="text-lg font-semibold text-foreground">
             {provider ? 'Edit Provider' : 'Add Provider'}
           </h3>
           <button
             type="button"
             onClick={handleCancel}
-            className="text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.65)]"
+            className="text-muted-foreground transition-colors hover:text-muted-foreground"
           >
             ✕
           </button>
@@ -345,11 +341,11 @@ function ProviderModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 border-t border-white/[0.14] px-6 py-4 shrink-0">
+        <div className="flex items-center justify-end gap-2 border-t border-white/[0.20] px-6 py-4 shrink-0">
           <button
             type="button"
             onClick={handleCancel}
-            className="rounded-xl px-4 py-1.5 text-sm text-[rgba(255,255,255,0.4)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+            className="rounded-xl px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
           >
             Cancel
           </button>
@@ -466,10 +462,10 @@ function ProvidersSection() {
       </div>
 
       {providersQuery.isLoading ? (
-        <p className="text-sm text-[rgba(255,255,255,0.35)]">Loading providers…</p>
+        <p className="text-sm text-muted-foreground">Loading providers…</p>
       ) : providers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/[0.16] px-6 py-10 text-center">
-          <p className="text-sm text-[rgba(255,255,255,0.35)]">
+        <div className="rounded-2xl border border-dashed border-white/[0.22] px-6 py-10 text-center">
+          <p className="text-sm text-muted-foreground">
             No providers yet.{' '}
             <button onClick={() => setModalState({ mode: 'add' })} className="text-primary hover:underline">
               Add one
@@ -478,21 +474,21 @@ function ProvidersSection() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.22] overflow-hidden">
           {providers.map((provider, i) => (
-            <div key={provider.id} className={`px-5 py-4 ${i > 0 ? 'border-t border-white/[0.18]' : ''}`}>
+            <div key={provider.id} className={`px-5 py-4 ${i > 0 ? 'border-t border-white/[0.24]' : ''}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-md font-medium text-[rgba(255,255,255,0.85)]">{provider.name}</span>
+                    <span className="text-md font-medium text-foreground">{provider.name}</span>
                     {settings?.defaultExposureProviderId === provider.id && (
                       <span className="rounded-full bg-primary/[0.12] px-2 py-0.5 text-2xs font-medium uppercase tracking-[0.12em] text-primary">Default</span>
                     )}
                     {!provider.enabled && (
-                      <span className="rounded-full bg-[rgba(255,255,255,0.05)] px-2 py-0.5 text-2xs font-medium uppercase tracking-[0.12em] text-[rgba(255,255,255,0.35)]">Disabled</span>
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-2xs font-medium uppercase tracking-[0.12em] text-muted-foreground">Disabled</span>
                     )}
                   </div>
-                  <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.35)]">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     {provider.providerType === 'caddy' ? 'Caddy Reverse Proxy' : 'Cloudflare Tunnel'}
                   </p>
                 </div>
@@ -501,7 +497,7 @@ function ProvidersSection() {
                   {settings?.defaultExposureProviderId !== provider.id && (
                     <button
                       onClick={() => setDefaultProvider.mutate(provider.id)}
-                      className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                      className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
                     >
                       Set default
                     </button>
@@ -509,22 +505,22 @@ function ProvidersSection() {
                   <button
                     onClick={() => runCheckSetup(provider)}
                     disabled={checkingSetup[provider.id]}
-                    className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+                    className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground disabled:opacity-40"
                   >
                     {checkingSetup[provider.id] ? 'Checking…' : 'Check setup'}
                   </button>
                   <button
                     onClick={() => setModalState({ mode: 'edit', provider })}
-                    className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                    className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
                   >
                     Edit
                   </button>
                   {deletingProviderId === provider.id ? (
                     <div className="flex items-center gap-1.5 pl-1">
-                      <span className="text-xs text-[rgba(255,255,255,0.45)]">Delete?</span>
+                      <span className="text-xs text-muted-foreground">Delete?</span>
                       <button
                         onClick={() => setDeletingProviderId(null)}
-                        className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                        className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
                       >
                         Cancel
                       </button>
@@ -539,7 +535,7 @@ function ProvidersSection() {
                   ) : (
                     <button
                       onClick={() => setDeletingProviderId(provider.id)}
-                      className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(248,113,113,0.75)]"
+                      className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground/50 transition-colors hover:text-[rgba(248,113,113,0.75)]"
                     >
                       Delete
                     </button>
@@ -555,7 +551,7 @@ function ProvidersSection() {
       {providers.length > 0 && settings?.defaultExposureProviderId && (
         <button
           onClick={() => setDefaultProvider.mutate(null)}
-          className="mt-3 text-xs text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(255,255,255,0.5)]"
+          className="mt-3 text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground"
         >
           Clear default provider
         </button>
@@ -656,7 +652,7 @@ function GroupsSection() {
     error: '#f87171',
   };
 
-  if (isLoading) return <p className="text-sm text-[rgba(255,255,255,0.35)]">Loading…</p>;
+  if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
 
   return (
     <div>
@@ -672,11 +668,11 @@ function GroupsSection() {
       </div>
 
       {groups.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/[0.16] px-6 py-10 text-center">
+        <div className="rounded-2xl border border-dashed border-white/[0.22] px-6 py-10 text-center">
           <div className="mb-3 flex justify-center">
-            <Layers className="h-8 w-8 text-[rgba(255,255,255,0.18)]" />
+            <Layers className="h-8 w-8 text-muted-foreground/40" />
           </div>
-          <p className="text-sm text-[rgba(255,255,255,0.35)]">Groups help you organize your projects.</p>
+          <p className="text-sm text-muted-foreground">Groups help you organize your projects.</p>
         </div>
       ) : (
         <div className="space-y-0">
@@ -687,19 +683,19 @@ function GroupsSection() {
 
             return (
               <div key={group.id}>
-                <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 ${groupIndex === 0 ? '' : 'mt-1'} bg-[rgba(255,255,255,0.03)] border border-white/[0.18]`}>
+                <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 ${groupIndex === 0 ? '' : 'mt-1'} bg-accent/80 border border-white/[0.24]`}>
                   <div className="flex flex-col">
                     <button
                       onClick={() => moveGroupUp(groupIndex)}
                       disabled={groupIndex === 0}
-                      className="text-[rgba(255,255,255,0.25)] hover:text-[rgba(255,255,255,0.6)] disabled:opacity-20 transition-colors leading-none"
+                      className="text-muted-foreground/50 hover:text-muted-foreground disabled:opacity-20 transition-colors leading-none"
                     >
                       <ChevronUp className="h-3.5 w-3.5" />
                     </button>
                     <button
                       onClick={() => moveGroupDown(groupIndex)}
                       disabled={groupIndex === groups.length - 1}
-                      className="text-[rgba(255,255,255,0.25)] hover:text-[rgba(255,255,255,0.6)] disabled:opacity-20 transition-colors leading-none"
+                      className="text-muted-foreground/50 hover:text-muted-foreground disabled:opacity-20 transition-colors leading-none"
                     >
                       <ChevronDown className="h-3.5 w-3.5" />
                     </button>
@@ -712,25 +708,25 @@ function GroupsSection() {
                       onChange={(e) => setEditingName(e.target.value)}
                       onBlur={() => commitEdit(group)}
                       onKeyDown={(e) => { if (e.key === 'Enter') commitEdit(group); if (e.key === 'Escape') setEditingGroupId(null); }}
-                      className="flex-1 rounded-lg border border-primary/[0.4] bg-primary/[0.06] px-2 py-0.5 text-sm text-[rgba(255,255,255,0.85)] outline-none"
+                      className="flex-1 rounded-lg border border-primary/[0.4] bg-primary/[0.06] px-2 py-0.5 text-sm text-foreground outline-none"
                     />
                   ) : (
                     <div className="flex flex-1 items-center gap-2 min-w-0">
-                      <span className="truncate text-sm font-medium text-[rgba(255,255,255,0.85)]">{group.name}</span>
-                      <button onClick={() => startEdit(group)} className="shrink-0 text-[rgba(255,255,255,0.25)] hover:text-[rgba(255,255,255,0.6)] transition-colors">
+                      <span className="truncate text-sm font-medium text-foreground">{group.name}</span>
+                      <button onClick={() => startEdit(group)} className="shrink-0 text-muted-foreground/50 hover:text-muted-foreground transition-colors">
                         <Pencil className="h-3 w-3" />
                       </button>
                     </div>
                   )}
 
-                  <span className="shrink-0 rounded-full bg-[rgba(255,255,255,0.06)] px-2 py-0.5 text-2xs text-[rgba(255,255,255,0.35)]">
+                  <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-2xs text-muted-foreground">
                     {gProjects.length}
                   </span>
 
                   {isDeleting ? (
                     <div className="flex shrink-0 items-center gap-2">
-                      <span className="text-xs text-[rgba(255,255,255,0.45)]">Projects will become ungrouped.</span>
-                      <button onClick={() => setDeletingGroupId(null)} className="text-xs text-[rgba(255,255,255,0.35)] hover:text-[rgba(255,255,255,0.6)] transition-colors">Cancel</button>
+                      <span className="text-xs text-muted-foreground">Projects will become ungrouped.</span>
+                      <button onClick={() => setDeletingGroupId(null)} className="text-xs text-muted-foreground hover:text-muted-foreground transition-colors">Cancel</button>
                       <button
                         onClick={() => { deleteGroup.mutate(group.id); setDeletingGroupId(null); }}
                         disabled={deleteGroup.isPending}
@@ -742,7 +738,7 @@ function GroupsSection() {
                   ) : (
                     <button
                       onClick={() => setDeletingGroupId(group.id)}
-                      className="shrink-0 text-xs text-[rgba(255,255,255,0.20)] hover:text-[rgba(248,113,113,0.75)] transition-colors"
+                      className="shrink-0 text-xs text-muted-foreground hover:text-[rgba(248,113,113,0.75)] transition-colors"
                     >
                       Delete
                     </button>
@@ -750,21 +746,21 @@ function GroupsSection() {
                 </div>
 
                 {gProjects.length > 0 && (
-                  <div className="ml-6 border-l border-white/[0.18] pl-3 mt-0.5 space-y-0.5 mb-1">
+                  <div className="ml-6 border-l border-white/[0.24] pl-3 mt-0.5 space-y-0.5 mb-1">
                     {gProjects.map((project, projectIndex) => (
-                      <div key={project.id} className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+                      <div key={project.id} className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-accent/50 transition-colors">
                         <div className="flex flex-col">
                           <button
                             onClick={() => moveProjectUp(group.id, projectIndex)}
                             disabled={projectIndex === 0}
-                            className="text-[rgba(255,255,255,0.20)] hover:text-[rgba(255,255,255,0.55)] disabled:opacity-20 transition-colors leading-none"
+                            className="text-muted-foreground hover:text-muted-foreground disabled:opacity-20 transition-colors leading-none"
                           >
                             <ChevronUp className="h-3 w-3" />
                           </button>
                           <button
                             onClick={() => moveProjectDown(group.id, projectIndex)}
                             disabled={projectIndex === gProjects.length - 1}
-                            className="text-[rgba(255,255,255,0.20)] hover:text-[rgba(255,255,255,0.55)] disabled:opacity-20 transition-colors leading-none"
+                            className="text-muted-foreground hover:text-muted-foreground disabled:opacity-20 transition-colors leading-none"
                           >
                             <ChevronDown className="h-3 w-3" />
                           </button>
@@ -774,7 +770,7 @@ function GroupsSection() {
                           className="h-1.5 w-1.5 shrink-0 rounded-full"
                           style={{ backgroundColor: dotColor[project.status] ?? 'rgba(255,255,255,0.20)' }}
                         />
-                        <span className="flex-1 truncate text-sm text-[rgba(255,255,255,0.65)]">{project.name}</span>
+                        <span className="flex-1 truncate text-sm text-muted-foreground">{project.name}</span>
 
                         <select
                           value={project.groupId ?? '__ungrouped__'}
@@ -782,7 +778,7 @@ function GroupsSection() {
                             const target = e.target.value === '__ungrouped__' ? null : e.target.value;
                             moveProjectToGroup(project, target);
                           }}
-                          className="appearance-none rounded-lg border border-white/[0.16] bg-transparent px-2 py-0.5 text-xs text-[rgba(255,255,255,0.35)] hover:border-white/[0.20] transition-colors cursor-pointer"
+                          className="appearance-none rounded-lg border border-white/[0.22] bg-transparent px-2 py-0.5 text-xs text-muted-foreground hover:border-white/[0.26] transition-colors cursor-pointer"
                         >
                           <option value={group.id}>{group.name}</option>
                           {groups
@@ -879,11 +875,11 @@ function DataSection() {
     <div className="space-y-8">
       {/* Export */}
       <div>
-        <p className="text-sm font-medium text-[rgba(255,255,255,0.6)] mb-3">Export backup</p>
+        <p className="text-sm font-medium text-muted-foreground mb-3">Export backup</p>
         <button
           onClick={handleExport}
           disabled={isExporting}
-          className="rounded-xl border border-white/[0.15] px-4 py-1.5 text-sm text-[rgba(255,255,255,0.75)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.9)] disabled:opacity-40"
+          className="rounded-xl border border-white/[0.15] px-4 py-1.5 text-sm text-foreground transition-colors hover:bg-accent hover:text-foreground disabled:opacity-40"
         >
           {isExporting ? 'Exporting…' : 'Export backup'}
         </button>
@@ -891,20 +887,20 @@ function DataSection() {
 
       {/* Import */}
       <div>
-        <p className="text-sm font-medium text-[rgba(255,255,255,0.6)] mb-3">Restore from backup</p>
+        <p className="text-sm font-medium text-muted-foreground mb-3">Restore from backup</p>
 
         <div
           onClick={() => { if (!isImporting && !importFile) fileInputRef.current?.click(); }}
           className={`rounded-2xl border border-dashed px-6 transition-colors ${
             importFile
-              ? 'flex items-center py-5 cursor-default border-white/[0.20]'
-              : 'flex flex-col items-center justify-center gap-2 py-8 cursor-pointer border-white/[0.15] hover:border-white/[0.25] hover:bg-[rgba(255,255,255,0.02)]'
+              ? 'flex items-center py-5 cursor-default border-white/[0.26]'
+              : 'flex flex-col items-center justify-center gap-2 py-8 cursor-pointer border-white/[0.15] hover:border-white/[0.25] hover:bg-accent/50'
           }`}
         >
           {importFile ? (
             <>
               <FileCheck className="h-4 w-4 shrink-0 text-[#4ade80]" />
-              <span className="ml-3 flex-1 truncate text-sm text-[rgba(255,255,255,0.75)]">{importFile.name}</span>
+              <span className="ml-3 flex-1 truncate text-sm text-foreground">{importFile.name}</span>
               <button
                 type="button"
                 disabled={isImporting}
@@ -915,15 +911,15 @@ function DataSection() {
                   setImportError(null);
                   if (fileInputRef.current) fileInputRef.current.value = '';
                 }}
-                className="ml-3 shrink-0 text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+                className="ml-3 shrink-0 text-muted-foreground/50 transition-colors hover:text-muted-foreground disabled:opacity-40"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </>
           ) : (
             <>
-              <p className="text-sm text-[rgba(255,255,255,0.45)]">Choose a backup file</p>
-              <p className="text-xs text-[rgba(255,255,255,0.25)]">Click to browse</p>
+              <p className="text-sm text-muted-foreground">Choose a backup file</p>
+              <p className="text-xs text-muted-foreground/50">Click to browse</p>
             </>
           )}
         </div>
@@ -953,10 +949,10 @@ function DataSection() {
         {/* Two-step confirmation */}
         {importConfirming && (
           <div className="mt-4 flex items-center gap-3">
-            <span className="text-sm text-[rgba(255,255,255,0.65)]">Replace everything?</span>
+            <span className="text-sm text-muted-foreground">Replace everything?</span>
             <button
               onClick={() => setImportConfirming(false)}
-              className="text-sm text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+              className="text-sm text-muted-foreground transition-colors hover:text-muted-foreground"
             >
               Cancel
             </button>
@@ -1015,7 +1011,7 @@ function AccountSection() {
   return (
     <form onSubmit={handleSubmit((data) => changePassword.mutate(data))} className="space-y-4 max-w-sm">
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Current password</label>
+        <label className="text-xs font-medium text-muted-foreground">Current password</label>
         <input type="password" autoComplete="current-password" className={inputCls} {...register('currentPassword')} />
         {errors.currentPassword && (
           <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.currentPassword.message}</p>
@@ -1023,7 +1019,7 @@ function AccountSection() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">New password</label>
+        <label className="text-xs font-medium text-muted-foreground">New password</label>
         <input type="password" autoComplete="new-password" className={inputCls} {...register('newPassword')} />
         {errors.newPassword && (
           <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.newPassword.message}</p>
@@ -1031,7 +1027,7 @@ function AccountSection() {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Confirm new password</label>
+        <label className="text-xs font-medium text-muted-foreground">Confirm new password</label>
         <input type="password" autoComplete="new-password" className={inputCls} {...register('confirmPassword')} />
         {errors.confirmPassword && (
           <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.confirmPassword.message}</p>
@@ -1082,7 +1078,7 @@ export function Settings() {
   return (
     <div className="min-h-full max-w-2xl">
       <div className="px-6 pt-6">
-        <h1 className="text-xl font-semibold text-[rgba(255,255,255,0.92)] mb-6">Settings</h1>
+        <h1 className="text-xl font-semibold text-foreground mb-6">Settings</h1>
       </div>
       <AnchorNav active={activeSection} />
 

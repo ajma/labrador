@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRegister, useAuthStatus } from '../hooks/useAuth';
 import { api } from '../lib/api';
+import { inputCls } from '../lib/styles';
 import { Input } from '../components/ui/input';
 import { CloudflareProviderForm, type CloudflareProviderFormValue } from '../components/CloudflareProviderForm';
 import { resolveCloudflareBeforeSave, deployCloudflaredProject } from '../lib/cloudflare';
@@ -40,8 +41,6 @@ interface ProviderSetupResult {
   checks: SetupCheck[];
 }
 
-const inputCls =
-  'flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-primary/[0.5] disabled:cursor-not-allowed disabled:opacity-50';
 
 function SetupCheckDisplay({ result }: { result: ProviderSetupResult }) {
   return (
@@ -52,10 +51,10 @@ function SetupCheckDisplay({ result }: { result: ProviderSetupResult }) {
             {check.passed ? '✓' : '✗'}
           </span>
           <div>
-            <span className="text-sm text-[rgba(255,255,255,0.75)]">{check.name}</span>
-            <span className="text-sm text-[rgba(255,255,255,0.35)]"> — {check.message}</span>
+            <span className="text-sm text-foreground">{check.name}</span>
+            <span className="text-sm text-muted-foreground"> — {check.message}</span>
             {!check.passed && check.resolution && (
-              <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.38)]">Fix: {check.resolution}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">Fix: {check.resolution}</p>
             )}
           </div>
         </div>
@@ -81,7 +80,7 @@ function StepIndicator({ currentStep }: { currentStep: OnboardingStep }) {
                 ? 'bg-primary text-primary-foreground'
                 : step < currentStep
                   ? 'bg-primary/[0.15] text-primary'
-                  : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.35)]'
+                  : 'bg-muted text-muted-foreground'
             }`}
           >
             {step}
@@ -89,13 +88,13 @@ function StepIndicator({ currentStep }: { currentStep: OnboardingStep }) {
           <span
             className={`text-sm ${
               step === currentStep
-                ? 'font-medium text-[rgba(255,255,255,0.85)]'
-                : 'text-[rgba(255,255,255,0.38)]'
+                ? 'font-medium text-foreground'
+                : 'text-muted-foreground'
             }`}
           >
             {label}
           </span>
-          {step < 3 && <div className="mx-2 h-px w-8 bg-[rgba(255,255,255,0.08)]" />}
+          {step < 3 && <div className="mx-2 h-px w-8 bg-muted" />}
         </div>
       ))}
     </div>
@@ -123,24 +122,24 @@ function CreateAccountStep({ onComplete }: { onComplete: () => void }) {
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
-      <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Create Admin Account</h2>
-      <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">
+    <div className="rounded-2xl border border-white/[0.22] bg-accent/80 p-6">
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Create Admin Account</h2>
+      <p className="mb-5 text-sm text-muted-foreground">
         Set up the administrator account for your Labrador instance.
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-1.5">
-          <label htmlFor="username" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Username</label>
+          <label htmlFor="username" className="text-xs font-medium text-muted-foreground">Username</label>
           <Input id="username" placeholder="Choose a username" {...register('username')} />
           {errors.username && <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.username.message}</p>}
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="password" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Password</label>
+          <label htmlFor="password" className="text-xs font-medium text-muted-foreground">Password</label>
           <Input id="password" type="password" placeholder="Choose a strong password" {...register('password')} />
           {errors.password && <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.password.message}</p>}
         </div>
         <div className="space-y-1.5">
-          <label htmlFor="confirm-password" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">Confirm Password</label>
+          <label htmlFor="confirm-password" className="text-xs font-medium text-muted-foreground">Confirm Password</label>
           <Input id="confirm-password" type="password" placeholder="Re-enter your password" {...register('confirmPassword')} />
           {errors.confirmPassword && <p className="text-xs text-[rgba(254,202,202,0.85)]">{errors.confirmPassword.message}</p>}
         </div>
@@ -241,21 +240,21 @@ function ConfigureProvidersStep({
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
-      <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Configure Exposure Providers</h2>
-      <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">
+    <div className="rounded-2xl border border-white/[0.22] bg-accent/80 p-6">
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Configure Exposure Providers</h2>
+      <p className="mb-5 text-sm text-muted-foreground">
         Optionally configure how your services are exposed to the internet. You can skip this and configure later in Settings.
       </p>
 
       <div className="space-y-3">
         {/* Caddy Provider */}
-        <div className="rounded-xl border border-white/[0.14] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.20] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-[rgba(255,255,255,0.85)]">Caddy</p>
-              <p className="text-xs text-[rgba(255,255,255,0.35)]">Reverse proxy with automatic HTTPS</p>
+              <p className="text-sm font-medium text-foreground">Caddy</p>
+              <p className="text-xs text-muted-foreground">Reverse proxy with automatic HTTPS</p>
               {providerConfig.caddy && expandedProvider !== 'caddy' && (
-                <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.38)]">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   Configured: {providerConfig.caddy.apiUrl}
                 </p>
               )}
@@ -264,7 +263,7 @@ function ConfigureProvidersStep({
               {providerConfig.caddy && (
                 <button
                   onClick={removeCaddy}
-                  className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                  className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
                 >
                   Remove
                 </button>
@@ -273,7 +272,7 @@ function ConfigureProvidersStep({
                 <button
                   onClick={() => runCheckSetup('caddy', { apiUrl: providerConfig.caddy!.apiUrl })}
                   disabled={checkingSetup['caddy']}
-                  className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+                  className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground disabled:opacity-40"
                 >
                   {checkingSetup['caddy'] ? 'Checking…' : 'Check Setup'}
                 </button>
@@ -287,14 +286,14 @@ function ConfigureProvidersStep({
             </div>
           </div>
           {setupResults['caddy'] && expandedProvider !== 'caddy' && (
-            <div className="border-t border-white/[0.18] px-4 pb-3">
+            <div className="border-t border-white/[0.24] px-4 pb-3">
               <SetupCheckDisplay result={setupResults['caddy']} />
             </div>
           )}
           {expandedProvider === 'caddy' && (
-            <div className="border-t border-white/[0.18] px-4 py-4 space-y-3">
+            <div className="border-t border-white/[0.24] px-4 py-4 space-y-3">
               <div className="space-y-1.5">
-                <label htmlFor="caddy-api-url" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">API URL</label>
+                <label htmlFor="caddy-api-url" className="text-xs font-medium text-muted-foreground">API URL</label>
                 <input
                   id="caddy-api-url"
                   type="text"
@@ -315,13 +314,13 @@ function ConfigureProvidersStep({
         </div>
 
         {/* Cloudflare Provider */}
-        <div className="rounded-xl border border-white/[0.14] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.20] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
-              <p className="text-sm font-medium text-[rgba(255,255,255,0.85)]">Cloudflare</p>
-              <p className="text-xs text-[rgba(255,255,255,0.35)]">Tunnel-based exposure via Cloudflare</p>
+              <p className="text-sm font-medium text-foreground">Cloudflare</p>
+              <p className="text-xs text-muted-foreground">Tunnel-based exposure via Cloudflare</p>
               {providerConfig.cloudflare && expandedProvider !== 'cloudflare' && (
-                <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.38)]">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   Account {providerConfig.cloudflare.accountId}
                   {providerConfig.cloudflare.tunnelId !== '__new__'
                     ? ` · Tunnel ${providerConfig.cloudflare.tunnelId}`
@@ -333,7 +332,7 @@ function ConfigureProvidersStep({
               {providerConfig.cloudflare && (
                 <button
                   onClick={removeCloudflare}
-                  className="rounded-lg px-2.5 py-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+                  className="rounded-lg px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
                 >
                   Remove
                 </button>
@@ -347,7 +346,7 @@ function ConfigureProvidersStep({
             </div>
           </div>
           {expandedProvider === 'cloudflare' && (
-            <div className="border-t border-white/[0.18] px-4 py-4 space-y-4">
+            <div className="border-t border-white/[0.24] px-4 py-4 space-y-4">
               <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} detectedStack={detectedStack} />
               <button
                 onClick={saveCloudflare}
@@ -363,7 +362,7 @@ function ConfigureProvidersStep({
       <div className="mt-5 flex items-center justify-between">
         <button
           onClick={onSkip}
-          className="rounded-xl px-4 py-1.5 text-sm text-[rgba(255,255,255,0.38)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+          className="rounded-xl px-4 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
         >
           Skip
         </button>
@@ -392,12 +391,12 @@ function CompleteStep({
   if (providerConfig.cloudflare) configuredProviders.push('Cloudflare');
 
   return (
-    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
-      <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Setup Complete</h2>
-      <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">Your Labrador instance is ready to use.</p>
-      <div className="mb-5 rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.02)] px-4 py-3">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Configuration Summary</p>
-        <ul className="space-y-1 text-sm text-[rgba(255,255,255,0.55)]">
+    <div className="rounded-2xl border border-white/[0.22] bg-accent/80 p-6">
+      <h2 className="mb-1 text-lg font-semibold text-foreground">Setup Complete</h2>
+      <p className="mb-5 text-sm text-muted-foreground">Your Labrador instance is ready to use.</p>
+      <div className="mb-5 rounded-xl border border-white/[0.20] bg-accent/50 px-4 py-3">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">Configuration Summary</p>
+        <ul className="space-y-1 text-sm text-muted-foreground">
           <li>Admin account created</li>
           {configuredProviders.length > 0 ? (
             <li>Exposure providers configured: {configuredProviders.join(', ')}</li>
@@ -493,10 +492,10 @@ export function Onboarding() {
   return (
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        <h1 className="mb-1 text-center text-2xl font-semibold text-[rgba(255,255,255,0.92)]">
+        <h1 className="mb-1 text-center text-2xl font-semibold text-foreground">
           Welcome to Labrador
         </h1>
-        <p className="mb-6 text-center text-sm text-[rgba(255,255,255,0.38)]">
+        <p className="mb-6 text-center text-sm text-muted-foreground">
           Let&apos;s get your instance set up.
         </p>
         <StepIndicator currentStep={step} />

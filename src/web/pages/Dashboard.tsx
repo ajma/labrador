@@ -108,7 +108,7 @@ export function Dashboard() {
   return (
     <div className="p-6">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-[rgba(255,255,255,0.92)]">Dashboard</h1>
+        <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
         <button
           onClick={() => navigate('/projects/new')}
           className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
@@ -131,13 +131,13 @@ export function Dashboard() {
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/[0.10] text-primary">
             <Server className="h-6 w-6" />
           </div>
-          <p className="text-md font-medium text-[rgba(255,255,255,0.65)]">Nothing deployed yet</p>
-          <p className="mt-1 text-sm text-[rgba(255,255,255,0.35)]">
+          <p className="text-md font-medium text-muted-foreground">Nothing deployed yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">
             Create a project to start self-hosting.
           </p>
           {adoptable && adoptable.length > 0 ? (
             <div className="mt-6 w-full max-w-sm text-left">
-              <p className="mb-3 text-sm font-medium text-[rgba(255,255,255,0.55)]">
+              <p className="mb-3 text-sm font-medium text-muted-foreground">
                 Or adopt an existing stack:
               </p>
               <AdoptableStacksList stacks={adoptable} />
@@ -160,7 +160,7 @@ export function Dashboard() {
             <div className="flex justify-end">
               <button
                 onClick={toggleAll}
-                className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
               >
                 {allCollapsed ? 'Expand all' : 'Collapse all'}
               </button>
@@ -192,11 +192,11 @@ export function Dashboard() {
                   className="flex w-full items-center gap-2 mb-4"
                 >
                   {collapsed ? (
-                    <ChevronRight className="h-3.5 w-3.5 text-[rgba(255,255,255,0.35)]" />
+                    <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
                   ) : (
-                    <ChevronDown className="h-3.5 w-3.5 text-[rgba(255,255,255,0.35)]" />
+                    <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
                   )}
-                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[rgba(255,255,255,0.45)]">
+                  <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                     {group.name}
                   </span>
                   <div className="flex-1 h-px bg-white/[0.06]" />

@@ -18,9 +18,9 @@ const buttonVariants = cva(
           'border border-primary/[0.4] text-primary hover:bg-primary/[0.08]',
         // Secondary: ghost glass with white border
         secondary:
-          'bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.07)] text-[rgba(255,255,255,0.45)] hover:bg-[rgba(255,255,255,0.07)] hover:text-[rgba(255,255,255,0.6)] hover:border-[rgba(255,255,255,0.12)]',
+          'bg-accent border border-border text-muted-foreground hover:bg-accent hover:text-muted-foreground hover:border-border',
         // Ghost: text only, subtle hover
-        ghost: 'text-[rgba(255,255,255,0.4)] hover:text-[rgba(255,255,255,0.65)] hover:bg-[rgba(255,255,255,0.04)]',
+        ghost: 'text-muted-foreground hover:text-muted-foreground hover:bg-accent',
         // Link: blue text underline
         link: 'text-primary underline-offset-4 hover:brightness-110 hover:underline',
       },

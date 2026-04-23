@@ -22,22 +22,22 @@ const yamlHighlight = HighlightStyle.define([
   // Numbers, booleans, null → amber
   { tag: [t.number, t.bool, t.null], color: '#fbbf24' },
   // Comments → dim
-  { tag: t.comment, color: 'rgba(255,255,255,0.30)', fontStyle: 'italic' },
+  { tag: t.comment, color: 'hsl(var(--muted-foreground))', fontStyle: 'italic' },
   // Punctuation (colons, dashes) → mid-muted
-  { tag: t.punctuation, color: 'rgba(255,255,255,0.40)' },
+  { tag: t.punctuation, color: 'hsl(var(--muted-foreground))' },
   // Anchors & aliases → lavender
   { tag: t.labelName, color: '#c084fc' },
   // Tags (!!str etc) → same lavender
   { tag: t.typeName, color: '#c084fc' },
   // Operators → same as punctuation
-  { tag: t.operator, color: 'rgba(255,255,255,0.40)' },
+  { tag: t.operator, color: 'hsl(var(--muted-foreground))' },
 ]);
 
 const darkTheme = EditorView.theme({
   '&': {
     background: 'hsl(var(--background) / 0.78)',
     borderRadius: '16px',
-    border: '1px solid rgba(255,255,255,0.10)',
+    border: '1px solid hsl(var(--border))',
     overflow: 'hidden',
   },
   '&.cm-focused': {
@@ -49,18 +49,18 @@ const darkTheme = EditorView.theme({
     fontFamily: 'monospace',
     fontSize: '0.8125rem',
     padding: '12px 16px',
-    color: 'rgba(255,255,255,0.88)',
+    color: 'hsl(var(--foreground))',
     caretColor: 'hsl(var(--primary))',
   },
   '.cm-gutters': {
     background: 'hsl(var(--background) / 0.6)',
     border: 'none',
-    borderRight: '1px solid rgba(255,255,255,0.12)',
-    color: 'rgba(255,255,255,0.22)',
+    borderRight: '1px solid hsl(var(--border))',
+    color: 'hsl(var(--muted-foreground))',
     padding: '0 8px',
   },
-  '.cm-activeLineGutter': { background: 'rgba(255,255,255,0.04)' },
-  '.cm-activeLine': { background: 'rgba(255,255,255,0.03)' },
+  '.cm-activeLineGutter': { background: 'hsl(var(--accent))' },
+  '.cm-activeLine': { background: 'hsl(var(--accent) / 0.7)' },
   '.cm-selectionBackground, ::selection': { background: 'hsl(var(--primary) / 0.20)' },
   '.cm-cursor': { borderLeftColor: 'hsl(var(--primary))' },
   '.cm-matchingBracket': { background: 'hsl(var(--primary) / 0.15)', outline: 'none' },

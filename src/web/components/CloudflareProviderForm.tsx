@@ -29,7 +29,7 @@ interface Props {
 }
 
 const selectCls =
-  'w-full appearance-none rounded-[14px] border border-white/[0.20] bg-background/[0.78] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-primary/[0.5] pr-9';
+  'w-full appearance-none rounded-[14px] border border-white/[0.26] bg-background/[0.78] px-4 py-2 text-md text-foreground outline-none transition-colors focus:border-primary/[0.5] pr-9';
 
 export function CloudflareProviderForm({ value, onChange, detectedStack }: Props) {
   const [accounts, setAccounts] = useState<CfAccount[]>([]);
@@ -93,7 +93,7 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
     <div className="space-y-4">
       {/* API Token */}
       <div className="space-y-1.5">
-        <label htmlFor="cf-api-token" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+        <label htmlFor="cf-api-token" className="text-xs font-medium text-muted-foreground">
           API Token
         </label>
         <div className="flex gap-2">
@@ -122,11 +122,11 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
           <p className="text-xs text-[rgba(254,202,202,0.85)]">{connectError}</p>
         )}
         {value.accountId && accounts.length === 0 && !isConnecting && (
-          <p className="text-xs text-[rgba(255,255,255,0.35)]">
+          <p className="text-xs text-muted-foreground">
             Click Connect to reload your accounts and tunnels.
           </p>
         )}
-        <div className="space-y-1 text-xs text-[rgba(255,255,255,0.38)]">
+        <div className="space-y-1 text-xs text-muted-foreground">
           <p>
             Create an API token (
             <a
@@ -140,10 +140,10 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
             ) with these permissions:
           </p>
           <ul className="list-disc list-inside space-y-0.5">
-            <li><span className="text-[rgba(255,255,255,0.55)]">Account → Cloudflare Tunnel → Edit</span></li>
-            <li><span className="text-[rgba(255,255,255,0.55)]">Account → Account Settings → Read</span></li>
-            <li><span className="text-[rgba(255,255,255,0.55)]">Zone → Zone → Read</span></li>
-            <li><span className="text-[rgba(255,255,255,0.55)]">Zone → DNS → Edit</span></li>
+            <li><span className="text-muted-foreground">Account → Cloudflare Tunnel → Edit</span></li>
+            <li><span className="text-muted-foreground">Account → Account Settings → Read</span></li>
+            <li><span className="text-muted-foreground">Zone → Zone → Read</span></li>
+            <li><span className="text-muted-foreground">Zone → DNS → Edit</span></li>
           </ul>
         </div>
       </div>
@@ -152,14 +152,14 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
       {accounts.length > 0 && (
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="cf-account" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="cf-account" className="text-xs font-medium text-muted-foreground">
               Account
             </label>
             <button
               type="button"
               onClick={handleConnect}
               disabled={isConnecting}
-              className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+              className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground disabled:opacity-40"
             >
               {isConnecting ? 'Refreshing…' : 'Refresh'}
             </button>
@@ -176,7 +176,7 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
                 <option key={a.id} value={a.id}>{a.name}</option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.35)]" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           </div>
         </div>
       )}
@@ -185,14 +185,14 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
       {value.accountId && accounts.length > 0 && (
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="cf-tunnel" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="cf-tunnel" className="text-xs font-medium text-muted-foreground">
               Tunnel
             </label>
             <button
               type="button"
               onClick={() => handleAccountChange(value.accountId)}
               disabled={isLoadingTunnels}
-              className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.65)] disabled:opacity-40"
+              className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground disabled:opacity-40"
             >
               {isLoadingTunnels ? 'Refreshing…' : 'Refresh'}
             </button>
@@ -210,10 +210,10 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
                 <option key={t.id} value={t.id}>{t.name}</option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.35)]" />
+            <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           </div>
           {isLoadingTunnels && (
-            <p className="text-xs text-[rgba(255,255,255,0.35)]">Loading tunnels…</p>
+            <p className="text-xs text-muted-foreground">Loading tunnels…</p>
           )}
         </div>
       )}
@@ -221,7 +221,7 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
       {/* Tunnel name — only when creating new */}
       {value.accountId && accounts.length > 0 && value.tunnelId === '__new__' && (
         <div className="space-y-1.5">
-          <label htmlFor="cf-tunnel-name" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+          <label htmlFor="cf-tunnel-name" className="text-xs font-medium text-muted-foreground">
             Tunnel Name
           </label>
           <Input
@@ -235,10 +235,10 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
 
       {value.accountId && accounts.length > 0 && (
         <>
-          <div className="border-t border-white/[0.14]" />
+          <div className="border-t border-white/[0.20]" />
           {detectedStack ? (
             <div className="space-y-2.5">
-              <p className="text-xs font-medium text-[rgba(255,255,255,0.6)]">cloudflared container</p>
+              <p className="text-xs font-medium text-muted-foreground">cloudflared container</p>
               {[
                 {
                   key: 'adopt',
@@ -272,8 +272,8 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
                     onChange={opt.onSelect}
                   />
                   <span className="space-y-0.5">
-                    <span className="text-sm font-medium text-[rgba(255,255,255,0.75)]">{opt.label}</span>
-                    <p className="text-xs text-[rgba(255,255,255,0.38)]">{opt.description}</p>
+                    <span className="text-sm font-medium text-foreground">{opt.label}</span>
+                    <p className="text-xs text-muted-foreground">{opt.description}</p>
                   </span>
                 </label>
               ))}
@@ -288,10 +288,10 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
                 onChange={(e) => onChange({ ...value, deployContainer: e.target.checked })}
               />
               <label htmlFor="cf-deploy-container" className="cursor-pointer space-y-0.5">
-                <span className="text-sm font-medium text-[rgba(255,255,255,0.75)]">
+                <span className="text-sm font-medium text-foreground">
                   Deploy cloudflared container
                 </span>
-                <p className="text-xs text-[rgba(255,255,255,0.38)]">
+                <p className="text-xs text-muted-foreground">
                   Creates a &quot;Cloudflare Tunnel&quot; project and starts the cloudflared Docker container
                   using the tunnel token. Required for traffic to flow.
                 </p>

@@ -59,10 +59,10 @@ export function AdoptableStacksList({ stacks, onAdopted }: Props) {
               className="h-4 w-4 rounded border-white/20 accent-primary"
             />
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-[rgba(255,255,255,0.85)]">
+              <span className="text-sm font-medium text-foreground">
                 {stack.stackName}
               </span>
-              <span className="text-2xs text-[rgba(255,255,255,0.38)]">
+              <span className="text-2xs text-muted-foreground">
                 {stack.containerCount} container{stack.containerCount !== 1 ? 's' : ''}
                 {stack.workingDir ? ` · ${stack.workingDir}` : ''}
               </span>

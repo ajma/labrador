@@ -13,6 +13,7 @@ import { load } from 'js-yaml';
 import { ComposeEditor } from '../components/ComposeEditor';
 import { TemplatePickerModal } from '../components/TemplatePickerModal';
 import { AdoptStacksDialog } from '../components/AdoptStacksDialog';
+import { inputCls, selectCls } from '../lib/styles';
 import { api } from '../lib/api';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { useAdoptable } from '../hooks/useAdoptable';
@@ -185,13 +186,13 @@ function GroupCombobox({
           onFocus={() => { setOpen(true); setQuery(''); }}
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           onChange={(e) => setQuery(e.target.value)}
-          className="flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-primary/[0.5]"
+          className="flex h-10 w-full rounded-[14px] border border-white/[0.26] bg-muted px-4 py-2 text-md text-foreground placeholder:text-muted-foreground outline-none transition-colors focus:border-primary/[0.5]"
         />
         {value && (
           <button
             type="button"
             onClick={clear}
-            className="shrink-0 text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(255,255,255,0.65)]"
+            className="shrink-0 text-muted-foreground/50 transition-colors hover:text-muted-foreground"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -199,16 +200,16 @@ function GroupCombobox({
       </div>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full rounded-xl border border-white/[0.18] bg-popover shadow-xl overflow-hidden">
+        <div className="absolute z-20 mt-1 w-full rounded-xl border border-white/[0.24] bg-popover shadow-xl overflow-hidden">
           {filtered.length === 0 && !showCreate && (
-            <p className="px-4 py-3 text-sm text-[rgba(255,255,255,0.35)]">No groups yet</p>
+            <p className="px-4 py-3 text-sm text-muted-foreground">No groups yet</p>
           )}
           {filtered.map((g) => (
             <button
               key={g.id}
               type="button"
               onMouseDown={() => select(g)}
-              className="flex w-full items-center px-4 py-2.5 text-sm text-[rgba(255,255,255,0.75)] hover:bg-[rgba(255,255,255,0.06)] transition-colors"
+              className="flex w-full items-center px-4 py-2.5 text-sm text-foreground hover:bg-accent transition-colors"
             >
               {g.name}
             </button>
@@ -218,7 +219,7 @@ function GroupCombobox({
               type="button"
               onMouseDown={handleCreate}
               disabled={createGroup.isPending}
-              className="flex w-full items-center gap-2 border-t border-white/[0.18] px-4 py-2.5 text-sm text-primary hover:bg-primary/[0.06] transition-colors disabled:opacity-40"
+              className="flex w-full items-center gap-2 border-t border-white/[0.24] px-4 py-2.5 text-sm text-primary hover:bg-primary/[0.06] transition-colors disabled:opacity-40"
             >
               <Plus className="h-3.5 w-3.5" />
               {createGroup.isPending ? 'Creating…' : `Create "${query.trim()}"`}
@@ -242,15 +243,10 @@ const emptyProjectFormValues: CreateProjectInput = {
   groupId: null,
 };
 
-const inputCls =
-  'flex h-10 w-full rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] placeholder:text-[rgba(255,255,255,0.28)] outline-none transition-colors focus:border-primary/[0.5] disabled:cursor-not-allowed disabled:opacity-50';
-
-const selectCls =
-  'h-10 w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(255,255,255,0.06)] px-4 py-2 pr-9 text-md text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-primary/[0.5]';
 
 const statusStyles: Record<string, string> = {
   running: 'bg-[rgba(74,222,128,0.12)] text-[#4ade80] border-[rgba(74,222,128,0.25)]',
-  stopped: 'bg-[rgba(255,255,255,0.04)] text-[rgba(255,255,255,0.38)] border-[rgba(255,255,255,0.08)]',
+  stopped: 'bg-accent text-muted-foreground border-border',
   starting: 'bg-[rgba(250,204,21,0.10)] text-[#facc15] border-[rgba(250,204,21,0.25)]',
   error: 'bg-[rgba(127,29,29,0.20)] text-[rgba(254,202,202,0.92)] border-[rgba(248,113,113,0.36)]',
 };
@@ -263,7 +259,7 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
       aria-checked={checked}
       onClick={() => onChange(!checked)}
       className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full transition-colors duration-200 ${
-        checked ? 'bg-primary' : 'bg-[rgba(255,255,255,0.14)]'
+        checked ? 'bg-primary' : 'bg-muted'
       }`}
     >
       <span
@@ -301,16 +297,16 @@ function LogsModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative flex h-[94vh] w-full max-w-6xl flex-col rounded-2xl border border-white/[0.18] bg-background/[0.97] shadow-2xl">
+      <div className="relative flex h-[94vh] w-full max-w-6xl flex-col rounded-2xl border border-white/[0.24] bg-background/[0.97] shadow-2xl">
 
         {/* Modal header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.14] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.20] px-6 py-4">
           <div className="flex items-center gap-2.5">
-            <ScrollText className="h-4 w-4 text-[rgba(255,255,255,0.30)]" />
-            <h2 className="font-rubik text-md font-semibold text-[rgba(255,255,255,0.88)]">
+            <ScrollText className="h-4 w-4 text-muted-foreground" />
+            <h2 className="font-rubik text-md font-semibold text-foreground">
               Container Logs
               {projectName && (
-                <span className="ml-2 font-normal text-[rgba(255,255,255,0.35)]">— {projectName}</span>
+                <span className="ml-2 font-normal text-muted-foreground">— {projectName}</span>
               )}
             </h2>
           </div>
@@ -319,7 +315,7 @@ function LogsModal({
               type="button"
               onClick={onRefresh}
               disabled={isFetching}
-              className="flex items-center gap-1.5 rounded-lg border border-white/[0.18] px-3 py-1.5 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)] disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg border border-white/[0.24] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-white/[0.28] hover:text-foreground disabled:opacity-40"
             >
               <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
               {isFetching ? 'Refreshing…' : 'Refresh'}
@@ -327,7 +323,7 @@ function LogsModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-[rgba(255,255,255,0.35)] transition-colors hover:bg-[rgba(255,255,255,0.06)] hover:text-[rgba(255,255,255,0.65)]"
+              className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
               aria-label="Close logs"
             >
               <X className="h-4 w-4" />
@@ -341,8 +337,8 @@ function LogsModal({
             <div className="space-y-4">
               {[1, 2].map((i) => (
                 <div key={i} className="space-y-2">
-                  <div className="h-3 w-24 animate-pulse rounded bg-[rgba(255,255,255,0.06)]" />
-                  <div className="h-32 animate-pulse rounded-xl bg-[rgba(255,255,255,0.03)]" />
+                  <div className="h-3 w-24 animate-pulse rounded bg-muted" />
+                  <div className="h-32 animate-pulse rounded-xl bg-accent/80" />
                 </div>
               ))}
             </div>
@@ -350,9 +346,9 @@ function LogsModal({
 
           {!isLoading && (!logs || logs.length === 0) && (
             <div className="flex flex-1 flex-col items-center justify-center text-center">
-              <ScrollText className="mb-3 h-8 w-8 text-[rgba(255,255,255,0.12)]" />
-              <p className="text-md text-[rgba(255,255,255,0.38)]">No logs yet.</p>
-              <p className="mt-1 text-sm text-[rgba(255,255,255,0.22)]">
+              <ScrollText className="mb-3 h-8 w-8 text-muted-foreground/30" />
+              <p className="text-md text-muted-foreground">No logs yet.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
                 Deploy the project first to see container output.
               </p>
             </div>
@@ -362,10 +358,10 @@ function LogsModal({
             <div className="flex min-h-0 flex-1 flex-col gap-4">
               {logs.map((entry, i) => (
                 <div key={i} className="flex min-h-0 flex-1 flex-col">
-                  <p className="mb-2 shrink-0 font-rubik text-2xs font-semibold uppercase tracking-[0.12em] text-[rgba(255,255,255,0.28)]">
+                  <p className="mb-2 shrink-0 font-rubik text-2xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
                     {entry.container}
                   </p>
-                  <pre className="min-h-0 flex-1 overflow-auto rounded-xl bg-background/[0.78] p-4 font-mono text-xs leading-relaxed text-[rgba(255,255,255,0.70)]">
+                  <pre className="min-h-0 flex-1 overflow-auto rounded-xl bg-background/[0.78] p-4 font-mono text-xs leading-relaxed text-foreground/80">
                     {entry.output || '(no output)'}
                   </pre>
                 </div>
@@ -678,7 +674,7 @@ export function ProjectEditor() {
   if (isEditing && isLoading) {
     return (
       <div className="flex items-center justify-center p-12">
-        <p className="text-sm text-[rgba(255,255,255,0.35)]">Loading project…</p>
+        <p className="text-sm text-muted-foreground">Loading project…</p>
       </div>
     );
   }
@@ -686,7 +682,7 @@ export function ProjectEditor() {
   if (isEditing && !isLoading && !project) {
     return (
       <div className="p-6">
-        <p className="text-[rgba(255,255,255,0.6)]">Project not found.</p>
+        <p className="text-muted-foreground">Project not found.</p>
         <button
           onClick={() => navigate('/')}
           className="mt-4 text-sm text-primary transition-colors hover:brightness-110"
@@ -704,7 +700,7 @@ export function ProjectEditor() {
 
       {isCreate && adoptable && adoptable.length > 0 && (
         <div className="mb-4 flex items-center justify-between rounded-2xl border border-primary/[0.18] bg-primary/[0.04] px-4 py-3">
-          <p className="text-sm text-[rgba(255,255,255,0.65)]">
+          <p className="text-sm text-muted-foreground">
             {adoptable.length} existing stack{adoptable.length > 1 ? 's' : ''} can be adopted
           </p>
           <button
@@ -719,7 +715,7 @@ export function ProjectEditor() {
       <AdoptStacksDialog open={adoptDialogOpen} onClose={() => setAdoptDialogOpen(false)} />
 
       {/* ── Sticky header ── */}
-      <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-white/[0.14] bg-background/[0.92] px-6 py-3 backdrop-blur-md">
+      <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-white/[0.20] bg-background/[0.92] px-6 py-3 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {watch('logoUrl') && (
             <img
@@ -729,7 +725,7 @@ export function ProjectEditor() {
               onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
             />
           )}
-          <h1 className="font-rubik truncate text-lg font-semibold text-[rgba(255,255,255,0.92)]">
+          <h1 className="font-rubik truncate text-lg font-semibold text-foreground">
             {projectDisplayName}
           </h1>
 
@@ -748,7 +744,7 @@ export function ProjectEditor() {
               href={`https://${project.domainName}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-primary"
+              className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-primary"
             >
               <Globe className="h-3 w-3" />
               {project.domainName}
@@ -780,7 +776,7 @@ export function ProjectEditor() {
           <button
             type="button"
             onClick={() => navigate('/')}
-            className="rounded-xl px-3 py-1.5 text-sm text-[rgba(255,255,255,0.4)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)]"
+            className="rounded-xl px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground"
           >
             Cancel
           </button>
@@ -794,11 +790,11 @@ export function ProjectEditor() {
         className="grid flex-1 grid-cols-1 lg:grid-cols-2"
       >
         {/* ── LEFT: Config ── */}
-        <div className="flex flex-col gap-6 border-b border-white/[0.14] p-6 lg:border-b-0 lg:border-r">
+        <div className="flex flex-col gap-6 border-b border-white/[0.20] p-6 lg:border-b-0 lg:border-r">
 
           {/* Name */}
           <div className="space-y-1.5">
-            <label htmlFor="name" className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="name" className="font-rubik text-xs font-medium text-muted-foreground">
               Project Name
             </label>
             <input
@@ -817,9 +813,9 @@ export function ProjectEditor() {
 
           {/* Logo URL */}
           <div className="space-y-1.5">
-            <label htmlFor="logoUrl" className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="logoUrl" className="font-rubik text-xs font-medium text-muted-foreground">
               Logo URL{' '}
-              <span className="font-normal text-[rgba(255,255,255,0.28)]">(optional)</span>
+              <span className="font-normal text-muted-foreground">(optional)</span>
             </label>
             <input
               id="logoUrl"
@@ -835,9 +831,9 @@ export function ProjectEditor() {
 
           {/* Group */}
           <div className="space-y-1.5">
-            <label className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label className="font-rubik text-xs font-medium text-muted-foreground">
               Group{' '}
-              <span className="font-normal text-[rgba(255,255,255,0.28)]">(optional)</span>
+              <span className="font-normal text-muted-foreground">(optional)</span>
             </label>
             <Controller
               name="groupId"
@@ -849,13 +845,13 @@ export function ProjectEditor() {
           </div>
 
           {/* Exposure */}
-          <div className="space-y-3 rounded-2xl border border-white/[0.14] p-4">
+          <div className="space-y-3 rounded-2xl border border-white/[0.20] p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-rubik text-sm font-medium text-[rgba(255,255,255,0.85)]">
+                <p className="font-rubik text-sm font-medium text-foreground">
                   External Exposure
                 </p>
-                <p className="mt-0.5 text-xs text-[rgba(255,255,255,0.38)]">
+                <p className="mt-0.5 text-xs text-muted-foreground">
                   Expose this service via a reverse proxy
                 </p>
               </div>
@@ -874,7 +870,7 @@ export function ProjectEditor() {
 
                   {/* Provider select */}
                   <div className="space-y-1.5">
-                    <label className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+                    <label className="font-rubik text-xs font-medium text-muted-foreground">
                       Provider
                     </label>
                     <div className="relative">
@@ -889,10 +885,10 @@ export function ProjectEditor() {
                           </option>
                         ))}
                       </select>
-                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.35)]" />
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     </div>
                     {availableProviders.length === 0 && (
-                      <p className="text-xs text-[rgba(255,255,255,0.35)]">
+                      <p className="text-xs text-muted-foreground">
                         No providers configured.{' '}
                         <button
                           type="button"
@@ -907,12 +903,12 @@ export function ProjectEditor() {
 
                   {/* Domain */}
                   <div className="space-y-1.5">
-                    <label className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+                    <label className="font-rubik text-xs font-medium text-muted-foreground">
                       Domain{' '}
                       {isCloudflareProvider ? (
                         <span className="text-[rgba(254,202,202,0.85)]">*</span>
                       ) : (
-                        <span className="font-normal text-[rgba(255,255,255,0.28)]">(optional)</span>
+                        <span className="font-normal text-muted-foreground">(optional)</span>
                       )}
                     </label>
                     <div className="flex items-center gap-1.5">
@@ -926,7 +922,7 @@ export function ProjectEditor() {
                         placeholder="myapp"
                         className={`${inputCls} flex-1 ${domainErrors.subdomain ? 'border-[rgba(248,113,113,0.5)]' : ''}`}
                       />
-                      <span className="shrink-0 text-md text-[rgba(255,255,255,0.28)]">.</span>
+                      <span className="shrink-0 text-md text-muted-foreground">.</span>
                       {availableDomains.length > 0 ? (
                         <div className="relative flex-1">
                           <select
@@ -942,7 +938,7 @@ export function ProjectEditor() {
                               <option key={domain} value={domain}>{domain}</option>
                             ))}
                           </select>
-                          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.35)]" />
+                          <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                         </div>
                       ) : (
                         <input
@@ -967,7 +963,7 @@ export function ProjectEditor() {
                       </p>
                     )}
                     {!domainErrors.subdomain && !domainErrors.domain && (subdomainPrefix || baseDomain) && (
-                      <p className="text-xs text-[rgba(255,255,255,0.35)]">
+                      <p className="text-xs text-muted-foreground">
                         → {subdomainPrefix || '…'}.{baseDomain || '…'}
                       </p>
                     )}
@@ -975,7 +971,7 @@ export function ProjectEditor() {
 
                   {/* Target port */}
                   <div className="space-y-1.5">
-                    <label htmlFor="exposurePort" className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+                    <label htmlFor="exposurePort" className="font-rubik text-xs font-medium text-muted-foreground">
                       Target Port
                     </label>
                     <input
@@ -992,7 +988,7 @@ export function ProjectEditor() {
                       className={`${inputCls} w-28 font-variant-numeric-tabular`}
                     />
                     {composeTargetPorts.length > 0 && (
-                      <p className="text-xs text-[rgba(255,255,255,0.35)]">
+                      <p className="text-xs text-muted-foreground">
                         Detected: {composeTargetPorts.join(', ')}
                       </p>
                     )}
@@ -1009,7 +1005,7 @@ export function ProjectEditor() {
                       className={`rounded-xl px-3 py-2.5 text-sm ${
                         exposureStatus.active
                           ? 'bg-[rgba(74,222,128,0.08)] text-[#76e5a2]'
-                          : 'bg-[rgba(255,255,255,0.03)] text-[rgba(255,255,255,0.45)]'
+                          : 'bg-accent/80 text-muted-foreground'
                       }`}
                     >
                       <span className="font-medium">
@@ -1035,7 +1031,7 @@ export function ProjectEditor() {
           {/* Ops bar — edit mode only */}
           {isEditing && project && (
             <div className="space-y-2">
-              <div className="flex items-center gap-3 rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.02)] px-4 py-2.5">
+              <div className="flex items-center gap-3 rounded-xl border border-white/[0.20] bg-accent/50 px-4 py-2.5">
 
                 {/* Left zone: deployment controls */}
                 <div className="flex flex-1 items-center gap-2">
@@ -1082,14 +1078,14 @@ export function ProjectEditor() {
                   )}
 
                   {isDeploying && !isStopped && !isRunning && (
-                    <span className="text-xs text-[rgba(255,255,255,0.35)]">Deploying…</span>
+                    <span className="text-xs text-muted-foreground">Deploying…</span>
                   )}
                 </div>
 
                 {/* Middle zone: container update status */}
                 <div className="flex shrink-0 items-center gap-2">
                   {checkUpdatesMutation.isPending ? (
-                    <span className="text-xs text-[rgba(255,255,255,0.35)]">Checking…</span>
+                    <span className="text-xs text-muted-foreground">Checking…</span>
                   ) : hasUpdateData ? (
                     <>
                       {updatesAvailable ? (
@@ -1102,13 +1098,13 @@ export function ProjectEditor() {
                       ) : (
                         <div className="flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-[#4ade80]" />
-                          <span className="text-xs text-[rgba(255,255,255,0.38)]">Up to date</span>
+                          <span className="text-xs text-muted-foreground">Up to date</span>
                         </div>
                       )}
                       <button
                         type="button"
                         onClick={() => checkUpdatesMutation.mutate()}
-                        className="text-xs text-[rgba(255,255,255,0.25)] transition-colors hover:text-[rgba(255,255,255,0.5)]"
+                        className="text-xs text-muted-foreground/50 transition-colors hover:text-muted-foreground"
                       >
                         Check again
                       </button>
@@ -1117,7 +1113,7 @@ export function ProjectEditor() {
                     <button
                       type="button"
                       onClick={() => checkUpdatesMutation.mutate()}
-                      className="text-xs text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                      className="text-xs text-muted-foreground transition-colors hover:text-muted-foreground"
                     >
                       Check for updates
                     </button>
@@ -1128,7 +1124,7 @@ export function ProjectEditor() {
                 <button
                   type="button"
                   onClick={() => setShowLogsModal(true)}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.18] px-3 py-1 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)]"
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.24] px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-white/[0.28] hover:text-foreground"
                 >
                   <ScrollText className="h-3.5 w-3.5" />
                   Logs
@@ -1144,8 +1140,8 @@ export function ProjectEditor() {
                   <div className="max-h-28 overflow-y-auto rounded-xl bg-background/[0.6] px-4 py-3">
                     {deployProgress.map((p, i) => (
                       <div key={i} className="flex gap-2 font-mono text-xs leading-relaxed">
-                        <span className="shrink-0 text-[rgba(255,255,255,0.22)]">[{p.stage}]</span>
-                        <span className="text-[rgba(255,255,255,0.58)]">{p.message}</span>
+                        <span className="shrink-0 text-muted-foreground">[{p.stage}]</span>
+                        <span className="text-muted-foreground">{p.message}</span>
                       </div>
                     ))}
                   </div>
@@ -1157,14 +1153,14 @@ export function ProjectEditor() {
           {/* Compose editor */}
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="font-rubik text-xs font-medium text-[rgba(255,255,255,0.6)]">
+              <label className="font-rubik text-xs font-medium text-muted-foreground">
                 docker-compose.yml
               </label>
               <button
                 type="button"
                 onClick={handleInferDetails}
                 disabled={!composeContent}
-                className="rounded-lg px-3 py-1 text-xs text-[rgba(255,255,255,0.4)] transition-colors hover:bg-[rgba(255,255,255,0.04)] hover:text-[rgba(255,255,255,0.65)] disabled:cursor-not-allowed disabled:opacity-30"
+                className="rounded-lg px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-30"
               >
                 Infer details
               </button>
@@ -1185,23 +1181,23 @@ export function ProjectEditor() {
 
       {/* ── Danger zone — edit mode only ── */}
       {isEditing && project && (
-        <div className="border-t border-white/[0.14] px-6 py-8">
+        <div className="border-t border-white/[0.20] px-6 py-8">
           <h3 className="font-rubik text-md font-semibold text-[rgba(248,113,113,0.75)]">
             Delete Project
           </h3>
-          <p className="mt-1 max-w-prose text-sm leading-relaxed text-[rgba(255,255,255,0.38)]">
+          <p className="mt-1 max-w-prose text-sm leading-relaxed text-muted-foreground">
             Removes this project and stops all associated containers. This cannot be undone.
           </p>
           <div className="mt-4">
             {showDeleteConfirm ? (
               <div className="flex items-center gap-4">
-                <span className="text-sm text-[rgba(255,255,255,0.45)]">
+                <span className="text-sm text-muted-foreground">
                   Delete &ldquo;{project.name}&rdquo;?
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="text-sm text-[rgba(255,255,255,0.35)] transition-colors hover:text-[rgba(255,255,255,0.6)]"
+                  className="text-sm text-muted-foreground transition-colors hover:text-muted-foreground"
                 >
                   Cancel
                 </button>

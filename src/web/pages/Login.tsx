@@ -34,14 +34,14 @@ export function Login() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <div className="w-full max-w-sm rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-8">
+      <div className="w-full max-w-sm rounded-2xl border border-white/[0.22] bg-accent/80 p-8">
         <div className="mb-6 text-center">
-          <h1 className="text-xl font-semibold text-[rgba(255,255,255,0.92)]">Labrador</h1>
-          <p className="mt-1 text-sm text-[rgba(255,255,255,0.38)]">Sign in to manage your homelab</p>
+          <h1 className="text-xl font-semibold text-foreground">Labrador</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Sign in to manage your homelab</p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">
-            <label htmlFor="username" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="username" className="text-xs font-medium text-muted-foreground">
               Username
             </label>
             <Input
@@ -54,7 +54,7 @@ export function Login() {
             )}
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
+            <label htmlFor="password" className="text-xs font-medium text-muted-foreground">
               Password
             </label>
             <Input
