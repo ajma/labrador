@@ -1131,16 +1131,21 @@ export function ProjectEditor() {
           {/* Compose editor */}
           <div className="flex flex-1 flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="font-rubik text-xs font-medium text-muted-foreground">
-                docker-compose.yml
-              </label>
+              <div>
+                <label className="font-rubik text-xs font-medium text-muted-foreground">
+                  docker-compose.yml
+                </label>
+                <p className="text-2xs text-muted-foreground/70">
+                  Pick a template above to get started, or paste your compose file and use Infer Details to automatically fill in settings.
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={handleInferDetails}
                 disabled={!composeContent}
-                className="rounded-lg px-3 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-30"
+                className="shrink-0 whitespace-nowrap rounded-lg border border-border px-3 py-1.5 text-xs text-foreground transition-colors hover:bg-accent disabled:cursor-not-allowed disabled:opacity-30"
               >
-                Infer details
+                Infer Details
               </button>
             </div>
             <ComposeEditor
