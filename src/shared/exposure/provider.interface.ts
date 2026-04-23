@@ -13,6 +13,7 @@ export interface ProviderSetupResult {
 export interface ExposureProvider {
   readonly type: string;
   readonly name: string;
+  readonly containerImage?: string;
 
   initialize(config: Record<string, any>): Promise<void>;
   validateConfig(config: Record<string, any>): Promise<ValidationResult>;

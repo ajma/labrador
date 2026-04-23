@@ -5,6 +5,7 @@ import { getDatabase } from '../db/index.js';
 import { projects } from '../db/schema.js';
 import type { DockerService } from './docker.service.js';
 import type Dockerode from 'dockerode';
+import type { ExposureProvider } from '@shared/exposure/provider.interface.js';
 
 const COMPOSE_LABEL = 'com.docker.compose.project';
 const COMPOSE_WORKDIR_LABEL = 'com.docker.compose.project.working_dir';
@@ -56,7 +57,40 @@ export class AdoptService {
     return result;
   }
 
-  async adoptStacks(stackNames: string[], userId: string): Promise<AdoptResult> {
+  async findProviderStack(
+    providers: ExposureProvider[],
+    userId: string,
+  ): Promise<{ detected: boolean; stackName?: string; providerType?: string }> {
+    try {
+      const containers = await this.dockerService.listComposeContainers();
+      const db = getDatabase();
+      const existingRows = await db
+        .select({ slug: projects.slug })
+        .from(projects)
+        .where(eq(projects.userId, userId));
+      const slugSet = new Set(existingRows.map((r) => r.slug));
+
+      for (const container of containers) {
+        const stackName = container.Labels?.[COMPOSE_LABEL];
+        if (!stackName || slugSet.has(stackName)) continue;
+        const image = container.Image ?? '';
+        for (const provider of providers) {
+          if (provider.containerImage && image.includes(provider.containerImage)) {
+            return { detected: true, stackName, providerType: provider.type };
+          }
+        }
+      }
+      return { detected: false };
+    } catch {
+      return { detected: false };
+    }
+  }
+
+  async adoptStacks(
+    stackNames: string[],
+    userId: string,
+    options?: { isInfrastructure?: boolean },
+  ): Promise<AdoptResult> {
     const containers = await this.dockerService.listComposeContainers();
     const stackMap = new Map<
       string,
@@ -116,6 +150,7 @@ export class AdoptService {
           logoUrl: info.logoUrl,
           composeContent,
           status: 'running',
+          isInfrastructure: options?.isInfrastructure ?? false,
           deployedAt: Date.now(),
         });
         adopted.push(stackName);

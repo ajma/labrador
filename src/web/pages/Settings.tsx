@@ -198,6 +198,7 @@ function ProviderForm({
     tunnelId: (provider?.configuration as any)?.tunnelId ?? '__new__',
     tunnelName: '',
     deployContainer: true,
+    adoptStackName: null,
   });
 
   const handleTypeChange = (type: 'caddy' | 'cloudflare') => {

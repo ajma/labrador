@@ -9,6 +9,7 @@ import { DockerService } from '../services/docker.service.js';
 import type { ExposureService } from '../services/exposure/exposure.service.js';
 import type { UpdateCheckerService } from '../services/update-checker.service.js';
 import type { StatsService } from '../services/stats.service.js';
+import type { ExposureProviderRegistry } from '../services/exposure/provider-registry.js';
 import fs from 'fs/promises';
 import path from 'path';
 import type { ProjectTemplateSummary, ProjectTemplate } from '../../shared/types.js';
@@ -59,15 +60,24 @@ export async function projectRoutes(app: FastifyInstance) {
     return adoptService.listAdoptable(userId);
   });
 
+  // GET /detect-provider-stack — find an unmanaged stack belonging to a known exposure provider
+  app.get('/detect-provider-stack', async (request) => {
+    if (!adoptService) return { detected: false };
+    const userId = (request.user as any).id;
+    const registry = (app as any).providerRegistry as ExposureProviderRegistry;
+    const providers = registry?.getAll() ?? [];
+    return adoptService.findProviderStack(providers, userId);
+  });
+
   // POST /adopt — adopt selected stacks into homelabman projects
-  app.post<{ Body: { stackNames: string[] } }>('/adopt', async (request, reply) => {
+  app.post<{ Body: { stackNames: string[]; isInfrastructure?: boolean } }>('/adopt', async (request, reply) => {
     if (!adoptService) return reply.code(503).send({ error: 'Docker not available' });
-    const { stackNames } = request.body;
+    const { stackNames, isInfrastructure } = request.body;
     if (!Array.isArray(stackNames) || stackNames.length === 0) {
       return reply.code(400).send({ error: 'stackNames must be a non-empty array' });
     }
     const userId = (request.user as any).id;
-    return adoptService.adoptStacks(stackNames, userId);
+    return adoptService.adoptStacks(stackNames, userId, { isInfrastructure });
   });
 
   const TEMPLATES_DIR = path.join(process.cwd(), 'templates');

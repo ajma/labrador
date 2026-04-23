@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Input } from './ui/input';
 import { api } from '../lib/api';
@@ -9,6 +9,7 @@ export interface CloudflareProviderFormValue {
   tunnelId: string;      // '__new__' when user wants to create a new tunnel
   tunnelName: string;    // only used when tunnelId === '__new__'
   deployContainer: boolean;
+  adoptStackName: string | null;
 }
 
 interface CfAccount {
@@ -24,17 +25,31 @@ interface CfTunnel {
 interface Props {
   value: CloudflareProviderFormValue;
   onChange: (value: CloudflareProviderFormValue) => void;
+  detectedStack?: { stackName: string; providerType: string } | null;
 }
 
 const selectCls =
   'w-full appearance-none rounded-[14px] border border-white/[0.20] bg-[rgba(4,7,15,0.78)] px-4 py-2 text-md text-[rgba(255,255,255,0.85)] outline-none transition-colors focus:border-[rgba(100,158,245,0.5)] pr-9';
 
-export function CloudflareProviderForm({ value, onChange }: Props) {
+export function CloudflareProviderForm({ value, onChange, detectedStack }: Props) {
   const [accounts, setAccounts] = useState<CfAccount[]>([]);
   const [tunnels, setTunnels] = useState<CfTunnel[]>([]);
   const [isConnecting, setIsConnecting] = useState(false);
   const [isLoadingTunnels, setIsLoadingTunnels] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
+
+  const preselectedRef = useRef(false);
+  const valueRef = useRef(value);
+  valueRef.current = value;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  useEffect(() => {
+    if (!preselectedRef.current && detectedStack && accounts.length > 0) {
+      preselectedRef.current = true;
+      onChangeRef.current({ ...valueRef.current, adoptStackName: detectedStack.stackName, deployContainer: false });
+    }
+  }, [detectedStack, accounts.length]);
 
   const handleConnect = async () => {
     setIsConnecting(true);
@@ -218,28 +233,71 @@ export function CloudflareProviderForm({ value, onChange }: Props) {
         </div>
       )}
 
-      {/* Deploy checkbox */}
       {value.accountId && accounts.length > 0 && (
         <>
           <div className="border-t border-white/[0.08]" />
-          <div className="flex items-start gap-3">
-            <input
-              id="cf-deploy-container"
-              type="checkbox"
-              className="mt-0.5 h-4 w-4 accent-[#649ef5] cursor-pointer"
-              checked={value.deployContainer}
-              onChange={(e) => onChange({ ...value, deployContainer: e.target.checked })}
-            />
-            <label htmlFor="cf-deploy-container" className="cursor-pointer space-y-0.5">
-              <span className="text-sm font-medium text-[rgba(255,255,255,0.75)]">
-                Deploy cloudflared container
-              </span>
-              <p className="text-xs text-[rgba(255,255,255,0.38)]">
-                Creates a &quot;Cloudflare Tunnel&quot; project and starts the cloudflared Docker
-                container using the tunnel token. Required for traffic to flow.
-              </p>
-            </label>
-          </div>
+          {detectedStack ? (
+            <div className="space-y-2.5">
+              <p className="text-xs font-medium text-[rgba(255,255,255,0.6)]">cloudflared container</p>
+              {[
+                {
+                  key: 'adopt',
+                  label: `Adopt existing container (${detectedStack.stackName})`,
+                  description: 'Register the running cloudflared stack as a HomelabMan infrastructure project.',
+                  checked: value.adoptStackName !== null,
+                  onSelect: () =>
+                    onChange({ ...value, adoptStackName: detectedStack.stackName, deployContainer: false }),
+                },
+                {
+                  key: 'deploy',
+                  label: 'Deploy new container',
+                  description: 'Create a new "Cloudflare Tunnel" project and start a fresh cloudflared container.',
+                  checked: value.adoptStackName === null && value.deployContainer,
+                  onSelect: () => onChange({ ...value, adoptStackName: null, deployContainer: true }),
+                },
+                {
+                  key: 'none',
+                  label: 'Neither',
+                  description: 'I will manage cloudflared myself.',
+                  checked: value.adoptStackName === null && !value.deployContainer,
+                  onSelect: () => onChange({ ...value, adoptStackName: null, deployContainer: false }),
+                },
+              ].map((opt) => (
+                <label key={opt.key} className="flex cursor-pointer items-start gap-3">
+                  <input
+                    type="radio"
+                    name="cf-container-setup"
+                    className="mt-0.5 h-4 w-4 cursor-pointer accent-[#649ef5]"
+                    checked={opt.checked}
+                    onChange={opt.onSelect}
+                  />
+                  <span className="space-y-0.5">
+                    <span className="text-sm font-medium text-[rgba(255,255,255,0.75)]">{opt.label}</span>
+                    <p className="text-xs text-[rgba(255,255,255,0.38)]">{opt.description}</p>
+                  </span>
+                </label>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-start gap-3">
+              <input
+                id="cf-deploy-container"
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 cursor-pointer accent-[#649ef5]"
+                checked={value.deployContainer}
+                onChange={(e) => onChange({ ...value, deployContainer: e.target.checked })}
+              />
+              <label htmlFor="cf-deploy-container" className="cursor-pointer space-y-0.5">
+                <span className="text-sm font-medium text-[rgba(255,255,255,0.75)]">
+                  Deploy cloudflared container
+                </span>
+                <p className="text-xs text-[rgba(255,255,255,0.38)]">
+                  Creates a &quot;Cloudflare Tunnel&quot; project and starts the cloudflared Docker container
+                  using the tunnel token. Required for traffic to flow.
+                </p>
+              </label>
+            </div>
+          )}
         </>
       )}
     </div>

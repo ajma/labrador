@@ -193,7 +193,20 @@ function ConfigureProvidersStep({
     tunnelId: providerConfig.cloudflare?.tunnelId ?? '__new__',
     tunnelName: providerConfig.cloudflare?.tunnelName ?? '',
     deployContainer: providerConfig.cloudflare?.deployContainer ?? true,
+    adoptStackName: providerConfig.cloudflare?.adoptStackName ?? null,
   });
+
+  const [detectedStack, setDetectedStack] = useState<{ stackName: string; providerType: string } | null>(null);
+
+  useEffect(() => {
+    api.get<{ detected: boolean; stackName?: string; providerType?: string }>('/projects/detect-provider-stack')
+      .then((res) => {
+        if (res.detected && res.stackName && res.providerType) {
+          setDetectedStack({ stackName: res.stackName, providerType: res.providerType });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const saveCaddy = () => {
     onConfigChange({ ...providerConfig, caddy: { apiUrl: caddyApiUrl } });
@@ -335,7 +348,7 @@ function ConfigureProvidersStep({
           </div>
           {expandedProvider === 'cloudflare' && (
             <div className="border-t border-white/[0.06] px-4 py-4 space-y-4">
-              <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} />
+              <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} detectedStack={detectedStack} />
               <button
                 onClick={saveCloudflare}
                 className="rounded-xl bg-[#649ef5] px-4 py-1.5 text-sm font-medium text-[#101827] transition-colors hover:bg-[#7db0ff]"
@@ -436,10 +449,24 @@ export function Onboarding() {
 
       if (providerConfig.cloudflare) {
         const cf = providerConfig.cloudflare;
-        const { tunnelId, tunnelToken } = await resolveCloudflareBeforeSave(cf);
-        if (cf.deployContainer && tunnelToken) {
+
+        // When adopting, skip tunnel creation/token fetch — the container is already running.
+        const { tunnelId, tunnelToken } = cf.adoptStackName
+          ? { tunnelId: cf.tunnelId, tunnelToken: null }
+          : await resolveCloudflareBeforeSave(cf);
+
+        if (cf.adoptStackName) {
+          const adoptResult = await api.post<{ adopted: string[]; failed: { stackName: string; reason: string }[] }>(
+            '/projects/adopt',
+            { stackNames: [cf.adoptStackName], isInfrastructure: true },
+          );
+          if (adoptResult.failed.length > 0) {
+            throw new Error(`Failed to adopt cloudflared stack: ${adoptResult.failed[0].reason}`);
+          }
+        } else if (cf.deployContainer && tunnelToken) {
           await deployCloudflaredProject(tunnelToken);
         }
+
         exposureProviders.push({
           providerType: 'cloudflare',
           name: 'Cloudflare',

@@ -23,6 +23,7 @@ interface TunnelConfig {
 export class CloudflareProvider extends BaseProvider {
   readonly type = 'cloudflare';
   readonly name = 'Cloudflare Tunnel';
+  readonly containerImage = 'cloudflare/cloudflared';
 
   private get apiToken(): string {
     return this.config.apiToken as string;

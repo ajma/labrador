@@ -266,4 +266,100 @@ describe('AdoptService.adoptStacks', () => {
     const insertedValues = db._valuesMock.mock.calls[0][0];
     expect(insertedValues.logoUrl).toBeNull();
   });
+
+  it('sets isInfrastructure: true on inserted project when option is passed', async () => {
+    const docker = makeDockerMock([composeContainer('cloudflared')]);
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    (fsModule.default.readFile as any).mockResolvedValue('services:\n  cloudflared:\n    image: cloudflare/cloudflared\n');
+    const service = new AdoptService(docker as any);
+
+    await service.adoptStacks(['cloudflared'], 'user-1', { isInfrastructure: true });
+
+    const insertedValues = db._valuesMock.mock.calls[0][0];
+    expect(insertedValues.isInfrastructure).toBe(true);
+  });
+
+  it('defaults isInfrastructure to false when option is omitted', async () => {
+    const docker = makeDockerMock([composeContainer('myapp')]);
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    (fsModule.default.readFile as any).mockResolvedValue('services:\n  web:\n    image: nginx\n');
+    const service = new AdoptService(docker as any);
+
+    await service.adoptStacks(['myapp'], 'user-1');
+
+    const insertedValues = db._valuesMock.mock.calls[0][0];
+    expect(insertedValues.isInfrastructure).toBe(false);
+  });
+});
+
+describe('AdoptService.findProviderStack', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns detected=true with stackName and providerType when a provider image matches', async () => {
+    const cfContainer = { ...composeContainer('cloudflared'), Image: 'cloudflare/cloudflared:latest' };
+    const docker = makeDockerMock([cfContainer]);
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    const service = new AdoptService(docker as any);
+    const providers = [{ type: 'cloudflare', containerImage: 'cloudflare/cloudflared' }];
+
+    const result = await service.findProviderStack(providers as any, 'user-1');
+
+    expect(result.detected).toBe(true);
+    expect(result.stackName).toBe('cloudflared');
+    expect(result.providerType).toBe('cloudflare');
+  });
+
+  it('returns detected=false when the matching stack is already managed', async () => {
+    const cfContainer = { ...composeContainer('cloudflared'), Image: 'cloudflare/cloudflared:latest' };
+    const docker = makeDockerMock([cfContainer]);
+    const db = makeDbMock(['cloudflared']);
+    (getDatabase as any).mockReturnValue(db);
+    const service = new AdoptService(docker as any);
+    const providers = [{ type: 'cloudflare', containerImage: 'cloudflare/cloudflared' }];
+
+    const result = await service.findProviderStack(providers as any, 'user-1');
+
+    expect(result.detected).toBe(false);
+  });
+
+  it('returns detected=false when no provider has a matching image', async () => {
+    const docker = makeDockerMock([composeContainer('myapp')]);
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    const service = new AdoptService(docker as any);
+    const providers = [{ type: 'cloudflare', containerImage: 'cloudflare/cloudflared' }];
+
+    const result = await service.findProviderStack(providers as any, 'user-1');
+
+    expect(result.detected).toBe(false);
+  });
+
+  it('skips providers without containerImage', async () => {
+    const cfContainer = { ...composeContainer('cloudflared'), Image: 'cloudflare/cloudflared:latest' };
+    const docker = makeDockerMock([cfContainer]);
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    const service = new AdoptService(docker as any);
+    const providers = [{ type: 'caddy' }]; // no containerImage
+
+    const result = await service.findProviderStack(providers as any, 'user-1');
+
+    expect(result.detected).toBe(false);
+  });
+
+  it('returns detected=false when docker throws', async () => {
+    const docker = { listComposeContainers: vi.fn().mockRejectedValue(new Error('docker offline')) };
+    const db = makeDbMock([]);
+    (getDatabase as any).mockReturnValue(db);
+    const service = new AdoptService(docker as any);
+
+    const result = await service.findProviderStack([{ type: 'cloudflare', containerImage: 'cloudflare/cloudflared' }] as any, 'user-1');
+
+    expect(result.detected).toBe(false);
+  });
 });

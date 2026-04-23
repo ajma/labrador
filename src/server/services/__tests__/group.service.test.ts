@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 
 vi.mock('../../db/index.js', () => ({ getDatabase: vi.fn() }));
 
@@ -25,7 +25,6 @@ function makeDb(overrides: Record<string, any> = {}) {
   const where = vi.fn().mockReturnValue({ returning });
   const set = vi.fn().mockReturnValue({ where });
   const values = vi.fn().mockReturnValue({ returning });
-  const from = vi.fn().mockReturnValue({ where: vi.fn().mockResolvedValue([makeGroup()]) });
   const selectFrom = vi.fn().mockReturnValue({ where: vi.fn().mockReturnValue({ orderBy: vi.fn().mockResolvedValue([makeGroup()]) }) });
 
   return {
