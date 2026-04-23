@@ -15,7 +15,7 @@ export class CaddyProvider extends BaseProvider {
   }
 
   private routeId(projectId: string): string {
-    return `homelabman-${projectId}`;
+    return `labrador-${projectId}`;
   }
 
   async validateConfig(config: Record<string, any>): Promise<ValidationResult> {

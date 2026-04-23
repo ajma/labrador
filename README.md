@@ -1,4 +1,4 @@
-# HomelabMan
+# Labrador
 
 > Docker management made simple. A web-based application to manage Docker Compose stacks with intelligent exposure via Caddy, Cloudflare, and more.
 
@@ -16,31 +16,31 @@
 **Run with Docker:**
 ```bash
 docker run -d \
-  --name homelabman \
+  --name labrador \
   -p 3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v homelabman-data:/data \
+  -v labrador-data:/data \
   -e JWT_SECRET=your-random-secret-here \
-  homelabman:latest
+  labrador:latest
 ```
 
 **Or with Docker Compose:**
 ```yaml
 services:
-  homelabman:
-    image: homelabman:latest
+  labrador:
+    image: labrador:latest
     ports:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - homelabman-data:/data
+      - labrador-data:/data
     environment:
-      DATABASE_PATH: /data/homelabman.db
+      DATABASE_PATH: /data/labrador.db
       JWT_SECRET: ${JWT_SECRET}
     restart: unless-stopped
 
 volumes:
-  homelabman-data:
+  labrador-data:
 ```
 
 Then open http://localhost:3000 in your browser.
@@ -49,7 +49,7 @@ Then open http://localhost:3000 in your browser.
 
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
-| `DATABASE_PATH` | Path to SQLite database file | No | `/data/homelabman.db` |
+| `DATABASE_PATH` | Path to SQLite database file | No | `/data/labrador.db` |
 | `JWT_SECRET` | Secret for JWT token signing | Yes | — |
 | `PORT` | Application port | No | `3000` |
 | `LOG_LEVEL` | Logging level (`debug`, `info`, `warn`, `error`) | No | `info` |
@@ -73,8 +73,8 @@ Then open http://localhost:3000 in your browser.
 ## Development
 
 ```bash
-git clone https://github.com/yourusername/homelabman.git
-cd homelabman
+git clone https://github.com/yourusername/labrador.git
+cd labrador
 pnpm install
 pnpm dev
 ```

@@ -34,14 +34,14 @@ describe('cloudflare web helpers', () => {
       apiToken: 'api-token',
       accountId: 'account-id',
       tunnelId: '__new__',
-      tunnelName: 'homelabman',
+      tunnelName: 'labrador',
       deployContainer: true,
     });
 
     expect(api.post).toHaveBeenCalledWith('/cloudflare/tunnels/create', {
       apiToken: 'api-token',
       accountId: 'account-id',
-      tunnelName: 'homelabman',
+      tunnelName: 'labrador',
     });
     expect(result).toEqual({
       tunnelId: 'new-tunnel-id',

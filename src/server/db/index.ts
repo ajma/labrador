@@ -8,7 +8,7 @@ import path from 'path';
 let db: ReturnType<typeof drizzle>;
 
 export function initDatabase(url?: string) {
-  const dbUrl = url ?? `file:${process.env.DATABASE_PATH ?? './data/homelabman.db'}`;
+  const dbUrl = url ?? `file:${process.env.DATABASE_PATH ?? './data/labrador.db'}`;
 
   if (dbUrl.startsWith('file:') && !dbUrl.includes(':memory:')) {
     const dbPath = dbUrl.replace(/^file:/, '');

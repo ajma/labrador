@@ -311,7 +311,7 @@ export async function settingsRoutes(app: FastifyInstance) {
     };
 
     const date = new Date().toISOString().slice(0, 10);
-    reply.header('Content-Disposition', `attachment; filename="homelabman-backup-${date}.json"`);
+    reply.header('Content-Disposition', `attachment; filename="labrador-backup-${date}.json"`);
     reply.header('Content-Type', 'application/json');
     return backup;
   });

@@ -9,7 +9,7 @@ import type { ExposureProvider } from '@shared/exposure/provider.interface.js';
 
 const COMPOSE_LABEL = 'com.docker.compose.project';
 const COMPOSE_WORKDIR_LABEL = 'com.docker.compose.project.working_dir';
-const LABEL_LOGO = 'homelabman.logo_url';
+const LABEL_LOGO = 'labrador.logo_url';
 
 export interface AdoptableStack {
   stackName: string;

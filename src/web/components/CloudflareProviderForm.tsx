@@ -243,7 +243,7 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
                 {
                   key: 'adopt',
                   label: `Adopt existing container (${detectedStack.stackName})`,
-                  description: 'Register the running cloudflared stack as a HomelabMan infrastructure project.',
+                  description: 'Register the running cloudflared stack as a Labrador infrastructure project.',
                   checked: value.adoptStackName !== null,
                   onSelect: () =>
                     onChange({ ...value, adoptStackName: detectedStack.stackName, deployContainer: false }),

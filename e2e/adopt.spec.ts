@@ -24,8 +24,8 @@ const orphaned = (stackName: string, projectId: string) => ({
   Labels: {
     'com.docker.compose.project': stackName,
     'com.docker.compose.project.working_dir': '/srv/myapp',
-    'homelabman.managed': 'true',
-    'homelabman.project_id': projectId,
+    'labrador.managed': 'true',
+    'labrador.project_id': projectId,
   },
 });
 
@@ -33,7 +33,7 @@ const withLogo = (stackName: string, logoUrl: string) => ({
   ...unmanaged(stackName),
   Labels: {
     ...unmanaged(stackName).Labels,
-    'homelabman.logo_url': logoUrl,
+    'labrador.logo_url': logoUrl,
   },
 });
 
@@ -124,7 +124,7 @@ test('adopting from dialog closes it and shows success toast', async ({ page }) 
 
 // --- Adopt variations ---
 
-test('orphaned stack (has homelabman label but no matching project) is adoptable', async ({ page }) => {
+test('orphaned stack (has labrador label but no matching project) is adoptable', async ({ page }) => {
   await page.request.post('/api/test/mock/docker', {
     data: { containers: [orphaned('myapp', 'deleted-uuid-1234')] },
   });

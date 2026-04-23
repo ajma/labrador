@@ -825,7 +825,7 @@ function DataSection() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `homelabman-backup-${date}.json`;
+      a.download = `labrador-backup-${date}.json`;
       a.click();
       URL.revokeObjectURL(url);
     } catch {
@@ -863,7 +863,7 @@ function DataSection() {
       window.location.reload();
     } catch (err: any) {
       if (err.message?.includes('Invalid backup') || err.message?.includes('JSON')) {
-        setImportError("That file doesn't look like a valid HomelabMan backup.");
+        setImportError("That file doesn't look like a valid Labrador backup.");
       } else {
         setImportError(err.message || 'Import failed. Please try again.');
       }
@@ -1099,7 +1099,7 @@ export function Settings() {
         <ProvidersSection />
       </Section>
 
-      <Section id="data" heading="Data" description="Back up or restore your HomelabMan configuration — projects, providers, and settings.">
+      <Section id="data" heading="Data" description="Back up or restore your Labrador configuration — projects, providers, and settings.">
         <DataSection />
       </Section>
       </div>

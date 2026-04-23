@@ -30,7 +30,7 @@ export class StatsService {
       // Group containers by project
       const projectContainers = new Map<string, typeof containers>();
       for (const container of containers) {
-        const projectId = container.Labels['homelabman.project_id'];
+        const projectId = container.Labels['labrador.project_id'];
         if (!projectId) continue;
         if (!projectContainers.has(projectId)) projectContainers.set(projectId, []);
         projectContainers.get(projectId)!.push(container);

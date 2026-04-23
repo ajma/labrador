@@ -53,7 +53,7 @@ export async function projectRoutes(app: FastifyInstance) {
   // All project routes require authentication
   app.addHook('preHandler', authenticate);
 
-  // GET /adoptable — list compose stacks not managed by homelabman
+  // GET /adoptable — list compose stacks not managed by labrador
   app.get('/adoptable', async (request, reply) => {
     if (!adoptService) return reply.code(503).send({ error: 'Docker not available' });
     const userId = (request.user as any).id;
@@ -69,7 +69,7 @@ export async function projectRoutes(app: FastifyInstance) {
     return adoptService.findProviderStack(providers, userId);
   });
 
-  // POST /adopt — adopt selected stacks into homelabman projects
+  // POST /adopt — adopt selected stacks into labrador projects
   app.post<{ Body: { stackNames: string[]; isInfrastructure?: boolean } }>('/adopt', async (request, reply) => {
     if (!adoptService) return reply.code(503).send({ error: 'Docker not available' });
     const { stackNames, isInfrastructure } = request.body;
@@ -191,7 +191,7 @@ export async function projectRoutes(app: FastifyInstance) {
       }
 
       // Clean up compose file directory
-      const projectDir = path.join('/tmp/homelabman', project.slug);
+      const projectDir = path.join('/tmp/labrador', project.slug);
       try {
         await fs.rm(projectDir, { recursive: true, force: true });
       } catch (err) {

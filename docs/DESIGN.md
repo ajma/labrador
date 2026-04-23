@@ -1,4 +1,4 @@
-# HomelabMan - Docker Management Web Application
+# Labrador - Docker Management Web Application
 ## Design Document
 
 ---
@@ -32,7 +32,7 @@
 - **Primary**: SQLite with better-sqlite3 (simple, embedded, zero-config)
 - **ORM**: Drizzle ORM (TypeScript-first, lightweight, excellent DX)
 - **Migrations**: Drizzle Kit
-- **File Location**: `data/homelabman.db` (persisted via volume mount)
+- **File Location**: `data/labrador.db` (persisted via volume mount)
 - **Why SQLite**: Perfect for single-instance deployments, no separate database server needed, simple backups (just copy the file), excellent performance for this use case, built-in transactions and ACID compliance
 
 ### Infrastructure
@@ -370,13 +370,13 @@ Server sends:
 - List/prune networks and images
 - Pull images with progress tracking
 
-**Startup Reconciliation**: On application boot, the Docker service scans for all containers with the `homelabman.managed=true` label, groups them by `homelabman.project_id`, and reconciles each project's `status` field in the database:
+**Startup Reconciliation**: On application boot, the Docker service scans for all containers with the `labrador.managed=true` label, groups them by `labrador.project_id`, and reconciles each project's `status` field in the database:
 - All containers running → set status to `running`
 - All containers stopped → set status to `stopped`
 - Mixed or missing containers → set status to `error`
 - Project in DB but no containers found → set status to `stopped`
 
-This handles HomelabMan restarts, host reboots, and containers that were started/stopped externally. The reconciliation runs once at startup before the server begins accepting requests.
+This handles Labrador restarts, host reboots, and containers that were started/stopped externally. The reconciliation runs once at startup before the server begins accepting requests.
 
 ### Caddy Integration
 
@@ -396,9 +396,9 @@ This handles HomelabMan restarts, host reboots, and containers that were started
 **How it works**:
 - Caddy provider is available by default (shown in onboarding)
 - User provides Caddy Admin API URL (e.g., `http://localhost:2019`)
-- HomelabMan connects to existing Caddy instance
+- Labrador connects to existing Caddy instance
 - Routes are added/removed via Caddy's Admin API
-- No Caddy binary included in HomelabMan container
+- No Caddy binary included in Labrador container
 
 **Example Caddy Config Generation**:
 ```json
@@ -429,7 +429,7 @@ This handles HomelabMan restarts, host reboots, and containers that were started
 
 **Implements**: `ExposureProvider` interface
 
-**Approach**: Uses **remotely managed tunnels** exclusively. The user runs `cloudflared` on their own (as a Docker container, systemd service, etc.) and connects it to a Cloudflare tunnel. HomelabMan manages the tunnel's public hostnames via the Cloudflare API — it never starts, stops, or touches the `cloudflared` process.
+**Approach**: Uses **remotely managed tunnels** exclusively. The user runs `cloudflared` on their own (as a Docker container, systemd service, etc.) and connects it to a Cloudflare tunnel. Labrador manages the tunnel's public hostnames via the Cloudflare API — it never starts, stops, or touches the `cloudflared` process.
 
 **Responsibilities**:
 - Add/update/remove public hostnames on an existing tunnel via Cloudflare API (`PUT /accounts/{account_id}/cfe/tunnel/{tunnel_id}/configurations`)
@@ -439,7 +439,7 @@ This handles HomelabMan restarts, host reboots, and containers that were started
 
 **Note**: DNS records (CNAME to `{tunnel_id}.cfargotunnel.com`) are created and deleted automatically by Cloudflare when public hostnames are added/removed from the tunnel config. No separate DNS API calls needed.
 
-**What HomelabMan does NOT do**:
+**What Labrador does NOT do**:
 - Does not install, start, stop, or manage the `cloudflared` daemon
 - Does not generate local config.yml files
 - Does not store tunnel credentials files
@@ -461,7 +461,7 @@ This handles HomelabMan restarts, host reboots, and containers that were started
 
 **Optional: Deploy as infrastructure project** (via `ExposureProvider.getComposeTemplate()`):
 
-During setup, if `getComposeTemplate()` returns a compose YAML, the UI offers to deploy the provider's service as a HomelabMan infrastructure project. This is the same project system used for user projects — it appears on the dashboard, can be stopped/started, and gets the same lifecycle management. For Cloudflare, this:
+During setup, if `getComposeTemplate()` returns a compose YAML, the UI offers to deploy the provider's service as a Labrador infrastructure project. This is the same project system used for user projects — it appears on the dashboard, can be stopped/started, and gets the same lifecycle management. For Cloudflare, this:
 1. Creates a new tunnel via the Cloudflare API and retrieves its token
 2. Calls `getComposeTemplate()` which returns compose YAML for `cloudflare/cloudflared`
 3. Creates a project with `name: "cloudflared"` and a system flag to mark it as infrastructure
@@ -513,7 +513,7 @@ export interface ExposureProvider {
   cleanup(): Promise<void>;
   
   // Optional: generate a compose YAML to deploy this provider's service
-  // as a HomelabMan infrastructure project (e.g., cloudflared, caddy, traefik)
+  // as a Labrador infrastructure project (e.g., cloudflared, caddy, traefik)
   getComposeTemplate?(config: Record<string, any>): string | null;
 }
 
@@ -665,7 +665,7 @@ export class ExposureService {
 
 #### 2. Docker Socket Security
 - Run backend with minimal Docker permissions
-- Label-based isolation (only manage homelabman-labeled containers)
+- Label-based isolation (only manage labrador-labeled containers)
 - Validate compose files to prevent privilege escalation
 - Sanitize container names and labels
 
@@ -727,32 +727,32 @@ CMD ["node", "dist/server/index.js"]
 **Running the container:**
 ```bash
 docker run -d \
-  --name homelabman \
+  --name labrador \
   -p 3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
-  -v homelabman-data:/data \
-  -e DATABASE_PATH=/data/homelabman.db \
+  -v labrador-data:/data \
+  -e DATABASE_PATH=/data/labrador.db \
   -e JWT_SECRET=your-secret-here \
-  homelabman:latest
+  labrador:latest
 ```
 
 **Docker Compose:**
 ```yaml
 services:
-  homelabman:
+  labrador:
     build: .
     ports:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - homelabman-data:/data
+      - labrador-data:/data
     environment:
-      DATABASE_PATH: /data/homelabman.db
+      DATABASE_PATH: /data/labrador.db
       JWT_SECRET: ${JWT_SECRET}
     restart: unless-stopped
 
 volumes:
-  homelabman-data:
+  labrador-data:
 ```
 
 **How Exposure Works**:
@@ -804,7 +804,7 @@ volumes:
 
 **Initialize single-package structure**:
 ```
-homelabman/
+labrador/
 ├── src/
 │   ├── web/                  # React + Vite frontend
 │   ├── server/               # Fastify backend
@@ -857,7 +857,7 @@ homelabman/
 - Initialize dockerode connection
 - Implement Docker service abstraction layer
 - Create docker-compose execution wrapper (via execa)
-- Label management system (`homelabman.managed=true`, `homelabman.project_id`)
+- Label management system (`labrador.managed=true`, `labrador.project_id`)
 - Container lifecycle operations (start, stop, restart)
 - Log streaming implementation
 - Startup reconciliation (scan labeled containers, sync project status)
@@ -893,7 +893,7 @@ homelabman/
 
 **Backend**:
 - Deploy endpoint implementation
-- Inject homelabman labels into compose YAML
+- Inject labrador labels into compose YAML
 - Execute docker-compose up with project labels
 - Update project status in database
 - WebSocket deployment progress events
@@ -1008,14 +1008,14 @@ homelabman/
 async deployProject(projectId: string): Promise<void> {
   const project = await this.getProject(projectId);
   
-  // Inject homelabman labels into compose YAML before writing
+  // Inject labrador labels into compose YAML before writing
   const labeledCompose = injectLabels(project.compose_content, {
-    'homelabman.project_id': projectId,
-    'homelabman.managed': 'true',
+    'labrador.project_id': projectId,
+    'labrador.managed': 'true',
   });
   
   // Write compose file to temp location
-  const composeFile = `/tmp/homelabman/${project.slug}/docker-compose.yml`;
+  const composeFile = `/tmp/labrador/${project.slug}/docker-compose.yml`;
   await fs.writeFile(composeFile, labeledCompose);
   
   // Execute docker compose up
@@ -1037,7 +1037,7 @@ async deployProject(projectId: string): Promise<void> {
 // WebSocket stats streaming (@fastify/websocket)
 async streamStats(socket: WebSocket, projectId: string): Promise<void> {
   const containers = await this.docker.listContainers({
-    filters: { label: [`homelabman.project_id=${projectId}`] }
+    filters: { label: [`labrador.project_id=${projectId}`] }
   });
   
   const interval = setInterval(async () => {
@@ -1131,7 +1131,7 @@ Based on this design, here are the most critical files for implementing this app
 ## 12. Project Structure
 
 ```
-homelabman/
+labrador/
 ├── src/
 │   ├── web/                      # React + Vite frontend
 │   │   ├── components/

@@ -1,5 +1,5 @@
 services:
-  homelabman:
+  labrador:
     build: .
     ports:
       - "3000:3000"
@@ -9,7 +9,7 @@ services:
       - .:/app
       - /app/node_modules
     environment:
-      DATABASE_PATH: ./data/homelabman.db
+      DATABASE_PATH: ./data/labrador.db
       JWT_SECRET: dev-secret
       NODE_ENV: development
     command: pnpm dev

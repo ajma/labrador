@@ -14,7 +14,7 @@ export class MockDockerService {
   async ping() { return true; }
   async listContainers(_projectId?: string) { return this.containers; }
   async listManagedContainers() {
-    return this.containers.filter((c) => c.Labels?.['homelabman.managed'] === 'true');
+    return this.containers.filter((c) => c.Labels?.['labrador.managed'] === 'true');
   }
   async listComposeContainers() {
     return this.containers.filter(

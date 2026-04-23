@@ -126,7 +126,7 @@ function CreateAccountStep({ onComplete }: { onComplete: () => void }) {
     <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] p-6">
       <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Create Admin Account</h2>
       <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">
-        Set up the administrator account for your HomelabMan instance.
+        Set up the administrator account for your Labrador instance.
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="space-y-1.5">
@@ -394,7 +394,7 @@ function CompleteStep({
   return (
     <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] p-6">
       <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Setup Complete</h2>
-      <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">Your HomelabMan instance is ready to use.</p>
+      <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">Your Labrador instance is ready to use.</p>
       <div className="mb-5 rounded-xl border border-white/[0.08] bg-[rgba(255,255,255,0.02)] px-4 py-3">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Configuration Summary</p>
         <ul className="space-y-1 text-sm text-[rgba(255,255,255,0.55)]">
@@ -481,7 +481,7 @@ export function Onboarding() {
 
       await api.post('/settings/onboarding', { exposureProviders });
       await queryClient.invalidateQueries({ queryKey: ['auth'] });
-      toast.success('Setup complete! Welcome to HomelabMan.');
+      toast.success('Setup complete! Welcome to Labrador.');
       navigate('/');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to complete setup');
@@ -494,7 +494,7 @@ export function Onboarding() {
     <div className="flex min-h-screen items-center justify-center p-4">
       <div className="w-full max-w-lg">
         <h1 className="mb-1 text-center text-2xl font-semibold text-[rgba(255,255,255,0.92)]">
-          Welcome to HomelabMan
+          Welcome to Labrador
         </h1>
         <p className="mb-6 text-center text-sm text-[rgba(255,255,255,0.38)]">
           Let&apos;s get your instance set up.

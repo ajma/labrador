@@ -1,15 +1,15 @@
 services:
-  homelabman:
+  labrador:
     build: .
     ports:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - homelabman-data:/data
+      - labrador-data:/data
     environment:
-      DATABASE_PATH: /data/homelabman.db
+      DATABASE_PATH: /data/labrador.db
       JWT_SECRET: ${JWT_SECRET}
     restart: unless-stopped
 
 volumes:
-  homelabman-data:
+  labrador-data:

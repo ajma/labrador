@@ -5,17 +5,17 @@
 
 ## Problem
 
-Docker Compose stacks running on the host that were not deployed through homelabman are invisible to it. Users want to bring these stacks under management without restarting containers.
+Docker Compose stacks running on the host that were not deployed through labrador are invisible to it. Users want to bring these stacks under management without restarting containers.
 
 ## Adoptability Rule
 
 A stack is adoptable if its `com.docker.compose.project` label value does not match any project's `slug` in the database for that user. This is the single source of truth — container labels are not used for this check.
 
 Two concrete scenarios produce adoptable stacks:
-1. **Never managed** — containers have no `homelabman.project_id` label and the stack name isn't a known slug.
-2. **Orphaned** — containers have a `homelabman.project_id` label whose UUID no longer exists in the `projects` table.
+1. **Never managed** — containers have no `labrador.project_id` label and the stack name isn't a known slug.
+2. **Orphaned** — containers have a `labrador.project_id` label whose UUID no longer exists in the `projects` table.
 
-After adoption the project record exists with `slug = stackName`, so the stack immediately falls out of the adoptable list. Container labels remain unchanged until the user redeploys through homelabman.
+After adoption the project record exists with `slug = stackName`, so the stack immediately falls out of the adoptable list. Container labels remain unchanged until the user redeploys through labrador.
 
 ## Backend
 
@@ -101,9 +101,9 @@ POST /api/projects/adopt { stackNames }
 Unit tests for `AdoptService` (`src/server/services/__tests__/adopt.service.test.ts`) using vitest with `vi.stubGlobal` / mocked Dockerode and DB:
 
 **`listAdoptable`**
-- Returns stack that has no `homelabman.project_id` label and no matching slug.
+- Returns stack that has no `labrador.project_id` label and no matching slug.
 - Excludes stack whose name matches an existing project slug (never-managed but already adopted).
-- Returns orphaned stack (has `homelabman.project_id` label whose UUID is absent from the DB).
+- Returns orphaned stack (has `labrador.project_id` label whose UUID is absent from the DB).
 - Excludes stack that is fully managed (has label and matching project record).
 - Returns empty array when all running stacks are known slugs.
 
@@ -131,19 +131,19 @@ Uses the existing Playwright + `MockDockerService` pattern (reset via `POST /api
 - Adopting from the dialog closes it and invalidates the project list.
 
 **Adopt variations**
-- Adopting an orphaned stack (has `homelabman.project_id` label but no matching project) succeeds.
+- Adopting an orphaned stack (has `labrador.project_id` label but no matching project) succeeds.
 - Adopting a stack whose name collides with an existing slug shows a failure toast with the reason.
-- Adopting a stack with a logo label (`homelabman.logo_url`) restores the logo on the created project.
+- Adopting a stack with a logo label (`labrador.logo_url`) restores the logo on the created project.
 - Partial batch (some succeed, some fail) shows a warning toast listing failures alongside a success toast for adopted stacks.
 
 ## Logo Label
 
-`deploy.service.ts` (`injectLabels`) must also inject `homelabman.logo_url={project.logoUrl}` when `logoUrl` is set. This allows `AdoptService` to restore the logo when adopting an orphaned stack.
+`deploy.service.ts` (`injectLabels`) must also inject `labrador.logo_url={project.logoUrl}` when `logoUrl` is set. This allows `AdoptService` to restore the logo when adopting an orphaned stack.
 
-During adoption, `adoptStacks` reads the `homelabman.logo_url` label from the stack's containers and sets it as `logoUrl` on the new project record. If the label is absent (never-managed stacks), `logoUrl` is left null.
+During adoption, `adoptStacks` reads the `labrador.logo_url` label from the stack's containers and sets it as `logoUrl` on the new project record. If the label is absent (never-managed stacks), `logoUrl` is left null.
 
 ## What Adoption Does Not Do
 
 - Does not restart or recreate containers.
-- Does not add `homelabman.managed` or `homelabman.project_id` labels to running containers. Labels are injected on next deploy.
+- Does not add `labrador.managed` or `labrador.project_id` labels to running containers. Labels are injected on next deploy.
 - Does not configure exposure providers.

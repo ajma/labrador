@@ -81,14 +81,14 @@ describe('AdoptService.listAdoptable', () => {
     expect(result).toHaveLength(0);
   });
 
-  it('returns orphaned stack (has homelabman.project_id label but slug not in DB)', async () => {
+  it('returns orphaned stack (has labrador.project_id label but slug not in DB)', async () => {
     const container = {
       ...composeContainer('myapp'),
       Labels: {
         'com.docker.compose.project': 'myapp',
         'com.docker.compose.project.working_dir': '/srv/myapp',
-        'homelabman.project_id': 'old-deleted-uuid',
-        'homelabman.managed': 'true',
+        'labrador.project_id': 'old-deleted-uuid',
+        'labrador.managed': 'true',
       },
     };
     const docker = makeDockerMock([container]);
@@ -102,14 +102,14 @@ describe('AdoptService.listAdoptable', () => {
     expect(result[0].stackName).toBe('myapp');
   });
 
-  it('excludes fully managed stack (has homelabman labels and slug exists in DB)', async () => {
+  it('excludes fully managed stack (has labrador labels and slug exists in DB)', async () => {
     const container = {
       ...composeContainer('myapp'),
       Labels: {
         'com.docker.compose.project': 'myapp',
         'com.docker.compose.project.working_dir': '/srv/myapp',
-        'homelabman.project_id': 'existing-uuid',
-        'homelabman.managed': 'true',
+        'labrador.project_id': 'existing-uuid',
+        'labrador.managed': 'true',
       },
     };
     const docker = makeDockerMock([container]);
@@ -233,13 +233,13 @@ describe('AdoptService.adoptStacks', () => {
     expect(result.failed).toEqual([{ stackName: 'otherapp', reason: 'slug already exists' }]);
   });
 
-  it('restores logo from homelabman.logo_url container label', async () => {
+  it('restores logo from labrador.logo_url container label', async () => {
     const container = {
       ...composeContainer('myapp'),
       Labels: {
         'com.docker.compose.project': 'myapp',
         'com.docker.compose.project.working_dir': '/srv/myapp',
-        'homelabman.logo_url': 'https://example.com/logo.png',
+        'labrador.logo_url': 'https://example.com/logo.png',
       },
     };
     const docker = makeDockerMock([container]);

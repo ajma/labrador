@@ -1,10 +1,10 @@
 # Adding a New Exposure Provider
 
-This guide walks you through creating a custom exposure provider for HomelabMan.
+This guide walks you through creating a custom exposure provider for Labrador.
 
 ## Overview
 
-Exposure providers are plugins that handle exposing Docker services to the internet or local network. HomelabMan uses a standardized interface that makes adding new providers straightforward.
+Exposure providers are plugins that handle exposing Docker services to the internet or local network. Labrador uses a standardized interface that makes adding new providers straightforward.
 
 **Examples of providers:**
 - Caddy - Reverse proxy with automatic HTTPS
@@ -133,7 +133,7 @@ registry.register(new TraefikProvider());
 
 ### 3. Implement compose template (optional)
 
-If your provider's service can run as a Docker container, implement `getComposeTemplate()`. During setup, if this returns a compose YAML string, the UI offers to deploy it as a HomelabMan infrastructure project. The project is created with `is_infrastructure: true` and managed like any other project on the dashboard.
+If your provider's service can run as a Docker container, implement `getComposeTemplate()`. During setup, if this returns a compose YAML string, the UI offers to deploy it as a Labrador infrastructure project. The project is created with `is_infrastructure: true` and managed like any other project on the dashboard.
 
 If the user already runs the service externally, they skip deployment and just provide the connection details (API URL, etc.).
 

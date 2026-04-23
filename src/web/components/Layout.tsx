@@ -79,7 +79,7 @@ function SidebarContent({
   return (
     <>
       <div className="flex h-14 items-center border-b border-[rgba(255,255,255,0.12)] px-4">
-        <h1 className="text-lg font-semibold text-[#7db0ff]">HomelabMan</h1>
+        <h1 className="text-lg font-semibold text-[#7db0ff]">Labrador</h1>
       </div>
       <nav className="flex-1 overflow-y-auto p-2">
         <div className="space-y-0.5">
@@ -252,7 +252,7 @@ export function Layout() {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <h1 className="ml-3 text-lg font-semibold text-[#7db0ff]">HomelabMan</h1>
+        <h1 className="ml-3 text-lg font-semibold text-[#7db0ff]">Labrador</h1>
       </header>
 
       {/* Mobile drawer overlay */}

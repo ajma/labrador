@@ -8,7 +8,7 @@ import { getDatabase } from '../db/index.js';
 import { projects } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 
-const COMPOSE_DIR = '/tmp/homelabman';
+const COMPOSE_DIR = '/tmp/labrador';
 
 interface DeploymentListener {
   onProgress: (stage: string, message: string) => void;
@@ -28,7 +28,7 @@ export class DeployService {
     this.exposureService = exposureService;
   }
 
-  /** Inject homelabman labels into compose YAML so containers are trackable */
+  /** Inject labrador labels into compose YAML so containers are trackable */
   private injectLabels(composeContent: string, projectId: string, logoUrl?: string | null): string {
     const parsed = yaml.load(composeContent) as any;
     if (parsed?.services) {
@@ -39,17 +39,17 @@ export class DeployService {
         // Handle both array and object label formats
         if (Array.isArray(parsed.services[serviceName].labels)) {
           parsed.services[serviceName].labels.push(
-            `homelabman.managed=true`,
-            `homelabman.project_id=${projectId}`,
+            `labrador.managed=true`,
+            `labrador.project_id=${projectId}`,
           );
           if (logoUrl) {
-            parsed.services[serviceName].labels.push(`homelabman.logo_url=${logoUrl}`);
+            parsed.services[serviceName].labels.push(`labrador.logo_url=${logoUrl}`);
           }
         } else {
-          parsed.services[serviceName].labels['homelabman.managed'] = 'true';
-          parsed.services[serviceName].labels['homelabman.project_id'] = projectId;
+          parsed.services[serviceName].labels['labrador.managed'] = 'true';
+          parsed.services[serviceName].labels['labrador.project_id'] = projectId;
           if (logoUrl) {
-            parsed.services[serviceName].labels['homelabman.logo_url'] = logoUrl;
+            parsed.services[serviceName].labels['labrador.logo_url'] = logoUrl;
           }
         }
       }

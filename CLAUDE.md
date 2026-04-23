@@ -37,7 +37,7 @@ src/
 
 **Entry point** — `src/server/index.ts` registers all Fastify plugins, decorates the app with `providerRegistry` and `db`, applies JWT auth preHandler to all routes except auth, registers route plugins under `/api/*`, and wires the WebSocket handler at `/ws`. In production it also serves the Vite-built SPA with a catch-all fallback.
 
-**Database** — Drizzle ORM over libSQL (local SQLite file). Schema in `src/server/db/schema.ts` (six tables: `users`, `settings`, `exposure_providers`, `projects`, `container_stats`, `container_updates`). Call `getDatabase()` anywhere server-side to get the singleton. `DATABASE_PATH` env var (default `./data/homelabman.db`). When changing the schema, run `db:generate` then `db:migrate`.
+**Database** — Drizzle ORM over libSQL (local SQLite file). Schema in `src/server/db/schema.ts` (six tables: `users`, `settings`, `exposure_providers`, `projects`, `container_stats`, `container_updates`). Call `getDatabase()` anywhere server-side to get the singleton. `DATABASE_PATH` env var (default `./data/labrador.db`). When changing the schema, run `db:generate` then `db:migrate`.
 
 **Auth** — HttpOnly JWT cookie (`token`). `authenticate` preHandler in `src/server/middleware/auth.middleware.ts` calls `request.jwtVerify()`. All API routes except `/api/auth/*` require it.
 
@@ -51,13 +51,13 @@ The provider system is the core extensibility mechanism:
 2. **BaseProvider** (`src/server/services/exposure/providers/base.provider.ts`) — Abstract class; stores `this.config` after `initialize()`.
 3. **Registry** (`src/server/services/exposure/provider-registry.ts`) — `ExposureProviderRegistry` keyed by `provider.type`, decorated onto Fastify as `app.providerRegistry`. Providers registered at startup in `index.ts`.
 4. **ExposureService** (`src/server/services/exposure/exposure.service.ts`) — Loads provider config from DB, calls `initialize(config)`, then delegates to provider methods.
-5. **Concrete providers**: `CaddyProvider` (Caddy Admin API, routes keyed `homelabman-{projectId}`) and `CloudflareProvider` (Cloudflare Tunnel REST API, routes keyed by domain).
+5. **Concrete providers**: `CaddyProvider` (Caddy Admin API, routes keyed `labrador-{projectId}`) and `CloudflareProvider` (Cloudflare Tunnel REST API, routes keyed by domain).
 
 To add a new provider: implement `ExposureProvider` extending `BaseProvider`, register in `index.ts`.
 
 ### Adopt Stacks
 
-`POST /api/projects/adopt` detects unmanaged Docker Compose stacks running on the host (containers with `com.docker.compose.project` label but no `homelabman.managed` label) and imports them as projects. `GET /api/projects/adoptable` returns the current list. The adopt service (`src/server/services/adopt.service.ts`) handles slug conflict detection and restores metadata from homelabman Docker labels (`homelabman.logo_url`, etc.) if present.
+`POST /api/projects/adopt` detects unmanaged Docker Compose stacks running on the host (containers with `com.docker.compose.project` label but no `labrador.managed` label) and imports them as projects. `GET /api/projects/adoptable` returns the current list. The adopt service (`src/server/services/adopt.service.ts`) handles slug conflict detection and restores metadata from labrador Docker labels (`labrador.logo_url`, etc.) if present.
 
 ### Frontend
 

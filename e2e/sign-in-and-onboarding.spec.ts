@@ -75,7 +75,7 @@ test('completes onboarding with Cloudflare provider and lands on dashboard', asy
   await expect(page.getByText('Exposure providers configured: Cloudflare')).toBeVisible();
   await page.getByRole('button', { name: 'Get Started' }).click();
 
-  await expect(page.getByText('Setup complete! Welcome to HomelabMan.')).toBeVisible();
+  await expect(page.getByText('Setup complete! Welcome to Labrador.')).toBeVisible();
 
   await page.goto('/');
   await expect(page).toHaveURL('/');
@@ -99,7 +99,7 @@ test('completes onboarding happy path and lands on dashboard', async ({ page }) 
   await expect(page.getByRole('heading', { name: 'Setup Complete' })).toBeVisible();
   await page.getByRole('button', { name: 'Get Started' }).click();
 
-  await expect(page.getByText('Setup complete! Welcome to HomelabMan.')).toBeVisible();
+  await expect(page.getByText('Setup complete! Welcome to Labrador.')).toBeVisible();
 
   await page.goto('/');
   await expect(page).toHaveURL('/');

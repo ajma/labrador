@@ -1,8 +1,8 @@
 import Dockerode from 'dockerode';
 import { execa } from 'execa';
 
-const LABEL_MANAGED = 'homelabman.managed';
-const LABEL_PROJECT_ID = 'homelabman.project_id';
+const LABEL_MANAGED = 'labrador.managed';
+const LABEL_PROJECT_ID = 'labrador.project_id';
 
 export class DockerService {
   private docker: Dockerode;
@@ -30,7 +30,7 @@ export class DockerService {
     return this.docker.listContainers({ all: true, filters });
   }
 
-  /** List only homelabman-managed containers */
+  /** List only labrador-managed containers */
   async listManagedContainers(): Promise<Dockerode.ContainerInfo[]> {
     return this.docker.listContainers({
       all: true,
@@ -159,8 +159,8 @@ export class DockerService {
 
   /**
    * Reconcile project statuses on startup.
-   * Scans for containers with homelabman.managed=true label,
-   * groups by homelabman.project_id, and returns a map of projectId -> status.
+   * Scans for containers with labrador.managed=true label,
+   * groups by labrador.project_id, and returns a map of projectId -> status.
    */
   async reconcileProjectStatuses(): Promise<Map<string, 'running' | 'stopped' | 'error'>> {
     const containers = await this.listManagedContainers();

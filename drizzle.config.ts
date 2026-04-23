@@ -5,6 +5,6 @@ export default defineConfig({
   out: './src/server/db/migrations',
   dialect: 'turso',
   dbCredentials: {
-    url: process.env.DATABASE_PATH || './data/homelabman.db',
+    url: process.env.DATABASE_PATH || './data/labrador.db',
   },
 });

@@ -10,7 +10,7 @@ import { seedDatabase } from './helpers/seed.js';
 import { setServer } from './server-singleton.js';
 
 export default async function globalSetup() {
-  const dbFilePath = join(tmpdir(), `homelabman-test-${randomUUID()}.db`);
+  const dbFilePath = join(tmpdir(), `labrador-test-${randomUUID()}.db`);
 
   const mocks = {
     dockerService: new MockDockerService(),
