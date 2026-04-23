@@ -103,16 +103,16 @@ export function Containers() {
       )}
 
       {!isLoading && containers && containers.length > 0 && filtered?.length === 0 && (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-8 text-center">
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.16] p-8 text-center">
           <p className="text-sm text-[rgba(255,255,255,0.35)]">No containers match your filter.</p>
         </div>
       )}
 
       {!isLoading && filtered && filtered.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.10] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-[rgba(255,255,255,0.02)]">
+              <tr className="border-b border-white/[0.14] bg-[rgba(255,255,255,0.02)]">
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Name</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Image</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Container ID</th>
@@ -125,7 +125,7 @@ export function Containers() {
               {paginated!.map((container) => (
                 <tr
                   key={container.Id}
-                  className={`border-b border-white/[0.06] last:border-0 ${container.State === 'running' ? 'bg-[rgba(74,222,128,0.015)]' : ''}`}
+                  className={`border-b border-white/[0.18] last:border-0 ${container.State === 'running' ? 'bg-[rgba(74,222,128,0.015)]' : ''}`}
                 >
                   <td className="px-4 py-3 text-sm font-medium text-[rgba(255,255,255,0.85)]">{containerName(container.Names)}</td>
                   <td className="px-4 py-3 text-sm text-[rgba(255,255,255,0.45)]">{container.Image}</td>

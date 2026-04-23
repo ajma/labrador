@@ -235,7 +235,7 @@ export function CloudflareProviderForm({ value, onChange, detectedStack }: Props
 
       {value.accountId && accounts.length > 0 && (
         <>
-          <div className="border-t border-white/[0.08]" />
+          <div className="border-t border-white/[0.14]" />
           {detectedStack ? (
             <div className="space-y-2.5">
               <p className="text-xs font-medium text-[rgba(255,255,255,0.6)]">cloudflared container</p>

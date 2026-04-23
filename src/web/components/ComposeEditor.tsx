@@ -55,7 +55,7 @@ const darkTheme = EditorView.theme({
   '.cm-gutters': {
     background: 'hsl(var(--background) / 0.6)',
     border: 'none',
-    borderRight: '1px solid rgba(255,255,255,0.06)',
+    borderRight: '1px solid rgba(255,255,255,0.12)',
     color: 'rgba(255,255,255,0.22)',
     padding: '0 8px',
   },

@@ -123,7 +123,7 @@ function CreateAccountStep({ onComplete }: { onComplete: () => void }) {
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] p-6">
+    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
       <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Create Admin Account</h2>
       <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">
         Set up the administrator account for your Labrador instance.
@@ -241,7 +241,7 @@ function ConfigureProvidersStep({
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] p-6">
+    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
       <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Configure Exposure Providers</h2>
       <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">
         Optionally configure how your services are exposed to the internet. You can skip this and configure later in Settings.
@@ -249,7 +249,7 @@ function ConfigureProvidersStep({
 
       <div className="space-y-3">
         {/* Caddy Provider */}
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.14] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
               <p className="text-sm font-medium text-[rgba(255,255,255,0.85)]">Caddy</p>
@@ -287,12 +287,12 @@ function ConfigureProvidersStep({
             </div>
           </div>
           {setupResults['caddy'] && expandedProvider !== 'caddy' && (
-            <div className="border-t border-white/[0.06] px-4 pb-3">
+            <div className="border-t border-white/[0.18] px-4 pb-3">
               <SetupCheckDisplay result={setupResults['caddy']} />
             </div>
           )}
           {expandedProvider === 'caddy' && (
-            <div className="border-t border-white/[0.06] px-4 py-4 space-y-3">
+            <div className="border-t border-white/[0.18] px-4 py-4 space-y-3">
               <div className="space-y-1.5">
                 <label htmlFor="caddy-api-url" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">API URL</label>
                 <input
@@ -315,7 +315,7 @@ function ConfigureProvidersStep({
         </div>
 
         {/* Cloudflare Provider */}
-        <div className="rounded-xl border border-white/[0.08] overflow-hidden">
+        <div className="rounded-xl border border-white/[0.14] overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3">
             <div>
               <p className="text-sm font-medium text-[rgba(255,255,255,0.85)]">Cloudflare</p>
@@ -347,7 +347,7 @@ function ConfigureProvidersStep({
             </div>
           </div>
           {expandedProvider === 'cloudflare' && (
-            <div className="border-t border-white/[0.06] px-4 py-4 space-y-4">
+            <div className="border-t border-white/[0.18] px-4 py-4 space-y-4">
               <CloudflareProviderForm value={cfFormValue} onChange={setCfFormValue} detectedStack={detectedStack} />
               <button
                 onClick={saveCloudflare}
@@ -392,10 +392,10 @@ function CompleteStep({
   if (providerConfig.cloudflare) configuredProviders.push('Cloudflare');
 
   return (
-    <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.03)] p-6">
+    <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.03)] p-6">
       <h2 className="mb-1 text-lg font-semibold text-[rgba(255,255,255,0.88)]">Setup Complete</h2>
       <p className="mb-5 text-sm text-[rgba(255,255,255,0.38)]">Your Labrador instance is ready to use.</p>
-      <div className="mb-5 rounded-xl border border-white/[0.08] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+      <div className="mb-5 rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.02)] px-4 py-3">
         <p className="mb-2 text-xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Configuration Summary</p>
         <ul className="space-y-1 text-sm text-[rgba(255,255,255,0.55)]">
           <li>Admin account created</li>

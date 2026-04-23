@@ -29,7 +29,7 @@ export function AdoptStacksDialog({ open, onClose }: Props) {
   return (
     <dialog
       ref={dialogRef}
-      className="m-auto w-full max-w-md rounded-2xl border border-white/[0.10] bg-popover p-6 text-white backdrop:bg-black/60 backdrop:backdrop-blur-sm"
+      className="m-auto w-full max-w-md rounded-2xl border border-white/[0.16] bg-popover p-6 text-white backdrop:bg-black/60 backdrop:backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}

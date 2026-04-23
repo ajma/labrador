@@ -47,9 +47,9 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="relative flex h-[80vh] w-full max-w-5xl flex-col rounded-2xl border border-white/[0.12] bg-background/[0.97] shadow-xl">
+      <div className="relative flex h-[80vh] w-full max-w-5xl flex-col rounded-2xl border border-white/[0.18] bg-background/[0.97] shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4">
+        <div className="flex items-center justify-between border-b border-white/[0.14] px-6 py-4">
           <h2 className="text-lg font-semibold text-[rgba(255,255,255,0.88)]">Choose a Template</h2>
           <button
             onClick={onClose}
@@ -61,7 +61,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
         </div>
 
         {/* Search + filters */}
-        <div className="space-y-3 border-b border-white/[0.08] px-6 py-4">
+        <div className="space-y-3 border-b border-white/[0.14] px-6 py-4">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[rgba(255,255,255,0.28)]" />
             <input
@@ -118,7 +118,7 @@ export function TemplatePickerModal({ onSelect, onClose }: TemplatePickerModalPr
                 key={template.id}
                 onClick={() => handleSelect(template.id)}
                 disabled={loadingId !== null}
-                className="flex items-start gap-3 rounded-xl border border-white/[0.10] bg-[rgba(255,255,255,0.02)] p-4 text-left transition-colors hover:bg-[rgba(255,255,255,0.05)] disabled:opacity-50"
+                className="flex items-start gap-3 rounded-xl border border-white/[0.16] bg-[rgba(255,255,255,0.02)] p-4 text-left transition-colors hover:bg-[rgba(255,255,255,0.05)] disabled:opacity-50"
               >
                 {template.logoUrl ? (
                   <img

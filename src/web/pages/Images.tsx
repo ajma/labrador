@@ -184,7 +184,7 @@ export function Images() {
 
       {/* Pull Image Form */}
       {isPulling && (
-        <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.02)] p-5">
+        <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.02)] p-5">
           <h3 className="mb-4 text-md font-medium text-[rgba(255,255,255,0.85)]">Pull Image</h3>
           <div className="space-y-1.5">
             <label htmlFor="image-name" className="text-xs font-medium text-[rgba(255,255,255,0.6)]">
@@ -248,17 +248,17 @@ export function Images() {
 
       {/* No filter results */}
       {!isLoading && images && images.length > 0 && filteredImages?.length === 0 && (
-        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.10] p-8">
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-white/[0.16] p-8">
           <p className="text-sm text-[rgba(255,255,255,0.35)]">No images match your filter.</p>
         </div>
       )}
 
       {/* Table */}
       {!isLoading && filteredImages && filteredImages.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.10] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-[rgba(255,255,255,0.02)]">
+              <tr className="border-b border-white/[0.14] bg-[rgba(255,255,255,0.02)]">
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Repository / Tag</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Image ID</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Size</th>
@@ -273,7 +273,7 @@ export function Images() {
                 const isNone = tag === '<none>';
                 const containerCount = containerCountByImage.get(image.Id) || 0;
                 return (
-                <tr key={image.Id} className="border-b border-white/[0.06] last:border-0">
+                <tr key={image.Id} className="border-b border-white/[0.18] last:border-0">
                   <td className={`px-4 py-3 text-sm font-medium ${isNone ? 'text-[rgba(255,255,255,0.35)] italic' : 'text-[rgba(255,255,255,0.85)]'}`}>
                     {tag}
                   </td>

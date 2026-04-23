@@ -40,7 +40,7 @@ function AnchorNav({ active }: { active: SectionId }) {
   };
 
   return (
-    <nav className="flex items-stretch gap-6 px-6 mb-8 border-b border-white/[0.10] sticky top-0 bg-background z-10">
+    <nav className="flex items-stretch gap-6 px-6 mb-8 border-b border-white/[0.16] sticky top-0 bg-background z-10">
       {SECTIONS.map((s) => (
         <button
           key={s.id}
@@ -317,11 +317,11 @@ function ProviderModal({
         e.preventDefault();
         handleCancel();
       }}
-      className="m-auto w-full max-w-lg rounded-2xl border border-white/[0.10] bg-popover p-0 shadow-2xl backdrop:bg-black/60"
+      className="m-auto w-full max-w-lg rounded-2xl border border-white/[0.16] bg-popover p-0 shadow-2xl backdrop:bg-black/60"
     >
       <div className="flex flex-col" style={{ maxHeight: '90vh' }}>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/[0.08] px-6 py-4 shrink-0">
+        <div className="flex items-center justify-between border-b border-white/[0.14] px-6 py-4 shrink-0">
           <h3 className="text-lg font-semibold text-[rgba(255,255,255,0.88)]">
             {provider ? 'Edit Provider' : 'Add Provider'}
           </h3>
@@ -345,7 +345,7 @@ function ProviderModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 border-t border-white/[0.08] px-6 py-4 shrink-0">
+        <div className="flex items-center justify-end gap-2 border-t border-white/[0.14] px-6 py-4 shrink-0">
           <button
             type="button"
             onClick={handleCancel}
@@ -468,7 +468,7 @@ function ProvidersSection() {
       {providersQuery.isLoading ? (
         <p className="text-sm text-[rgba(255,255,255,0.35)]">Loading providers…</p>
       ) : providers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/[0.10] px-6 py-10 text-center">
+        <div className="rounded-2xl border border-dashed border-white/[0.16] px-6 py-10 text-center">
           <p className="text-sm text-[rgba(255,255,255,0.35)]">
             No providers yet.{' '}
             <button onClick={() => setModalState({ mode: 'add' })} className="text-primary hover:underline">
@@ -478,9 +478,9 @@ function ProvidersSection() {
           </p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/[0.10] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
           {providers.map((provider, i) => (
-            <div key={provider.id} className={`px-5 py-4 ${i > 0 ? 'border-t border-white/[0.06]' : ''}`}>
+            <div key={provider.id} className={`px-5 py-4 ${i > 0 ? 'border-t border-white/[0.18]' : ''}`}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -672,7 +672,7 @@ function GroupsSection() {
       </div>
 
       {groups.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/[0.10] px-6 py-10 text-center">
+        <div className="rounded-2xl border border-dashed border-white/[0.16] px-6 py-10 text-center">
           <div className="mb-3 flex justify-center">
             <Layers className="h-8 w-8 text-[rgba(255,255,255,0.18)]" />
           </div>
@@ -687,7 +687,7 @@ function GroupsSection() {
 
             return (
               <div key={group.id}>
-                <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 ${groupIndex === 0 ? '' : 'mt-1'} bg-[rgba(255,255,255,0.03)] border border-white/[0.06]`}>
+                <div className={`flex items-center gap-2 rounded-xl px-3 py-2.5 ${groupIndex === 0 ? '' : 'mt-1'} bg-[rgba(255,255,255,0.03)] border border-white/[0.18]`}>
                   <div className="flex flex-col">
                     <button
                       onClick={() => moveGroupUp(groupIndex)}
@@ -750,7 +750,7 @@ function GroupsSection() {
                 </div>
 
                 {gProjects.length > 0 && (
-                  <div className="ml-6 border-l border-white/[0.06] pl-3 mt-0.5 space-y-0.5 mb-1">
+                  <div className="ml-6 border-l border-white/[0.18] pl-3 mt-0.5 space-y-0.5 mb-1">
                     {gProjects.map((project, projectIndex) => (
                       <div key={project.id} className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-[rgba(255,255,255,0.02)] transition-colors">
                         <div className="flex flex-col">
@@ -782,7 +782,7 @@ function GroupsSection() {
                             const target = e.target.value === '__ungrouped__' ? null : e.target.value;
                             moveProjectToGroup(project, target);
                           }}
-                          className="appearance-none rounded-lg border border-white/[0.10] bg-transparent px-2 py-0.5 text-xs text-[rgba(255,255,255,0.35)] hover:border-white/[0.20] transition-colors cursor-pointer"
+                          className="appearance-none rounded-lg border border-white/[0.16] bg-transparent px-2 py-0.5 text-xs text-[rgba(255,255,255,0.35)] hover:border-white/[0.20] transition-colors cursor-pointer"
                         >
                           <option value={group.id}>{group.name}</option>
                           {groups

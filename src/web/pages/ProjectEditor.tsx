@@ -199,7 +199,7 @@ function GroupCombobox({
       </div>
 
       {open && (
-        <div className="absolute z-20 mt-1 w-full rounded-xl border border-white/[0.12] bg-popover shadow-xl overflow-hidden">
+        <div className="absolute z-20 mt-1 w-full rounded-xl border border-white/[0.18] bg-popover shadow-xl overflow-hidden">
           {filtered.length === 0 && !showCreate && (
             <p className="px-4 py-3 text-sm text-[rgba(255,255,255,0.35)]">No groups yet</p>
           )}
@@ -218,7 +218,7 @@ function GroupCombobox({
               type="button"
               onMouseDown={handleCreate}
               disabled={createGroup.isPending}
-              className="flex w-full items-center gap-2 border-t border-white/[0.06] px-4 py-2.5 text-sm text-primary hover:bg-primary/[0.06] transition-colors disabled:opacity-40"
+              className="flex w-full items-center gap-2 border-t border-white/[0.18] px-4 py-2.5 text-sm text-primary hover:bg-primary/[0.06] transition-colors disabled:opacity-40"
             >
               <Plus className="h-3.5 w-3.5" />
               {createGroup.isPending ? 'Creating…' : `Create "${query.trim()}"`}
@@ -301,10 +301,10 @@ function LogsModal({
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="relative flex h-[94vh] w-full max-w-6xl flex-col rounded-2xl border border-white/[0.12] bg-background/[0.97] shadow-2xl">
+      <div className="relative flex h-[94vh] w-full max-w-6xl flex-col rounded-2xl border border-white/[0.18] bg-background/[0.97] shadow-2xl">
 
         {/* Modal header */}
-        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.08] px-6 py-4">
+        <div className="flex shrink-0 items-center justify-between border-b border-white/[0.14] px-6 py-4">
           <div className="flex items-center gap-2.5">
             <ScrollText className="h-4 w-4 text-[rgba(255,255,255,0.30)]" />
             <h2 className="font-rubik text-md font-semibold text-[rgba(255,255,255,0.88)]">
@@ -319,7 +319,7 @@ function LogsModal({
               type="button"
               onClick={onRefresh}
               disabled={isFetching}
-              className="flex items-center gap-1.5 rounded-lg border border-white/[0.12] px-3 py-1.5 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)] disabled:opacity-40"
+              className="flex items-center gap-1.5 rounded-lg border border-white/[0.18] px-3 py-1.5 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)] disabled:opacity-40"
             >
               <RefreshCw className={`h-3 w-3 ${isFetching ? 'animate-spin' : ''}`} />
               {isFetching ? 'Refreshing…' : 'Refresh'}
@@ -719,7 +719,7 @@ export function ProjectEditor() {
       <AdoptStacksDialog open={adoptDialogOpen} onClose={() => setAdoptDialogOpen(false)} />
 
       {/* ── Sticky header ── */}
-      <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-white/[0.08] bg-background/[0.92] px-6 py-3 backdrop-blur-md">
+      <header className="sticky top-0 z-10 flex items-center gap-3 border-b border-white/[0.14] bg-background/[0.92] px-6 py-3 backdrop-blur-md">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {watch('logoUrl') && (
             <img
@@ -794,7 +794,7 @@ export function ProjectEditor() {
         className="grid flex-1 grid-cols-1 lg:grid-cols-2"
       >
         {/* ── LEFT: Config ── */}
-        <div className="flex flex-col gap-6 border-b border-white/[0.08] p-6 lg:border-b-0 lg:border-r">
+        <div className="flex flex-col gap-6 border-b border-white/[0.14] p-6 lg:border-b-0 lg:border-r">
 
           {/* Name */}
           <div className="space-y-1.5">
@@ -849,7 +849,7 @@ export function ProjectEditor() {
           </div>
 
           {/* Exposure */}
-          <div className="space-y-3 rounded-2xl border border-white/[0.08] p-4">
+          <div className="space-y-3 rounded-2xl border border-white/[0.14] p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-rubik text-sm font-medium text-[rgba(255,255,255,0.85)]">
@@ -1035,7 +1035,7 @@ export function ProjectEditor() {
           {/* Ops bar — edit mode only */}
           {isEditing && project && (
             <div className="space-y-2">
-              <div className="flex items-center gap-3 rounded-xl border border-white/[0.08] bg-[rgba(255,255,255,0.02)] px-4 py-2.5">
+              <div className="flex items-center gap-3 rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.02)] px-4 py-2.5">
 
                 {/* Left zone: deployment controls */}
                 <div className="flex flex-1 items-center gap-2">
@@ -1128,7 +1128,7 @@ export function ProjectEditor() {
                 <button
                   type="button"
                   onClick={() => setShowLogsModal(true)}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.12] px-3 py-1 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)]"
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg border border-white/[0.18] px-3 py-1 text-xs text-[rgba(255,255,255,0.45)] transition-colors hover:border-white/[0.22] hover:text-[rgba(255,255,255,0.7)]"
                 >
                   <ScrollText className="h-3.5 w-3.5" />
                   Logs
@@ -1185,7 +1185,7 @@ export function ProjectEditor() {
 
       {/* ── Danger zone — edit mode only ── */}
       {isEditing && project && (
-        <div className="border-t border-white/[0.08] px-6 py-8">
+        <div className="border-t border-white/[0.14] px-6 py-8">
           <h3 className="font-rubik text-md font-semibold text-[rgba(248,113,113,0.75)]">
             Delete Project
           </h3>

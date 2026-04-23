@@ -33,7 +33,7 @@ const statusConfig: Record<Project['status'], { dot: string; label: string; labe
     dot: 'bg-[rgba(255,255,255,0.20)]',
     label: 'Stopped',
     labelColor: 'text-[rgba(255,255,255,0.35)]',
-    cardBorder: 'border-white/[0.08]',
+    cardBorder: 'border-white/[0.14]',
     cardBg: 'bg-[rgba(255,255,255,0.025)]',
     cardHover: 'hover:bg-[rgba(255,255,255,0.04)]',
   },
@@ -155,7 +155,7 @@ export function ProjectCard({ project, stats, onDeploy, onStop, onRestart }: Pro
       </div>
 
       {/* Footer actions */}
-      <div className="mt-auto flex items-center gap-1.5 border-t border-white/[0.06] px-4 py-2.5">
+      <div className="mt-auto flex items-center gap-1.5 border-t border-white/[0.18] px-4 py-2.5">
         {(project.status === 'stopped' || project.status === 'error') && (
           <button
             onClick={(e) => { e.stopPropagation(); onDeploy(project.id); }}

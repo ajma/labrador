@@ -24,7 +24,7 @@ export function StatsDisplay({ stats }: StatsDisplayProps) {
       {stats.map((s) => (
         <div
           key={s.containerId}
-          className="rounded-xl border border-white/[0.08] bg-[rgba(255,255,255,0.03)] p-3"
+          className="rounded-xl border border-white/[0.14] bg-[rgba(255,255,255,0.03)] p-3"
         >
           <div className="mb-2.5 flex items-center justify-between">
             <span className="text-sm font-medium text-[rgba(255,255,255,0.85)]">{s.name}</span>

@@ -37,7 +37,7 @@ export function App() {
         toastOptions={{
           classNames: {
             toast:
-              'group flex items-center gap-3 rounded-2xl border border-white/[0.12] bg-[rgba(18,26,42,0.96)] px-4 py-3 text-sm text-[rgba(255,255,255,0.85)] shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md',
+              'group flex items-center gap-3 rounded-2xl border border-white/[0.18] bg-[rgba(18,26,42,0.96)] px-4 py-3 text-sm text-[rgba(255,255,255,0.85)] shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md',
             title: 'font-medium text-[rgba(255,255,255,0.88)]',
             description: 'text-[rgba(255,255,255,0.50)]',
             success: 'border-[rgba(74,222,128,0.25)] bg-[rgba(18,26,42,0.96)]',
@@ -45,7 +45,7 @@ export function App() {
             warning: 'border-[rgba(250,204,21,0.25)] bg-[rgba(18,26,42,0.96)]',
             icon: 'text-[rgba(255,255,255,0.50)]',
             closeButton:
-              'rounded-lg border border-white/[0.10] bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.40)] hover:bg-[rgba(255,255,255,0.10)] hover:text-[rgba(255,255,255,0.70)]',
+              'rounded-lg border border-white/[0.16] bg-[rgba(255,255,255,0.05)] text-[rgba(255,255,255,0.40)] hover:bg-[rgba(255,255,255,0.10)] hover:text-[rgba(255,255,255,0.70)]',
           },
         }}
       />

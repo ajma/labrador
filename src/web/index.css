@@ -5,43 +5,43 @@
 @layer base {
   :root {
     /* Background: deep warm-black with golden tint */
-    --background: 40 18% 6%;
+    --background: 40 15% 7%;
     --foreground: 40 5% 92%;
 
     /* Card: slightly elevated dark surface */
-    --card: 37 16% 10%;
+    --card: 37 12% 12%;
     --card-foreground: 40 5% 92%;
 
     /* Popover */
-    --popover: 37 16% 10%;
+    --popover: 37 12% 12%;
     --popover-foreground: 40 5% 92%;
 
     /* Primary: golden labrador */
-    --primary: 37 50% 55%;
-    --primary-foreground: 37 30% 7%;
+    --primary: 37 55% 65%;
+    --primary-foreground: 37 40% 8%;
 
     /* Secondary: hover surface */
-    --secondary: 37 12% 12%;
-    --secondary-foreground: 37 5% 60%;
+    --secondary: 37 10% 14%;
+    --secondary-foreground: 37 5% 65%;
 
     /* Muted: subdued surface + muted text */
-    --muted: 37 10% 13%;
-    --muted-foreground: 37 5% 45%;
+    --muted: 37 8% 15%;
+    --muted-foreground: 37 5% 50%;
 
     /* Accent: hover surface */
-    --accent: 37 12% 12%;
-    --accent-foreground: 37 5% 60%;
+    --accent: 37 10% 14%;
+    --accent-foreground: 37 5% 65%;
 
     /* Destructive: #f87171 */
     --destructive: 0 72% 71%;
     --destructive-foreground: 40 5% 92%;
 
     /* Border: warm-tinted */
-    --border: 37 10% 18%;
-    --input: 37 10% 18%;
+    --border: 37 8% 22%;
+    --input: 37 8% 22%;
 
     /* Ring: same as primary for focus */
-    --ring: 37 50% 55%;
+    --ring: 37 55% 65%;
 
     /* Border-radius baseline: rounded-xl (12px) */
     --radius: 0.75rem;

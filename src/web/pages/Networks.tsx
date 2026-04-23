@@ -131,7 +131,7 @@ export function Networks() {
 
       {/* Create Network Form */}
       {isCreating && (
-        <div className="rounded-2xl border border-white/[0.10] bg-[rgba(255,255,255,0.02)] p-5">
+        <div className="rounded-2xl border border-white/[0.16] bg-[rgba(255,255,255,0.02)] p-5">
           <h3 className="mb-4 text-md font-medium text-[rgba(255,255,255,0.85)]">Create Network</h3>
           <div className="space-y-4">
             <div className="space-y-1.5">
@@ -202,10 +202,10 @@ export function Networks() {
 
       {/* Table */}
       {!isLoading && networks && networks.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.10] overflow-hidden">
+        <div className="rounded-2xl border border-white/[0.16] overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.08] bg-[rgba(255,255,255,0.02)]">
+              <tr className="border-b border-white/[0.14] bg-[rgba(255,255,255,0.02)]">
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Name</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Driver</th>
                 <th className="px-4 py-3 text-left text-2xs font-semibold uppercase tracking-[0.1em] text-[rgba(255,255,255,0.35)]">Scope</th>
@@ -216,7 +216,7 @@ export function Networks() {
             </thead>
             <tbody>
               {networks.map((network) => (
-                <tr key={network.Id} className="border-b border-white/[0.06] last:border-0">
+                <tr key={network.Id} className="border-b border-white/[0.18] last:border-0">
                   <td className="px-4 py-3 text-sm font-medium text-[rgba(255,255,255,0.85)]">{network.Name}</td>
                   <td className="px-4 py-3">
                     <DriverBadge driver={network.Driver} />
