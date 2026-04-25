@@ -74,9 +74,19 @@ Then open http://localhost:3000 in your browser.
 
 ## Development
 
+The recommended way to develop is inside a Docker container, which mirrors the production environment and avoids local dependency issues:
+
 ```bash
 git clone https://github.com/yourusername/labrador.git
 cd labrador
+pnpm dev:docker
+```
+
+This starts Vite (port 5173) and Fastify (port 3000) inside a container with live-reloading via bind mounts. Source changes on your host are reflected immediately.
+
+To develop without Docker:
+
+```bash
 pnpm install
 pnpm dev
 ```

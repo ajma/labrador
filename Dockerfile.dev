@@ -1,0 +1,11 @@
+FROM node:24-alpine
+WORKDIR /app
+
+RUN corepack enable && apk add --no-cache docker-cli docker-cli-compose
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
+EXPOSE 3000 5173
+
+CMD ["pnpm", "dev"]
