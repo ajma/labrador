@@ -203,6 +203,31 @@ export class DockerService {
     return this.docker.pruneImages();
   }
 
+  /** List all Docker volumes */
+  async listVolumes(): Promise<Dockerode.VolumeInspectInfo[]> {
+    const result = await this.docker.listVolumes();
+    return result.Volumes || [];
+  }
+
+  /** Create a Docker volume */
+  async createVolume(
+    name: string,
+    driver = "local",
+  ): Promise<Dockerode.VolumeCreateResponse> {
+    return this.docker.createVolume({ Name: name, Driver: driver });
+  }
+
+  /** Remove a Docker volume */
+  async removeVolume(name: string): Promise<void> {
+    const volume = this.docker.getVolume(name);
+    await volume.remove();
+  }
+
+  /** Prune unused volumes */
+  async pruneVolumes(): Promise<Dockerode.PruneVolumesInfo> {
+    return this.docker.pruneVolumes();
+  }
+
   /**
    * Reconcile project statuses on startup.
    * Scans for containers with labrador.managed=true label,

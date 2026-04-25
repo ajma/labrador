@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronRight,
   Box,
+  Database,
 } from "lucide-react";
 import { api } from "../lib/api";
 import { useQueryClient } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ const dockerNavItems = [
   { to: "/containers", icon: Box, label: "Containers" },
   { to: "/images", icon: HardDrive, label: "Images" },
   { to: "/networks", icon: Network, label: "Networks" },
+  { to: "/volumes", icon: Database, label: "Volumes" },
 ];
 
 function NavItem({

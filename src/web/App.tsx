@@ -10,6 +10,7 @@ import { Settings } from "./pages/Settings";
 import { Networks } from "./pages/Networks";
 import { Images } from "./pages/Images";
 import { Containers } from "./pages/Containers";
+import { Volumes } from "./pages/Volumes";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { data, isLoading } = useAuthStatus();
@@ -70,6 +71,7 @@ export function App() {
           <Route path="containers" element={<Containers />} />
           <Route path="networks" element={<Networks />} />
           <Route path="images" element={<Images />} />
+          <Route path="volumes" element={<Volumes />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Routes>

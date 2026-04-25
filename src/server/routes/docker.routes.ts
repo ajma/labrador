@@ -169,4 +169,77 @@ export async function dockerRoutes(app: FastifyInstance) {
     const result = await dockerService.pruneImages();
     return result;
   });
+
+  // GET /volumes - List Docker volumes with container counts
+  app.get<{ Querystring: { page?: string; pageSize?: string } }>(
+    "/volumes",
+    async (request, reply) => {
+      if (!dockerService) {
+        return reply.code(503).send({ error: "Docker is not available" });
+      }
+      const page = Math.max(1, parseInt(request.query.page ?? "1", 10));
+      const pageSize = Math.min(
+        50,
+        Math.max(1, parseInt(request.query.pageSize ?? "15", 10)),
+      );
+      const allVolumes = await dockerService.listVolumes();
+      const containers = await dockerService.listContainers();
+
+      const volumeContainerCount = new Map<string, number>();
+      for (const container of containers) {
+        for (const mount of (container as any).Mounts || []) {
+          if (mount.Type === "volume" && mount.Name) {
+            volumeContainerCount.set(
+              mount.Name,
+              (volumeContainerCount.get(mount.Name) || 0) + 1,
+            );
+          }
+        }
+      }
+
+      const paged = allVolumes.slice((page - 1) * pageSize, page * pageSize);
+      const data = paged.map((v) => ({
+        ...v,
+        ContainerCount: volumeContainerCount.get(v.Name) || 0,
+      }));
+      return { data, total: allVolumes.length };
+    },
+  );
+
+  // POST /volumes - Create a volume
+  app.post<{ Body: { name: string; driver?: string } }>(
+    "/volumes",
+    async (request, reply) => {
+      if (!dockerService) {
+        return reply.code(503).send({ error: "Docker is not available" });
+      }
+      const { name, driver } = request.body;
+      if (!name || typeof name !== "string") {
+        return reply.code(400).send({ error: "Volume name is required" });
+      }
+      const volume = await dockerService.createVolume(name, driver);
+      return { name: volume.Name };
+    },
+  );
+
+  // DELETE /volumes/:name - Remove a volume
+  app.delete<{ Params: { name: string } }>(
+    "/volumes/:name",
+    async (request, reply) => {
+      if (!dockerService) {
+        return reply.code(503).send({ error: "Docker is not available" });
+      }
+      await dockerService.removeVolume(request.params.name);
+      return { success: true };
+    },
+  );
+
+  // POST /volumes/prune - Prune unused volumes
+  app.post("/volumes/prune", async (_request, reply) => {
+    if (!dockerService) {
+      return reply.code(503).send({ error: "Docker is not available" });
+    }
+    const result = await dockerService.pruneVolumes();
+    return result;
+  });
 }
