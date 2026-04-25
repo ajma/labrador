@@ -201,7 +201,7 @@ function ProviderForm({
   onDirty,
 }: {
   provider?: ExposureProviderConfig;
-  formRef: React.RefObject<HTMLFormElement | null>;
+  formRef: React.RefObject<HTMLFormElement>;
   onSubmit: (data: ExposureProviderInput) => void;
   onDirty: () => void;
 }) {

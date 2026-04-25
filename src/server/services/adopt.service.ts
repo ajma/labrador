@@ -207,7 +207,10 @@ export class AdoptService {
       lines.push(`#   ${serviceName}:`);
       lines.push(`#     image: ${container.Config?.Image ?? "unknown"}`);
 
-      const portBindings = container.HostConfig?.PortBindings ?? {};
+      const portBindings = (container.HostConfig?.PortBindings ?? {}) as Record<
+        string,
+        Array<{ HostIp?: string; HostPort?: string }> | undefined
+      >;
       const ports = Object.entries(portBindings).flatMap(
         ([containerPort, hostBindings]) =>
           (hostBindings ?? []).map(

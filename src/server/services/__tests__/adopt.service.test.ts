@@ -2,13 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../db/index.js", () => ({ getDatabase: vi.fn() }));
 vi.mock("fs/promises", () => ({
-  default: { readFile: vi.fn() },
   readFile: vi.fn(),
 }));
 
 import { getDatabase } from "../../db/index.js";
 import { AdoptService } from "../adopt.service.js";
-import * as fsModule from "fs/promises";
+import { readFile } from "fs/promises";
 
 function makeDockerMock(containers: any[] = []) {
   return {
@@ -165,7 +164,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("myapp")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  web:\n    image: nginx\n",
     );
     const service = new AdoptService(docker as any);
@@ -189,7 +188,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("myapp")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockRejectedValue(new Error("ENOENT"));
+    (readFile as any).mockRejectedValue(new Error("ENOENT"));
     const service = new AdoptService(docker as any);
 
     const result = await service.adoptStacks(["myapp"], "user-1");
@@ -210,7 +209,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("myapp", "/srv/myapp")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockRejectedValue(new Error("ENOENT"));
+    (readFile as any).mockRejectedValue(new Error("ENOENT"));
     const service = new AdoptService(docker as any);
 
     await service.adoptStacks(["myapp"], "user-1");
@@ -241,7 +240,7 @@ describe("AdoptService.adoptStacks", () => {
     ]);
     const db = makeDbMock(["otherapp"]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  web:\n    image: nginx\n",
     );
     const service = new AdoptService(docker as any);
@@ -266,7 +265,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([container]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  web:\n    image: nginx\n",
     );
     const service = new AdoptService(docker as any);
@@ -281,7 +280,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("myapp")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  web:\n    image: nginx\n",
     );
     const service = new AdoptService(docker as any);
@@ -296,7 +295,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("cloudflared")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  cloudflared:\n    image: cloudflare/cloudflared\n",
     );
     const service = new AdoptService(docker as any);
@@ -313,7 +312,7 @@ describe("AdoptService.adoptStacks", () => {
     const docker = makeDockerMock([composeContainer("myapp")]);
     const db = makeDbMock([]);
     (getDatabase as any).mockReturnValue(db);
-    (fsModule.default.readFile as any).mockResolvedValue(
+    (readFile as any).mockResolvedValue(
       "services:\n  web:\n    image: nginx\n",
     );
     const service = new AdoptService(docker as any);

@@ -36,6 +36,7 @@ describe("cloudflare web helpers", () => {
       tunnelId: "__new__",
       tunnelName: "labrador",
       deployContainer: true,
+      adoptStackName: null,
     });
 
     expect(api.post).toHaveBeenCalledWith("/cloudflare/tunnels/create", {
@@ -60,6 +61,7 @@ describe("cloudflare web helpers", () => {
       tunnelId: "existing-id",
       tunnelName: "",
       deployContainer: true,
+      adoptStackName: null,
     });
 
     expect(api.post).toHaveBeenCalledWith("/cloudflare/tunnels/token", {
@@ -80,6 +82,7 @@ describe("cloudflare web helpers", () => {
       tunnelId: "existing-id",
       tunnelName: "",
       deployContainer: false,
+      adoptStackName: null,
     });
 
     expect(api.post).not.toHaveBeenCalled();

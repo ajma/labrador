@@ -155,7 +155,7 @@ describe("deploy", () => {
       (call: any[]) => call[0].status === "running",
     );
     expect(runningCall).toBeDefined();
-    expect(runningCall[0].deployedAt).toBeTypeOf("number");
+    expect(runningCall![0].deployedAt).toBeTypeOf("number");
   });
 
   it("calls addProjectExposure when exposureService is set", async () => {

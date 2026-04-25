@@ -78,7 +78,11 @@ describe("ProjectService.createProject", () => {
     const service = new ProjectService();
     await service.createProject(USER_ID, {
       name: "My App",
+      sortOrder: 0,
       composeContent: "services:\n  web:\n    image: nginx\n",
+      exposureEnabled: false,
+      exposureConfig: {},
+      isInfrastructure: false,
     });
 
     expect(values).toHaveBeenCalledWith(
@@ -107,7 +111,11 @@ describe("ProjectService.createProject", () => {
     const service = new ProjectService();
     await service.createProject(USER_ID, {
       name: "My App",
+      sortOrder: 0,
       composeContent: "services:\n  web:\n    image: nginx\n",
+      exposureEnabled: false,
+      exposureConfig: {},
+      isInfrastructure: false,
     });
 
     expect(values).toHaveBeenCalledWith(
@@ -129,7 +137,11 @@ describe("ProjectService.createProject", () => {
     const service = new ProjectService();
     await service.createProject(USER_ID, {
       name: "My App",
+      sortOrder: 0,
       composeContent: "services:\n  web:\n    image: nginx\n",
+      exposureEnabled: false,
+      exposureConfig: {},
+      isInfrastructure: false,
     });
 
     expect(values).toHaveBeenCalledWith({

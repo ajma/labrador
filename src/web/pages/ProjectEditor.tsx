@@ -266,6 +266,7 @@ function GroupCombobox({
 
 const emptyProjectFormValues: CreateProjectInput = {
   name: "",
+  sortOrder: 0,
   composeContent: "",
   logoUrl: null,
   domainName: null,
