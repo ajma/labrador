@@ -42,6 +42,7 @@ const PROJECT = {
   logoUrl: null,
   exposureEnabled: false,
   status: "stopped",
+  configFiles: [{ filename: "Caddyfile", content: ':80 { respond "OK" }' }],
 };
 
 describe("injectLabels", () => {
@@ -125,15 +126,24 @@ describe("deploy", () => {
     service.setExposureService(mockExposureService as any);
   });
 
-  it("writes compose file to /tmp/labrador/{slug}/docker-compose.yml", async () => {
+  it("writes compose file to PROJECTS_DIR/{slug}/docker-compose.yml", async () => {
     await service.deploy("proj-1", "user-1");
 
-    expect(fs.mkdir).toHaveBeenCalledWith("/tmp/labrador/my-app", {
+    expect(fs.mkdir).toHaveBeenCalledWith("/data/projects/my-app", {
       recursive: true,
     });
     expect(fs.writeFile).toHaveBeenCalledWith(
-      "/tmp/labrador/my-app/docker-compose.yml",
+      "/data/projects/my-app/docker-compose.yml",
       expect.any(String),
+    );
+  });
+
+  it("writes config files alongside compose file", async () => {
+    await service.deploy("proj-1", "user-1");
+
+    expect(fs.writeFile).toHaveBeenCalledWith(
+      "/data/projects/my-app/Caddyfile",
+      ':80 { respond "OK" }',
     );
   });
 
@@ -141,7 +151,7 @@ describe("deploy", () => {
     await service.deploy("proj-1", "user-1");
 
     expect(mockDockerService.composeUp).toHaveBeenCalledWith(
-      "/tmp/labrador/my-app/docker-compose.yml",
+      "/data/projects/my-app/docker-compose.yml",
       "my-app",
     );
   });
@@ -314,7 +324,7 @@ describe("restart", () => {
     await service.restart("proj-1", "user-1");
 
     expect(mockDockerService.composeRestart).toHaveBeenCalledWith(
-      "/tmp/labrador/my-app/docker-compose.yml",
+      "/data/projects/my-app/docker-compose.yml",
       "my-app",
     );
 

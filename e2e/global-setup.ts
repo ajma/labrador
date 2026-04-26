@@ -15,10 +15,10 @@ export default async function globalSetup() {
     `labrador-test-compose-${randomUUID()}`,
   );
 
-  // Set COMPOSE_DIR before dynamically importing server modules so that the
+  // Set PROJECTS_DIR before dynamically importing server modules so that the
   // module-level constant in project.service.ts and deploy.service.ts picks
-  // up the temp directory instead of the production default (/data/compose).
-  process.env.COMPOSE_DIR = composeDirPath;
+  // up the temp directory instead of the production default (/data/projects).
+  process.env.PROJECTS_DIR = composeDirPath;
 
   const { createTestServer } = await import("../src/server/test-server.js");
 

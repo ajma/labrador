@@ -7,8 +7,11 @@ import type { ExposureService } from "./exposure/exposure.service.js";
 import { getDatabase } from "../db/index.js";
 import { projects } from "../db/schema.js";
 import { eq } from "drizzle-orm";
+import type { Project } from "../../shared/types.js";
+import type { ConfigFile } from "../../shared/types.js";
 
-const COMPOSE_DIR = process.env.COMPOSE_DIR ?? "/data/compose";
+const PROJECTS_DIR = process.env.PROJECTS_DIR ?? "/data/projects";
+const HOST_PROJECTS_DIR = process.env.HOST_PROJECTS_DIR;
 
 interface DeploymentListener {
   onProgress: (stage: string, message: string) => void;
@@ -26,6 +29,55 @@ export class DeployService {
 
   setExposureService(exposureService: ExposureService): void {
     this.exposureService = exposureService;
+  }
+
+  private async writeProjectFiles(
+    project: Project & { configFiles: ConfigFile[] },
+  ): Promise<string> {
+    const projectDir = path.join(PROJECTS_DIR, project.slug);
+    await fs.mkdir(projectDir, { recursive: true });
+
+    let compose = this.injectLabels(
+      project.composeContent,
+      project.id,
+      project.logoUrl,
+    );
+    compose = this.rewriteVolumePaths(compose, project.slug);
+    await fs.writeFile(path.join(projectDir, "docker-compose.yml"), compose);
+
+    for (const file of project.configFiles ?? []) {
+      await fs.writeFile(path.join(projectDir, file.filename), file.content);
+    }
+
+    return path.join(projectDir, "docker-compose.yml");
+  }
+
+  private rewriteVolumePaths(composeContent: string, slug: string): string {
+    if (!HOST_PROJECTS_DIR) return composeContent;
+    const hostProjectDir = path.join(HOST_PROJECTS_DIR, slug);
+    const parsed = yaml.load(composeContent) as any;
+    if (!parsed?.services) return composeContent;
+
+    for (const serviceName of Object.keys(parsed.services)) {
+      const volumes = parsed.services[serviceName].volumes;
+      if (!Array.isArray(volumes)) continue;
+      parsed.services[serviceName].volumes = volumes.map((v: any) => {
+        if (typeof v === "string") {
+          const [src, ...rest] = v.split(":");
+          if (src.startsWith("./") || src.startsWith("../")) {
+            const abs = path.join(hostProjectDir, src);
+            return [abs, ...rest].join(":");
+          }
+        } else if (
+          v?.source?.startsWith("./") ||
+          v?.source?.startsWith("../")
+        ) {
+          v.source = path.join(hostProjectDir, v.source);
+        }
+        return v;
+      });
+    }
+    return yaml.dump(parsed);
   }
 
   /** Inject labrador labels into compose YAML so containers are trackable */
@@ -82,19 +134,9 @@ export class DeployService {
       .where(eq(projects.id, projectId));
 
     try {
-      // Inject labels
-      listener?.onProgress("labels", "Injecting management labels...");
-      const labeledCompose = this.injectLabels(
-        project.composeContent,
-        projectId,
-        project.logoUrl,
-      );
-
-      // Write compose file
-      const projectDir = path.join(COMPOSE_DIR, project.slug);
-      await fs.mkdir(projectDir, { recursive: true });
-      const composeFile = path.join(projectDir, "docker-compose.yml");
-      await fs.writeFile(composeFile, labeledCompose);
+      // Write compose + config files
+      listener?.onProgress("preparing", "Writing project files...");
+      const composeFile = await this.writeProjectFiles(project);
 
       // Run docker compose up
       listener?.onProgress("deploying", "Running docker compose up...");
@@ -156,17 +198,7 @@ export class DeployService {
     const project = await this.projectService.getProject(projectId, userId);
     if (!project) throw new Error("Project not found");
 
-    const projectDir = path.join(COMPOSE_DIR, project.slug);
-    const composeFile = path.join(projectDir, "docker-compose.yml");
-
-    // Ensure compose file exists (may have been lost if container restarted)
-    const labeledCompose = this.injectLabels(
-      project.composeContent,
-      projectId,
-      project.logoUrl,
-    );
-    await fs.mkdir(projectDir, { recursive: true });
-    await fs.writeFile(composeFile, labeledCompose);
+    const composeFile = await this.writeProjectFiles(project);
 
     // Remove exposure routes before stopping
     if (this.exposureService) {
@@ -194,17 +226,7 @@ export class DeployService {
     const project = await this.projectService.getProject(projectId, userId);
     if (!project) throw new Error("Project not found");
 
-    const projectDir = path.join(COMPOSE_DIR, project.slug);
-    const composeFile = path.join(projectDir, "docker-compose.yml");
-
-    // Ensure compose file exists (may have been lost if container restarted)
-    const labeledCompose = this.injectLabels(
-      project.composeContent,
-      projectId,
-      project.logoUrl,
-    );
-    await fs.mkdir(projectDir, { recursive: true });
-    await fs.writeFile(composeFile, labeledCompose);
+    const composeFile = await this.writeProjectFiles(project);
 
     await this.dockerService.composeRestart(composeFile, project.slug);
 

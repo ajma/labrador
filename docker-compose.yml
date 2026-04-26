@@ -5,11 +5,9 @@ services:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - labrador-data:/data
+      - ${DATA_DIR:-./data}:/data
     environment:
       DATABASE_PATH: /data/labrador.db
+      HOST_PROJECTS_DIR: ${DATA_DIR:-${PWD}/data}/projects
       JWT_SECRET: ${JWT_SECRET}
     restart: unless-stopped
-
-volumes:
-  labrador-data:

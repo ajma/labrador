@@ -17,10 +17,10 @@ function generateSlug(name: string): string {
     .replace(/^-|-$/g, "");
 }
 
-const COMPOSE_DIR = process.env.COMPOSE_DIR ?? "/data/compose";
+const PROJECTS_DIR = process.env.PROJECTS_DIR ?? "/data/projects";
 
 export class ProjectService {
-  private configFileService = new ConfigFileService(COMPOSE_DIR);
+  private configFileService = new ConfigFileService(PROJECTS_DIR);
   async listProjects(userId: string): Promise<Project[]> {
     const db = getDatabase();
     const rows = await db

@@ -14,6 +14,8 @@ services:
       DATABASE_PATH: ./data/labrador.db
       JWT_SECRET: dev-secret
       NODE_ENV: development
+      PROJECTS_DIR: ./data/projects
+      HOST_PROJECTS_DIR: ${PWD}/data/projects
     command: pnpm dev
 
 volumes:
