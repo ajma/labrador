@@ -10,4 +10,9 @@ services:
       DATABASE_PATH: /data/labrador.db
       HOST_PROJECTS_DIR: ${DATA_DIR:-${PWD}/data}/projects
       JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - labrador
     restart: unless-stopped
+networks:
+  labrador:
+    name: labrador

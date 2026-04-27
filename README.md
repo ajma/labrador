@@ -13,19 +13,7 @@
 
 ## Quick Start
 
-**Run with Docker:**
-
-```bash
-docker run -d \
-  --name labrador \
-  -p 3000:3000 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -v labrador-data:/data \
-  -e JWT_SECRET=your-random-secret-here \
-  labrador:latest
-```
-
-**Or with Docker Compose:**
+**Run with Docker Compose** (recommended):
 
 ```yaml
 services:
@@ -35,48 +23,66 @@ services:
       - "3000:3000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - labrador-data:/data
+      - ${DATA_DIR:-./data}:/data
     environment:
       DATABASE_PATH: /data/labrador.db
+      HOST_PROJECTS_DIR: ${DATA_DIR:-${PWD}/data}/projects
       JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - labrador
     restart: unless-stopped
-
-volumes:
-  labrador-data:
+networks:
+  labrador:
+    name: labrador
 ```
 
 Then open http://localhost:3000 in your browser.
 
 ## Data Directory
 
-Everything Labrador needs to persist is stored under the mounted data directory (`/data` inside the container, backed by the `labrador-data` volume). Labrador creates these subdirectories automatically on first use — no manual setup required.
+Everything Labrador needs to persist is stored under the mounted data directory (`/data` inside the container, bound from the host via `DATA_DIR`). Labrador creates these subdirectories automatically on first use — no manual setup required.
 
 ```
 /data/
-├── labrador.db        # SQLite database (all projects, settings, providers, stats)
-└── compose/
+├── labrador.db             # SQLite database (projects, settings, providers, stats)
+└── projects/
     ├── my-stack/
-    │   └── docker-compose.yml
+    │   ├── docker-compose.yml
+    │   ├── Caddyfile          # User-authored config files (if any)
+    │   └── nginx.conf
     ├── another-project/
     │   └── docker-compose.yml
     └── …
 ```
 
-| Path                                | Purpose                                                                                                                                                                                                                                                                                                                       |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `labrador.db`                       | Single-file SQLite database. Contains all project definitions (including compose YAML), user accounts, exposure provider configuration, container stats history, and image update records.                                                                                                                                    |
-| `compose/<slug>/docker-compose.yml` | Generated compose file for each project, written before every deploy, stop, or restart. The compose content is always re-generated from the database, so this directory is a working cache — you can delete it and it will be recreated on the next operation. One subfolder per project, named after the project's URL slug. |
+| Path                                 | Purpose                                                                                                                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `labrador.db`                        | Single-file SQLite database. Contains all project definitions (including compose YAML), user accounts, exposure provider configuration, container stats history, and image update records. |
+| `projects/<slug>/docker-compose.yml` | Generated compose file for each project, written before every deploy, stop, or restart. Re-generated from the database, so it can be recreated on the next operation.                      |
+| `projects/<slug>/<config files>`     | User-authored config files (Caddyfile, nginx.conf, etc.) managed through the UI. These are stored **only on disk** — they are not in the database and cannot be recreated from it.         |
 
-> **Backup**: backing up `labrador.db` is sufficient to restore all project definitions and configuration. The `compose/` directory is derived from the database and does not need to be included in backups.
+> **Backup**: back up the entire `/data` directory (or your `DATA_DIR` bind mount). The `labrador.db` database contains project definitions, but user-authored config files in `projects/<slug>/` live only on disk and must also be included in backups.
 
 ## Environment Variables
 
-| Variable        | Description                                      | Required | Default             |
-| --------------- | ------------------------------------------------ | -------- | ------------------- |
-| `DATABASE_PATH` | Path to SQLite database file                     | No       | `/data/labrador.db` |
-| `JWT_SECRET`    | Secret for JWT token signing                     | Yes      | —                   |
-| `PORT`          | Application port                                 | No       | `3000`              |
-| `LOG_LEVEL`     | Logging level (`debug`, `info`, `warn`, `error`) | No       | `info`              |
+| Variable            | Description                                                   | Required | Default             |
+| ------------------- | ------------------------------------------------------------- | -------- | ------------------- |
+| `DATABASE_PATH`     | Path to SQLite database file                                  | No       | `/data/labrador.db` |
+| `JWT_SECRET`        | Secret for JWT token signing                                  | Yes      | —                   |
+| `HOST_PROJECTS_DIR` | Absolute host path to projects dir (for bind-mount rewriting) | No       | —                   |
+| `DATA_DIR`          | Host path to data directory (used in docker-compose.yml)      | No       | `./data`            |
+| `PORT`              | Application port                                              | No       | `3000`              |
+| `LOG_LEVEL`         | Logging level (`debug`, `info`, `warn`, `error`)              | No       | `info`              |
+
+### Upgrading from named volumes
+
+If you previously used `labrador-data:/data` (named volume), migrate your data to the new bind-mount layout:
+
+```bash
+mkdir -p ./data
+docker run --rm -v labrador-data:/from -v $PWD/data:/to alpine cp -a /from/. /to/
+docker compose up -d
+```
 
 ## Requirements
 

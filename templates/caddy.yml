@@ -1,15 +1,21 @@
 services:
   caddy:
+    container_name: caddy
     image: caddy:latest
+    command: caddy run --resume
     ports:
       - "80:80"
       - "443:443"
       - "443:443/udp"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - labrador
     restart: unless-stopped
 volumes:
   caddy_data:
   caddy_config:
+networks:
+  labrador:
+    external: true

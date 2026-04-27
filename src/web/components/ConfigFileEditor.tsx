@@ -1,7 +1,6 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
-import { ViewUpdate } from "@codemirror/view";
 
 interface ConfigFileEditorProps {
   value: string;
@@ -58,15 +57,8 @@ export function ConfigFileEditor({
 }: ConfigFileEditorProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
-
-  const onUpdate = useCallback(
-    (update: ViewUpdate) => {
-      if (update.docChanged) {
-        onChange(update.state.doc.toString());
-      }
-    },
-    [onChange],
-  );
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -75,7 +67,11 @@ export function ConfigFileEditor({
       doc: value,
       extensions: [
         basicSetup,
-        EditorView.updateListener.of(onUpdate),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            onChangeRef.current(update.state.doc.toString());
+          }
+        }),
         darkTheme,
         EditorView.contentAttributes.of({ style: `min-height: ${minHeight}` }),
       ],

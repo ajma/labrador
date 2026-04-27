@@ -1,5 +1,6 @@
 services:
   labrador:
+    container_name: labrador
     build:
       context: .
       dockerfile: Dockerfile.dev

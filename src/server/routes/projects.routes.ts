@@ -231,7 +231,8 @@ export async function projectRoutes(app: FastifyInstance) {
       }
 
       // Clean up compose file directory
-      const projectDir = path.join("/tmp/labrador", project.slug);
+      const PROJECTS_DIR = process.env.PROJECTS_DIR ?? "/data/projects";
+      const projectDir = path.join(PROJECTS_DIR, project.slug);
       try {
         await fs.rm(projectDir, { recursive: true, force: true });
       } catch (err) {

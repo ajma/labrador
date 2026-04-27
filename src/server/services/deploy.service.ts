@@ -13,6 +13,13 @@ import type { ConfigFile } from "../../shared/types.js";
 const PROJECTS_DIR = process.env.PROJECTS_DIR ?? "/data/projects";
 const HOST_PROJECTS_DIR = process.env.HOST_PROJECTS_DIR;
 
+if (HOST_PROJECTS_DIR && !path.isAbsolute(HOST_PROJECTS_DIR)) {
+  throw new Error(
+    `HOST_PROJECTS_DIR must be an absolute path, got: "${HOST_PROJECTS_DIR}". ` +
+      `Set DATA_DIR to an absolute host path (e.g. /home/user/labrador/data).`,
+  );
+}
+
 interface DeploymentListener {
   onProgress: (stage: string, message: string) => void;
   onComplete: (status: "success" | "error") => void;
